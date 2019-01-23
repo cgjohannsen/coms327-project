@@ -1,0 +1,3 @@
+ASSIGNMENT 0
+
+The file sobel.c takes a pmg formatted image and outputs an edge detected version of that image using the sobel filter. The outputted image is named sobel.pmg.
