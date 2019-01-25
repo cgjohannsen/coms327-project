@@ -1,0 +1,8 @@
+1/23 Read assignment and began dungeon_gen.c file
+	Added struct to represent terrain with char field
+	Had dungeon_gen.c output a set of 21x80 '.' to terminal
+	Began thinking about how to impelement placing rooms
+
+1/25 Continued thinking about placing rooms
+	Replaced array of terrain struct with a char array
+	Created struct for rooms with 4 fields
