@@ -1,0 +1,8 @@
+Assignment 1.01
+
+This program will generate a dungeon with the following specifications and print it to the terminal:
+
+6 rooms
+All rooms connected
+1 upwards staircase
+1 downwards staircase
