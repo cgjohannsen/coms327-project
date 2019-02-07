@@ -24,12 +24,6 @@ int place_rooms(uint8_t num_rooms,
   uint16_t i, j, r, c, isValid, max_height = 10, max_width = 20;
   srand(time(NULL));
 
-  /*  
-   *  Each room has a coordinate which specifies the upper left corner,  
-   *  a width, and height. There are then always a set of valid coordinates 
-   *  to place a room, and a valid width/height range for each room.
-   */ 
-
   /* Place immutable spaces and rest of map with rock */
   for(i = 0; i < DUNGEON_HEIGHT; i++){
     if(i == 0 || i == DUNGEON_HEIGHT-1){
