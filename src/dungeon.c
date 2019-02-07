@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <endian.h> //NOTE
+#include <endian.h>
 
 #define DUNGEON_HEIGHT 21
 #define DUNGEON_WIDTH 80
@@ -142,24 +142,6 @@ int place_stairs(struct staircase *stairs,
     r_index++;
   }while(i < num_down+num_up);
 
-  /*
-  rand_room = rand() % num_rooms;
-  rand_row = (rand() % rooms[rand_room].height) + rooms[rand_room].y;
-  rand_col = (rand() % rooms[rand_room].width) + rooms[rand_room].x;
-  stairs[0] = 0;
-  stairs[1] = rand_row;
-  stairs[2] = rand_col;
-
-  do{
-    rand_room = rand() % num_rooms;
-    rand_row = (rand() % rooms[rand_room].height) + rooms[rand_room].y;
-    rand_col = (rand() % rooms[rand_room].width) + rooms[rand_room].x;
-    stairs[3] = 1;
-    stairs[4] = rand_row;
-    stairs[5] = rand_col;
-  }while(stairs[1] == stairs[4] || stairs[2] == stairs[5]);
-  */
-
   return 0;
 }
 
@@ -258,8 +240,8 @@ int write_dungeon(struct player pc,
 
   // File data
   char file_type[] = "RLG327-S2019";
-  uint32_t file_version = 0;
-  uint32_t file_size = 1708 + num_rooms*4 + num_up*2 + num_down*2;
+  uint32_t file_version = htobe32(0);
+  uint32_t file_size = htobe32(1708 + num_rooms*4 + num_up*2 + num_down*2);
   fwrite(file_type, sizeof(char), 12, f);
   fwrite(&file_version, sizeof(uint32_t), 1, f);
   fwrite(&file_size, sizeof(uint32_t), 1, f);
@@ -275,7 +257,8 @@ int write_dungeon(struct player pc,
   }
 
   // Room data
-  fwrite(&num_rooms, sizeof(uint16_t), 1, f);
+  uint16_t be_num_rooms = htobe16(num_rooms);
+  fwrite(&be_num_rooms, sizeof(uint16_t), 1, f);
   for(i = 0; i < num_rooms; i++){
     uint8_t room_data[4] = { rooms[i].x, rooms[i].y, 
 			     rooms[i].width, rooms[i].height };
@@ -283,12 +266,14 @@ int write_dungeon(struct player pc,
   }
 
   // Stair data
-  fwrite(&num_up, sizeof(uint16_t), 1, f);
+  uint16_t be_num_up = htobe16(num_up);
+  fwrite(&be_num_up, sizeof(uint16_t), 1, f);
   for(i = 0; i < num_up; i++){
     uint8_t stair_location[2] = { stairs[i].x, stairs[i].y };
     fwrite(stair_location, sizeof(uint8_t), 2, f);
   }
-  fwrite(&num_down, sizeof(uint16_t), 1, f);
+  uint16_t be_num_down = htobe16(num_down);
+  fwrite(&be_num_down, sizeof(uint16_t), 1, f);
   for(i = i; i < num_down+num_up; i++){
     uint8_t stair_location[2] = { stairs[i].x, stairs[i].y };
     fwrite(stair_location, sizeof(uint8_t), 2, f);
