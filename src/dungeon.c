@@ -5,8 +5,16 @@
 #include <time.h>
 #include <endian.h>
 
+/* ----------------------------- */
+/*       Global Constants        */
+/* ----------------------------- */
+
 #define DUNGEON_HEIGHT 21
 #define DUNGEON_WIDTH 80
+
+/* ----------------------------- */
+/*   Global Variables/Structs    */
+/* ----------------------------- */
 
 struct room {
   uint8_t x;
@@ -24,11 +32,17 @@ struct staircase {
 struct player {
   uint8_t x;
   uint8_t y;
-};
+} pc;
 
-int place_rooms(struct room rooms[],
-		uint16_t num_rooms, 
-		uint8_t map[21][80])
+char *file_type = "RLG327-S2019";
+uint32_t file_version = 0, file_size;
+uint16_t num_rooms = 6, num_up = 2, num_down = 2;
+
+/* ----------------------------- */
+/*      Dungeon Generation       */
+/* ----------------------------- */
+
+int place_rooms(struct room *rooms, uint8_t map[21][80])
 {
 
   /* Initialize some things */
@@ -81,9 +95,7 @@ int place_rooms(struct room rooms[],
   return 0;
 }
 
-int place_corridors(struct room rooms[],
-		    uint16_t num_rooms,
-		    uint8_t map[21][80]){
+int place_corridors(struct room rooms[], uint8_t map[21][80]){
 
   uint16_t i, r, c, room1, room2;
 
@@ -107,50 +119,44 @@ int place_corridors(struct room rooms[],
   return 0;
 }
 
-/*
- * precondition: num_up < num_rooms and num_down < num_rooms
- */
-int place_stairs(struct staircase *stairs,
-		 uint16_t num_up,
-		 uint16_t num_down,
-		 struct room rooms[],
-		 uint16_t num_rooms)
+int place_stairs(struct staircase *up_stairs, 
+		 struct staircase *down_stairs,
+		 struct room *rooms)
 {
   uint16_t i, rand_row, rand_col, r_index;
   srand(time(NULL));
   
-  i = r_index = 0;
-  do{
+  for(i = 0; i < num_up; i++){
     r_index = r_index % num_rooms;
     rand_row = (rand() % rooms[r_index].height) + rooms[r_index].y;
     rand_col = (rand() % rooms[r_index].width) + rooms[r_index].x;
-    stairs[i].x = rand_col;
-    stairs[i].y = rand_row;
-    stairs[i].dir = 'u';
-    i++;
+    up_stairs[i].x = rand_col;
+    up_stairs[i].y = rand_row;
+    up_stairs[i].dir = 'u';
     r_index++;
-  }while(i < num_up);
+  }
 
-  do{
+  for(i = 0; i < num_down; i++){
     r_index = r_index % num_rooms;
     rand_row = (rand() % rooms[r_index].height) + rooms[r_index].y;
     rand_col = (rand() % rooms[r_index].width) + rooms[r_index].x;
-    stairs[i].x = rand_col;
-    stairs[i].y = rand_row;
-    stairs[i].dir = 'd';
-    i++;
+    down_stairs[i].x = rand_col;
+    down_stairs[i].y = rand_row;
+    down_stairs[i].dir = 'd';
     r_index++;
-  }while(i < num_down+num_up);
+  }
 
   return 0;
 }
 
+/* ----------------------------- */
+/*       Output Formatting       */
+/* ----------------------------- */
+
 int to_char_arr(uint8_t dungeon[DUNGEON_HEIGHT][DUNGEON_WIDTH],
 		struct room *rooms,
-		uint16_t num_rooms,
-		struct staircase *stairs,
-		uint16_t num_stairs,
-		struct player pc,
+		struct staircase *up_stairs,
+		struct staircase *down_stairs,
 		char char_dungeon[DUNGEON_HEIGHT][DUNGEON_WIDTH])
 {
   int r, c, i;
@@ -168,12 +174,11 @@ int to_char_arr(uint8_t dungeon[DUNGEON_HEIGHT][DUNGEON_WIDTH],
     }
   }
 
-  for(i = 0; i < num_stairs; i++){
-    if(stairs[i].dir == 'u'){
-      char_dungeon[stairs[i].y][stairs[i].x] = '>';
-    }else{
-      char_dungeon[stairs[i].y][stairs[i].x] = '<';
-    }
+  for(i = 0; i < num_up; i++){ 
+    char_dungeon[up_stairs[i].y][up_stairs[i].x] = '>';
+  }
+  for(i = 0; i < num_down; i++){ 
+    char_dungeon[down_stairs[i].y][down_stairs[i].x] = '>';
   }
 
   for(r = 0; r < DUNGEON_HEIGHT; r++){
@@ -204,32 +209,14 @@ int print_dungeon(char dungeon[DUNGEON_HEIGHT][DUNGEON_WIDTH])
   return 0;
 }
 
-/*
-int read(){
+/* ----------------------------- */
+/*          File IO              */
+/* ----------------------------- */
 
-  // HOW TO DEAL WITH LOCATION READING
-  // Location = /home/student/.rlg327/dungeon
-  // str(getenv("HOME"));
-
-  char *home = getenv("HOME");
-  char *path;
-  path = malloc(strlen(home) + strlen("/.rlg327/dungeon") + 1);
-  strcpy(path, home);
-  strcat(path, "/.rlg327/dungeon");
-  FILE *f = fopen(path, 'r');
-  free(path);
-
-  return 0;
-}
-*/
-
-int write_dungeon(struct player pc,
-		  uint8_t hardness[DUNGEON_HEIGHT][DUNGEON_WIDTH],
+int write_dungeon(uint8_t hardness[DUNGEON_HEIGHT][DUNGEON_WIDTH],
 		  struct room *rooms,
-		  uint16_t num_rooms,
-		  struct staircase *stairs,
-		  uint16_t num_up,
-		  uint16_t num_down)
+		  struct staircase *up_stairs,
+		  struct staircase *down_stairs)
 {
   char *home = getenv("HOME");
   char *path;
@@ -239,12 +226,11 @@ int write_dungeon(struct player pc,
   FILE *f = fopen(path, "w");
 
   // File data
-  char file_type[] = "RLG327-S2019";
-  uint32_t file_version = htobe32(0);
-  uint32_t file_size = htobe32(1708 + num_rooms*4 + num_up*2 + num_down*2);
+  uint32_t be_file_version = htobe32(file_version);
+  uint32_t be_file_size = htobe32(1708 + num_rooms*4 + num_up*2 + num_down*2);
   fwrite(file_type, sizeof(char), 12, f);
-  fwrite(&file_version, sizeof(uint32_t), 1, f);
-  fwrite(&file_size, sizeof(uint32_t), 1, f);
+  fwrite(&be_file_version, sizeof(uint32_t), 1, f);
+  fwrite(&be_file_size, sizeof(uint32_t), 1, f);
   
   // PC data
   uint8_t pc_location[2] = { pc.x, pc.y };
@@ -269,52 +255,135 @@ int write_dungeon(struct player pc,
   uint16_t be_num_up = htobe16(num_up);
   fwrite(&be_num_up, sizeof(uint16_t), 1, f);
   for(i = 0; i < num_up; i++){
-    uint8_t stair_location[2] = { stairs[i].x, stairs[i].y };
+    uint8_t stair_location[2] = { up_stairs[i].x, up_stairs[i].y };
     fwrite(stair_location, sizeof(uint8_t), 2, f);
   }
   uint16_t be_num_down = htobe16(num_down);
   fwrite(&be_num_down, sizeof(uint16_t), 1, f);
-  for(i = i; i < num_down+num_up; i++){
-    uint8_t stair_location[2] = { stairs[i].x, stairs[i].y };
+  for(i = 0; i < num_down; i++){
+    uint8_t stair_location[2] = { down_stairs[i].x, down_stairs[i].y };
     fwrite(stair_location, sizeof(uint8_t), 2, f);
   }
 
   fclose(f);
   free(path);
   return 0;
-}		  
+}
+
+int read_dungeon(uint8_t hardness[DUNGEON_HEIGHT][DUNGEON_WIDTH],
+		 struct room *rooms,
+		 struct staircase *up_stairs,
+		 struct staircase *down_stairs)
+{
+  char *home = getenv("HOME");
+  char *path;
+  path = malloc(strlen(home) + strlen("/.rlg327/dungeon") + 1);
+  strcpy(path, home);
+  strcat(path, "/.rlg327/dungeon");
+  FILE *f = fopen(path, "r");
+
+  // File data
+  char *be_file_type = malloc(sizeof(char)*12);
+  fread(be_file_type, sizeof(char), 12, f);
+
+  uint32_t be_file_version;
+  fread(&be_file_version, sizeof(uint32_t), 1, f);
+  file_version = be32toh(be_file_version);
+
+  uint32_t be_file_size;
+  fread(&be_file_size, sizeof(uint32_t), 1, f);
+  file_size = be32toh(be_file_size);
+
+  // PC data
+  uint8_t pc_location[2];
+  fread(pc_location, sizeof(uint8_t), 2, f);
+  pc.x = pc_location[0];
+  pc.y = pc_location[1];
+
+  // Hardness matrix
+  int i, j;
+  uint8_t hardness_row[DUNGEON_WIDTH];
+  for(i = 0; i < DUNGEON_HEIGHT; i++){
+    fread(hardness_row, sizeof(uint8_t), DUNGEON_WIDTH, f);
+    for(j = 0; j < DUNGEON_WIDTH; j++){ hardness[i][j] = hardness_row[j]; }
+  }
+
+  // Room data
+  uint16_t be_num_rooms;
+  fread(&be_num_rooms, sizeof(uint16_t), 1, f);
+  num_rooms = be16toh(be_num_rooms);
+  rooms = realloc(rooms, num_rooms*sizeof(struct room));
+  uint8_t room_data[4];
+  for(i = 0; i < num_rooms; i++){
+    fread(room_data, sizeof(uint8_t), 4, f);
+    rooms[i].x = room_data[0];
+    rooms[i].y = room_data[1];
+    rooms[i].width = room_data[2];
+    rooms[i].height = room_data[3];
+  }
+
+  // Stair data
+  uint16_t be_num_up;
+  fread(&be_num_up, sizeof(uint16_t), 1, f);
+  num_up = be16toh(be_num_up);
+  up_stairs = realloc(up_stairs, num_up*sizeof(struct staircase));
+  uint8_t stair_data[2];
+  for(i = 0; i < num_up; i++){
+    fread(stair_data, sizeof(uint8_t), 2, f);
+    up_stairs[i].x = stair_data[0];
+    up_stairs[i].y = stair_data[1];
+  }
+  uint16_t be_num_down;
+  fread(&be_num_down, sizeof(uint16_t), 1, f);
+  num_down = be16toh(be_num_down);
+  down_stairs = realloc(down_stairs, num_up*sizeof(struct staircase));
+  for(i = 0; i < num_up; i++){
+    fread(stair_data, sizeof(uint8_t), 2, f);
+    down_stairs[i].x = stair_data[0];
+    down_stairs[i].y = stair_data[1];
+  }
+			      
+  fclose(f);
+  free(path);
+  return 0;
+}
+
+/* ----------------------------- */
+/*            Main               */
+/* ----------------------------- */
 
 int main(int argc, char *argv[])
 {
   uint8_t dungeon[DUNGEON_HEIGHT][DUNGEON_WIDTH];
-  uint16_t num_rooms = 6, num_up = 2, num_down = 2;
   char char_dungeon[DUNGEON_HEIGHT][DUNGEON_WIDTH];
-  struct room rooms[num_rooms];
-  struct staircase stairs[num_up + num_down];
-  struct player pc;
+  struct room *rooms = malloc(num_rooms*sizeof(struct room));
+  struct staircase *up_stairs = malloc(num_up*sizeof(struct staircase));
+  struct staircase *down_stairs = malloc(num_down*sizeof(struct staircase));
 
-  int arg = argc;
-  while(arg > 1){
-    if(!strcmp(argv[arg-1],"--save")){ 
-      place_rooms(rooms, num_rooms, dungeon);
-      place_corridors(rooms, num_rooms, dungeon);
-      place_stairs(stairs, num_up, num_down, rooms, num_rooms);
+  int arg = 1;
+  while(arg < argc){
+    if(!strcmp(argv[arg],"--save")){ 
+      place_rooms(rooms, dungeon);
+      place_corridors(rooms, dungeon);
+      place_stairs(up_stairs, down_stairs, rooms);
 
       pc.x = rooms[0].x;
       pc.y = rooms[0].y;
       
-      write_dungeon(pc, dungeon, rooms, num_rooms, 
-		    stairs, num_up, num_down); 
+      write_dungeon(dungeon, rooms, up_stairs, down_stairs); 
     }
-    else if(!strcmp(argv[arg-1],"--load")){ 
-      //read_dungeon(); 
+    else if(!strcmp(argv[arg],"--load")){ 
+      read_dungeon(dungeon, rooms, up_stairs, down_stairs); 
     }
-    arg--;
+    arg++;
   }
 
-  to_char_arr(dungeon, rooms, num_rooms, 
-	      stairs, num_up+num_down, pc, char_dungeon);
+  to_char_arr(dungeon, rooms, up_stairs, down_stairs, char_dungeon);
   print_dungeon(char_dungeon);
+
+  free(rooms);
+  free(up_stairs);
+  free(down_stairs);
 
   return 0;
 }
