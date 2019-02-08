@@ -1,8 +1,10 @@
 Assignment 1.01
 
-This program will generate a dungeon with the following specifications and print it to the terminal:
+This program will generate a dungeon with the following specifications:
 
 6 rooms
 All rooms connected
 1 upwards staircase
 1 downwards staircase
+
+This program will also load and save generated or provided dungeon binary files from the $HOME/.rlg327 directory with the file name "dungeon".
