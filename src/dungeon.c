@@ -270,9 +270,9 @@ int read_dungeon(uint8_t hardness[DUNGEON_HEIGHT][DUNGEON_WIDTH])
 {
   char *home = getenv("HOME");
   char *path;
-  path = malloc(strlen(home) + strlen("/.rlg327/09.rlg327") + 1);
+  path = malloc(strlen(home) + strlen("/.rlg327/dungeon") + 1);
   strcpy(path, home);
-  strcat(path, "/.rlg327/09.rlg327");
+  strcat(path, "/.rlg327/dungeon");
   FILE *f = fopen(path, "r");
 
   // File data
@@ -354,23 +354,24 @@ int main(int argc, char *argv[])
   up_stairs = malloc(num_up*sizeof(struct staircase));
   down_stairs = malloc(num_down*sizeof(struct staircase));
 
-  int arg = 1;
-  while(arg < argc){
-    if(!strcmp(argv[arg],"--save")){ 
-      place_rooms(dungeon);
-      place_corridors(dungeon);
-      place_stairs();
-
-      pc.x = rooms[0].x;
-      pc.y = rooms[0].y;
+  int arg, load = 0;
+  for(arg = 1; arg < argc; arg++){
+    if(!strcmp(argv[arg],"--load")){ 
       
-      write_dungeon(dungeon); 
-    }
-    else if(!strcmp(argv[arg],"--load")){ 
       read_dungeon(dungeon);
+      load = 1;
     }
-    arg++;
   }
+  if(!load){
+    place_rooms(dungeon);
+    place_corridors(dungeon);
+    place_stairs();
+    pc.x = rooms[0].x;
+    pc.y = rooms[0].y;
+  }
+  for(arg = 1; arg < argc; arg++){
+    if(!strcmp(argv[arg],"--save")){ write_dungeon(dungeon); }
+  } 
 
   to_char_arr(dungeon, char_dungeon);
   print_dungeon(char_dungeon);
