@@ -38,11 +38,15 @@ char *file_type = "RLG327-S2019";
 uint32_t file_version = 0, file_size;
 uint16_t num_rooms = 6, num_up = 2, num_down = 2;
 
+struct room *rooms;
+struct staircase *up_stairs;
+struct staircase *down_stairs;
+
 /* ----------------------------- */
 /*      Dungeon Generation       */
 /* ----------------------------- */
 
-int place_rooms(struct room *rooms, uint8_t map[21][80])
+int place_rooms(uint8_t map[21][80])
 {
 
   /* Initialize some things */
@@ -95,7 +99,7 @@ int place_rooms(struct room *rooms, uint8_t map[21][80])
   return 0;
 }
 
-int place_corridors(struct room rooms[], uint8_t map[21][80]){
+int place_corridors(uint8_t map[21][80]){
 
   uint16_t i, r, c, room1, room2;
 
@@ -119,9 +123,7 @@ int place_corridors(struct room rooms[], uint8_t map[21][80]){
   return 0;
 }
 
-int place_stairs(struct staircase *up_stairs, 
-		 struct staircase *down_stairs,
-		 struct room *rooms)
+int place_stairs()
 {
   uint16_t i, rand_row, rand_col, r_index;
   srand(time(NULL));
@@ -154,9 +156,6 @@ int place_stairs(struct staircase *up_stairs,
 /* ----------------------------- */
 
 int to_char_arr(uint8_t dungeon[DUNGEON_HEIGHT][DUNGEON_WIDTH],
-		struct room *rooms,
-		struct staircase *up_stairs,
-		struct staircase *down_stairs,
 		char char_dungeon[DUNGEON_HEIGHT][DUNGEON_WIDTH])
 {
   int r, c, i;
@@ -175,7 +174,7 @@ int to_char_arr(uint8_t dungeon[DUNGEON_HEIGHT][DUNGEON_WIDTH],
   }
 
   for(i = 0; i < num_up; i++){ 
-    char_dungeon[up_stairs[i].y][up_stairs[i].x] = '>';
+    char_dungeon[up_stairs[i].y][up_stairs[i].x] = '<';
   }
   for(i = 0; i < num_down; i++){ 
     char_dungeon[down_stairs[i].y][down_stairs[i].x] = '>';
@@ -213,10 +212,7 @@ int print_dungeon(char dungeon[DUNGEON_HEIGHT][DUNGEON_WIDTH])
 /*          File IO              */
 /* ----------------------------- */
 
-int write_dungeon(uint8_t hardness[DUNGEON_HEIGHT][DUNGEON_WIDTH],
-		  struct room *rooms,
-		  struct staircase *up_stairs,
-		  struct staircase *down_stairs)
+int write_dungeon(uint8_t hardness[DUNGEON_HEIGHT][DUNGEON_WIDTH])
 {
   char *home = getenv("HOME");
   char *path;
@@ -270,16 +266,13 @@ int write_dungeon(uint8_t hardness[DUNGEON_HEIGHT][DUNGEON_WIDTH],
   return 0;
 }
 
-int read_dungeon(uint8_t hardness[DUNGEON_HEIGHT][DUNGEON_WIDTH],
-		 struct room *rooms,
-		 struct staircase *up_stairs,
-		 struct staircase *down_stairs)
+int read_dungeon(uint8_t hardness[DUNGEON_HEIGHT][DUNGEON_WIDTH])
 {
   char *home = getenv("HOME");
   char *path;
-  path = malloc(strlen(home) + strlen("/.rlg327/dungeon") + 1);
+  path = malloc(strlen(home) + strlen("/.rlg327/09.rlg327") + 1);
   strcpy(path, home);
-  strcat(path, "/.rlg327/dungeon");
+  strcat(path, "/.rlg327/09.rlg327");
   FILE *f = fopen(path, "r");
 
   // File data
@@ -327,6 +320,7 @@ int read_dungeon(uint8_t hardness[DUNGEON_HEIGHT][DUNGEON_WIDTH],
   fread(&be_num_up, sizeof(uint16_t), 1, f);
   num_up = be16toh(be_num_up);
   up_stairs = realloc(up_stairs, num_up*sizeof(struct staircase));
+
   uint8_t stair_data[2];
   for(i = 0; i < num_up; i++){
     fread(stair_data, sizeof(uint8_t), 2, f);
@@ -356,34 +350,31 @@ int main(int argc, char *argv[])
 {
   uint8_t dungeon[DUNGEON_HEIGHT][DUNGEON_WIDTH];
   char char_dungeon[DUNGEON_HEIGHT][DUNGEON_WIDTH];
-  struct room *rooms = malloc(num_rooms*sizeof(struct room));
-  struct staircase *up_stairs = malloc(num_up*sizeof(struct staircase));
-  struct staircase *down_stairs = malloc(num_down*sizeof(struct staircase));
+  rooms = malloc(num_rooms*sizeof(struct room));
+  up_stairs = malloc(num_up*sizeof(struct staircase));
+  down_stairs = malloc(num_down*sizeof(struct staircase));
 
   int arg = 1;
   while(arg < argc){
     if(!strcmp(argv[arg],"--save")){ 
-      place_rooms(rooms, dungeon);
-      place_corridors(rooms, dungeon);
-      place_stairs(up_stairs, down_stairs, rooms);
+      place_rooms(dungeon);
+      place_corridors(dungeon);
+      place_stairs();
 
       pc.x = rooms[0].x;
       pc.y = rooms[0].y;
       
-      write_dungeon(dungeon, rooms, up_stairs, down_stairs); 
+      write_dungeon(dungeon); 
     }
     else if(!strcmp(argv[arg],"--load")){ 
-      read_dungeon(dungeon, rooms, up_stairs, down_stairs); 
+      read_dungeon(dungeon);
     }
     arg++;
   }
 
-  to_char_arr(dungeon, rooms, up_stairs, down_stairs, char_dungeon);
+  to_char_arr(dungeon, char_dungeon);
   print_dungeon(char_dungeon);
 
-  free(rooms);
-  free(up_stairs);
-  free(down_stairs);
 
   return 0;
 }
