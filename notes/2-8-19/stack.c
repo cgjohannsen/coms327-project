@@ -1,10 +1,11 @@
-#include <stdlib.h) 
-#include <stack.h>
+#include <stdlib.h>
+#include "stack.h"
 
 int stack_init(stack_t *s)
 {
   s->size = 0;
   s->top = NULL;
+  return 0;
 }
 
 int stack_delete(stack_t *s)
@@ -15,9 +16,11 @@ int stack_delete(stack_t *s)
     s->top = n->next;
     free(n);
   }
+
+  return 0;
 }
 
-int stack_peak(stack_t *s, int *value)
+int stack_peek(stack_t *s, int *value)
 {
   if(s->top){
     *value = s->top->value;
@@ -41,6 +44,8 @@ int stack_push(stack_t *s, int value)
 
 int stack_pop(stack_t *s, int *value)
 {
+  stack_node_t *n;
+
   if(!s->top){
     return 1;
   }
@@ -55,12 +60,12 @@ int stack_pop(stack_t *s, int *value)
 
 }
 
-int stack_size(stack_t *s);
+int stack_size(stack_t *s)
 {
   return s->size;
 }
 
 int stack_is_empty(stack_t *s)
 {
-  return s->top;
+  return s->size;
 }
