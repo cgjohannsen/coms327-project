@@ -122,9 +122,9 @@ int place_corridors(dungeon_t *d){
 
   uint16_t i, r, c, room1, room2;
 
-  for(i = 0; i < num_rooms; i++){
+  for(i = 0; i < d->num_rooms; i++){
     room1 = i;
-    room2 = (i + 1) % num_rooms;
+    room2 = (i + 1) % d->num_rooms;
 
     r = d->rooms[room1].y;
     c = d->rooms[room1].x;
@@ -271,7 +271,7 @@ int write_dungeon(dungeon_t *d)
   }
 
   // Room data
-  uint16_t be_num_rooms = htobe16(num_rooms);
+  uint16_t be_num_rooms = htobe16(d->num_rooms);
   fwrite(&be_num_rooms, sizeof(uint16_t), 1, f);
   for(i = 0; i < d->num_rooms; i++){
     uint8_t room_data[4] = { d->rooms[i].x, d->rooms[i].y, 
@@ -339,7 +339,7 @@ int read_dungeon(dungeon_t *d)
   d->num_rooms = be16toh(be_num_rooms);
   d->rooms = malloc(sizeof(room_t) * d->num_rooms);
   uint8_t room_data[4];
-  for(i = 0; i < num_rooms; i++){
+  for(i = 0; i < d->num_rooms; i++){
     fread(room_data, sizeof(uint8_t), 4, f);
     d->rooms[i].x = room_data[0];
     d->rooms[i].y = room_data[1];
