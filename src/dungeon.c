@@ -364,7 +364,7 @@ int read_dungeon(dungeon_t *d)
   d->num_down = be16toh(be_num_down);
   d->d_stairs = malloc(sizeof(stair_t) * d->num_down);
 
-  for(i = 0; i < d->num_up; i++){
+  for(i = 0; i < d->num_down; i++){
     fread(stair_data, sizeof(uint8_t), 2, f);
     d->d_stairs[i].x = stair_data[0];
     d->d_stairs[i].y = stair_data[1];
