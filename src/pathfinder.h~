@@ -1,0 +1,17 @@
+#ifndef PATHFINDER_H
+# define PATHFINDER_H
+
+# include <stdint.h>
+# include "heap.h"
+
+# define DUNGEON_X 80
+# define DUNGEON_Y 21
+
+heap_t heap;
+uint8_t hardness[DUNGEON_Y][DUNGEON_X];
+
+int pathfinder_init(uint8_t hardness[DUNGEON_Y][DUNGEON_X]);
+int pathfinder_dijkstra_floor(uint8_t x, uint8_t y);
+int pathfinder_dijkstra_all(uint8_t x, uint8_t y);
+
+#endif

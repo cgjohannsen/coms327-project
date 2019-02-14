@@ -5,6 +5,9 @@
 #include <time.h>
 #include <endian.h>
 
+#include "heap.h"
+#include "pathfinder.h"
+
 /* ----------------------------- */
 /*       Global Constants        */
 /* ----------------------------- */
@@ -181,6 +184,22 @@ int gen_dungeon(dungeon_t *d)
   place_corridors(d);
   place_stairs(d);
  
+  return 0;
+}
+
+/* ----------------------------- */
+/*          Pathfinding          */
+/* ----------------------------- */
+
+int pathfind_dungeon(dungeon_t *d)
+{
+  dungeon_path_t path[DUNGEON_Y][DUNGEON_X];
+
+  pathfinder_init(d->hardness, path);
+  pathfinder_dijkstra_floor(d->hardness, path,
+			    d->pc.x, d->pc.y);
+  pathfinder_print(path);
+  
   return 0;
 }
 
@@ -400,6 +419,10 @@ int main(int argc, char *argv[])
   }
   for(arg = 1; arg < argc; arg++){
     if(!strcmp(argv[arg],"--save")){ write_dungeon(&dungeon); }
+  } 
+  for(arg = 1; arg < argc; arg++){
+    // -p = pathfind
+    if(!strcmp(argv[arg],"-p")){ pathfind_dungeon(&dungeon); }
   } 
 
   write_char_arr(&dungeon);
