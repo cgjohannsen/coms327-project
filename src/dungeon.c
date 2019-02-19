@@ -196,8 +196,11 @@ int pathfind_dungeon(dungeon_t *d)
   dungeon_path_t path[DUNGEON_Y][DUNGEON_X];
 
   pathfinder_init(d->hardness, path);
-  pathfinder_dijkstra_floor(d->hardness, path,
-			    d->pc.x, d->pc.y);
+  pathfinder_dijkstra_floor(d->hardness, path, d->pc.x, d->pc.y);
+  pathfinder_print(path);
+
+  pathfinder_init(d->hardness, path);
+  pathfinder_dijkstra_all(d->hardness, path, d->pc.x, d->pc.y);
   pathfinder_print(path);
   
   return 0;
