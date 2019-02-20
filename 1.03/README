@@ -1,0 +1,14 @@
+Assignment 1.03
+
+This program can generate, load, and save dungeons in accordance to the specifications for assignments up to 1.03. It can also calculate distances from the player to ech cell in the dungeon. These distances are based on including walls or not, and if including walls the hardness of each wall cell.
+
+Executable Commands:
+
+--load -l	Loads the dungeon from the file at location $HOME/.rlg327/dungeon
+
+--save -s	Saves the dungeon file to $HOME/.rlg327/dungeon
+
+-p		Will calculate distances from player to every cell in dungeon. Outputs the results in
+		accordance to the specified format for assignment 1.03
+		
+-lt [file]	Loads dungeon file entered from directory at location $HOME/.rlg327/saved_dungeons/
