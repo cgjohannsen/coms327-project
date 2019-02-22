@@ -69,9 +69,11 @@ uint16_t num_rooms = 6, num_up = 2, num_down = 2;
 int init_dungeon(dungeon_t *d)
 {
   uint16_t i, j;
+  srand(time(NULL));
+  
   for(i = 0; i < DUNGEON_Y; i++) {
     for(j = 0; j < DUNGEON_X; j++) {
-      d->hardness[i][j] = 1;
+      d->hardness[i][j] = rand() % 254 + 1;
       if(i == 0 || i == DUNGEON_Y-1 ||
 	 j == 0 || j == DUNGEON_X-1) {
        d->hardness[i][j] = 255;
