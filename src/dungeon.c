@@ -7,56 +7,37 @@
 
 #include "heap.h"
 #include "pathfinder.h"
-
-/* ----------------------------- */
-/*       Global Constants        */
-/* ----------------------------- */
-
-#define DUNGEON_Y  21
-#define DUNGEON_X  80
-#define MIN_ROOMS  6
-#define MAX_ROOMS  10
-#define MAX_UP     3
-#define MAX_DOWN   3
-#define ROOM_MIN_X 4
-#define ROOM_MIN_Y 3
-#define ROOM_MAX_X 20
-#define ROOM_MAX_Y 15
-#define MAX_BUFFER 1000
+#include "dungeon.h"
 
 /* ----------------------------- */
 /*   Global Variables/Structs    */
 /* ----------------------------- */
 
-typedef struct room {
-  uint8_t x;
-  uint8_t y;
-  uint8_t width;
-  uint8_t height;
-} room_t;
 
-typedef struct stair {
-  uint8_t x;
-  uint8_t y;
-  char dir;
-} stair_t;
 
-typedef struct player {
-  uint8_t x;
-  uint8_t y;
-} player_t;
+/* ----------------------- */
+/*
 
-typedef struct dungeon {
-  uint16_t num_rooms;
-  room_t *rooms;
-  stair_t *u_stairs;
-  stair_t *d_stairs;
-  uint16_t num_up;
-  uint16_t num_down;
-  player_t pc;
-  uint8_t hardness[DUNGEON_Y][DUNGEON_X];
-  char char_arr[DUNGEON_Y][DUNGEON_X];
-} dungeon_t;
+#define NPC_SMART   0x00000001 // = b00000001
+#define NPC_TELE    0x00000002 // = b00000010
+#define NPC_TUNNEL  0x00000004 // = 000000100
+#define NPC_ERRATIC 0x00000008 // = 000001000
+
+int characteristics;
+characteristics = rand() % 16;
+// or
+characteristics = rand() & 0xf;
+
+
+sprintf(s, "%x", characterstics); // %x - convert to hexidecimal
+// or
+char symbols[] = "0123456789abcdef";
+symbol[characterstics];
+
+// # define has_characterstic(character, bit) 
+//    ((character)->npc)->characterstics & NPC_##bit)
+*/
+
 
 char *file_type = "RLG327-S2019";
 uint32_t file_version = 0, file_size;
@@ -124,8 +105,8 @@ int place_rooms(dungeon_t *d)
   return 0;
 }
 
-int place_corridors(dungeon_t *d){
-
+int place_corridors(dungeon_t *d)
+{
   uint16_t i, r, c, room1, room2;
 
   for(i = 0; i < d->num_rooms; i++){
@@ -187,25 +168,6 @@ int gen_dungeon(dungeon_t *d)
   place_corridors(d);
   place_stairs(d);
  
-  return 0;
-}
-
-/* ----------------------------- */
-/*          Pathfinding          */
-/* ----------------------------- */
-
-int pathfind_dungeon(dungeon_t *d)
-{
-  dungeon_path_t path[DUNGEON_Y][DUNGEON_X];
-
-  pathfinder_init(d->hardness, path);
-  pathfinder_dijkstra_floor(d->hardness, path, d->pc.x, d->pc.y);
-  pathfinder_print(path);
-
-  pathfinder_init(d->hardness, path);
-  pathfinder_dijkstra_all(d->hardness, path, d->pc.x, d->pc.y);
-  pathfinder_print(path);
-  
   return 0;
 }
 
@@ -323,98 +285,21 @@ int write_dungeon(dungeon_t *d)
   return 0;
 }
 
-int read_dungeon(dungeon_t *d)
+int read_dungeon(dungeon_t *d, uint8_t test, char *n)
 {
   char *home = getenv("HOME");
   char *path;
-  path = malloc(strlen(home) + strlen("/.rlg327/dungeon") + 1);
-  strcpy(path, home);
-  strcat(path, "/.rlg327/dungeon");
-  FILE *f = fopen(path, "r");
-
-  // File data
-  char *be_file_type = malloc(sizeof(char)*12);
-  fread(be_file_type, sizeof(char), 12, f);
-
-  uint32_t be_file_version;
-  fread(&be_file_version, sizeof(uint32_t), 1, f);
-  file_version = be32toh(be_file_version);
-
-  uint32_t be_file_size;
-  fread(&be_file_size, sizeof(uint32_t), 1, f);
-  file_size = be32toh(be_file_size);
-
-  // PC data
-  uint8_t pc_location[2];
-  fread(pc_location, sizeof(uint8_t), 2, f);
-  d->pc.x = pc_location[0];
-  d->pc.y = pc_location[1];
-
-  // Hardness matrix
-  int i, j;
-  uint8_t hardness_row[DUNGEON_X];
-  for(i = 0; i < DUNGEON_Y; i++){
-    fread(hardness_row, sizeof(uint8_t), DUNGEON_X, f);
-    for(j = 0; j < DUNGEON_X; j++){ d->hardness[i][j] = hardness_row[j]; }
-  }
-
-  // Room data
-  uint16_t be_num_rooms;
-  fread(&be_num_rooms, sizeof(uint16_t), 1, f);
-  d->num_rooms = be16toh(be_num_rooms);
-  d->rooms = malloc(sizeof(room_t) * d->num_rooms);
-  uint8_t room_data[4];
-  for(i = 0; i < d->num_rooms; i++){
-    fread(room_data, sizeof(uint8_t), 4, f);
-    d->rooms[i].x = room_data[0];
-    d->rooms[i].y = room_data[1];
-    d->rooms[i].width = room_data[2];
-    d->rooms[i].height = room_data[3];
-  }
-
-  // Stair data
-  uint16_t be_num_up;
-  fread(&be_num_up, sizeof(uint16_t), 1, f);
-  d->num_up = be16toh(be_num_up);
-  d->u_stairs = malloc(sizeof(stair_t) * d->num_up);
-
-  uint8_t stair_data[2];
-  for(i = 0; i < d->num_up; i++){
-    fread(stair_data, sizeof(uint8_t), 2, f);
-    d->u_stairs[i].x = stair_data[0];
-    d->u_stairs[i].y = stair_data[1];
-  }
-  uint16_t be_num_down;
-  fread(&be_num_down, sizeof(uint16_t), 1, f);
-  d->num_down = be16toh(be_num_down);
-  d->d_stairs = malloc(sizeof(stair_t) * d->num_down);
-
-  for(i = 0; i < d->num_down; i++){
-    fread(stair_data, sizeof(uint8_t), 2, f);
-    d->d_stairs[i].x = stair_data[0];
-    d->d_stairs[i].y = stair_data[1];
-  }
-			      
-  fclose(f);
-  free(path);
-  return 0;
-}
-
-/* ----------------------------- */
-/*           Testing             */
-/* ----------------------------- */
-
-// Copied from above, reads from subdirectory
-
-int read_dungeon_test(dungeon_t *d, char *n)
-{
-  char *home = getenv("HOME");
-  char *path;
-  path = malloc(strlen(home) + strlen("/.rlg327/saved_dungeons/") +
+  if(test) {
+    path = malloc(strlen(home) + strlen("/.rlg327/saved_dungeons/") +
 		strlen(n) + 1);
-  strcpy(path, home);
-  strcat(path, "/.rlg327/saved_dungeons/");
-  strcat(path, n);
+    strcpy(path, home);
+    strcat(path, "/.rlg327/saved_dungeons/");
+    strcat(path, n);
+  } else {
+    path = malloc(strlen(home) + strlen("/.rlg327/dungeon") + 1);
+    strcpy(path, home);
+    strcat(path, "/.rlg327/dungeon");
+  }
   FILE *f = fopen(path, "r");
 
   // File data
@@ -482,100 +367,5 @@ int read_dungeon_test(dungeon_t *d, char *n)
 			      
   fclose(f);
   free(path);
-  return 0;
-}
-
-/*
-int compare_results(char *t)
-{
-  FILE *f = fopen("/.rlg327/distance_maps.txt", "r"); 
-  char line[MAX_BUFFER];
-  char str[MAX_BUFFER];
-  int i, j;
-
-  dungeon_path_t path[DUNGEON_Y][DUNGEON_X];
-    
-  while(!fgets(line, MAX_BUFFER, f)) {
-    sscanf(line, "%s", str); 
-    if(!strcmp(t, str)) {
-      // PC position line
-      fgets(line,MAX_BUFFER, f);
-      // Dungeon Map
-      for(i = 0; i < DUNGEON_Y; i++){
-	fgets(line, MAX_BUFFER, f);
-      }
-      // Dijkstra floor
-      pathfinder_init(d->hardness, path);
-      for(i = 0; i < DUNGEON_Y; i++){
-	fgets(line, MAX_BUFFER, f);
-	sscanf(
-	for(j = 0; j < DUNGEON_X; j++){
-	  
-	}
-      }
-    }
-  }
-
-  fclose(f);
-  return 0;
-}
-*/
-
-/* ----------------------------- */
-/*            Main               */
-/* ----------------------------- */
-
-int main(int argc, char *argv[])
-{
-  dungeon_t dungeon;
-  //char *test_dungeon;
-
-  init_dungeon(&dungeon);
-
-  // Commands:
-  //
-  // --load -l     Load file from /.rlg327
-  // --save -s     Saves dungeon to file in /.rlg327
-  // -p            Output pathfinding dungeons
-  // -lt [file]    Load file from .rlg327/saved_dungeons/
-  //
-  //           TODO
-  // --test -t     Tests loaded dungeon (must be run with -lt) 
-  
-
-  int arg, load = 0;
-  for(arg = 1; arg < argc; arg++){
-    if(!strcmp(argv[arg],"--load") || !strcmp(argv[arg],"-l")){ 
-      read_dungeon(&dungeon);
-      load++;
-    }
-    if(!strcmp(argv[arg], "-lt")) {
-      read_dungeon_test(&dungeon, argv[arg+1]);
-      //test_dungeon = argv[arg+1];
-      load++;
-    }
-  }
-  if(!load){
-    gen_dungeon(&dungeon);
-    dungeon.pc.x = dungeon.rooms[0].x;
-    dungeon.pc.y = dungeon.rooms[0].y;
-  }
-  for(arg = 1; arg < argc; arg++){
-    if(!strcmp(argv[arg],"--save") || !strcmp(argv[arg], "-s"))
-      { write_dungeon(&dungeon); }
-  } 
-  for(arg = 1; arg < argc; arg++){
-    if(!strcmp(argv[arg],"-p")){ pathfind_dungeon(&dungeon); }
-  }
-  /*
-  for(arg = 1; arg < argc; arg++){
-    if(!strcmp(argv[arg],"--test") || !strcmp(argv[arg], "-t"))
-      { compare_results(test_dungeon); }
-  }
-  */
-
-  write_char_arr(&dungeon);
-  display_dungeon(&dungeon);
-
   return 0;
 }
