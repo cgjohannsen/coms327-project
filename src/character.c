@@ -208,28 +208,43 @@ int character_tunnel_tele_smart(character_t *c, dungeon_t *d)
     down = d->all_dis[(c->y)+1][(c->x)  ].cost,
     left = d->all_dis[(c->y)  ][(c->x)-1].cost,
    right = d->all_dis[(c->y)  ][(c->x)+1].cost;
-
-  //printf("X:%d Y:%d UP:%d DOWN:%d LEFT%d RIGHT:%d\n",
-  //c->x, c->y, up, down, left, right);
   
   if(up <= down && up <= left && up <= right) {
-    c->y = (c->y)-1;
-    c->x = (c->x)  ;
+    if(d->hardness[(c->y)-1][(c->x)  ] < 86){
+      d->hardness[(c->y)-1][(c->x)  ] = 0;
+      c->y = (c->y)-1;
+      c->x = (c->x)  ;
+    } else {
+      d->hardness[(c->y)-1][(c->x)  ] -= 85;
+    }
+    
+  } else if(right <= up && right <= down && right <= left) {
+    if(d->hardness[(c->y)  ][(c->x)+1] < 86){
+      d->hardness[(c->y)  ][(c->x)+1] = 0;
+      c->y = (c->y)  ;
+      c->x = (c->x)+1;
+    } else {
+      d->hardness[(c->y)  ][(c->x)+1] -= 85;
+    }
+    
+  } else if (left <= up && left <= down && left <= right) {
+    if(d->hardness[(c->y)  ][(c->x)-1] < 86){
+      d->hardness[(c->y)  ][(c->x)-1] = 0;
+      c->y = (c->y)  ;
+      c->x = (c->x)-1;
+    } else {
+      d->hardness[(c->y)  ][(c->x)-1] -= 85;
+    }
+    
+  } else if (down <= up && down <= left && down <= right) {
+    if(d->hardness[(c->y)+1][(c->x)  ] < 86){
+      d->hardness[(c->y)+1][(c->x)  ] = 0;
+      c->y = (c->y)+1;
+      c->x = (c->x)  ;
+    } else {
+      d->hardness[(c->y)+1][(c->x)  ] -= 85;
+    }
   }
-  if(right <= up && right <= down && right <= left) {
-    c->y = (c->y)  ;
-    c->x = (c->x)+1;
-  }
-  if(left <= up && left <= down && left <= right) {
-    c->y = (c->y)  ;
-    c->x = (c->x)-1;
-  }
-  if(down <= up && down <= left && down <= right) {
-    c->y = (c->y)+1;
-    c->x = (c->x)  ;
-  }
-
-  d->hardness[c->y][c->x] = 0;
   
   return 0;
 }

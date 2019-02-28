@@ -46,13 +46,13 @@ int play_game(dungeon_t *d, character_t *pc,
       // Place current character back into queue 
       cur_character->move_time =
 	(cur_character->move_time + (1000 / (cur_character->speed)));
+      update_distances(d, pc->x, pc->y);
       
       cur_character->hn = heap_insert(&event_queue, cur_character);
     
       // Display dungeon with delay &
       // Update distances if pc moved
       if(cur_character->isPC) {
-	update_distances(d, pc->x, pc->y);
 	usleep(250000);
         render_dungeon(d);
         character_render(d, pc, n, monsters);
