@@ -4,18 +4,22 @@
 #include <string.h>
 #include <time.h>
 #include <endian.h>
+#include <limits.h>
+#include <unistd.h>
 
 #include "heap.h"
 #include "pathfinder.h"
+#include "character.h"
 #include "dungeon.h"
+#include "pc.h"
+#include "npc.h"
 
 /* ----------------------------- */
 /*   Global Variables/Structs    */
 /* ----------------------------- */
 
-char *file_type = "RLG327-S2019";
-uint32_t file_version = 0, file_size;
-//uint16_t num_rooms = 6, num_up = 2, num_down = 2;
+static char *file_type = "RLG327-S2019";
+static uint32_t file_version = 0, file_size;
 
 /* ----------------------------- */
 /*      Dungeon Generation       */
@@ -23,15 +27,17 @@ uint32_t file_version = 0, file_size;
 
 int init_dungeon(dungeon_t *d)
 {
-  uint16_t i, j;
+  uint16_t r, c;
   srand(time(NULL));
   
-  for(i = 0; i < DUNGEON_Y; i++) {
-    for(j = 0; j < DUNGEON_X; j++) {
-      d->hardness[i][j] = rand() % 254 + 1;
-      if(i == 0 || i == DUNGEON_Y-1 ||
-	 j == 0 || j == DUNGEON_X-1) {
-       d->hardness[i][j] = 255;
+  for(r = 0; r < DUNGEON_Y; r++) {
+    for(c = 0; c < DUNGEON_X; c++) {
+      d->map[r][c] = ter_wall;
+      d->hardness[r][c] = rand() % 254 + 1;
+      if(r == 0 || r == DUNGEON_Y-1 ||
+	 c == 0 || c == DUNGEON_X-1) {
+	d->map[r][c] = ter_immutable;
+        d->hardness[r][c] = 255;
       }
     }
   }
@@ -71,6 +77,7 @@ int place_rooms(dungeon_t *d)
     /* Place room */
     for(r = d->rooms[i].y; r < d->rooms[i].y+d->rooms[i].height; r++){
       for(c = d->rooms[i].x; c < d->rooms[i].x+d->rooms[i].width; c++){
+	d->map[r][c] = ter_floor;
 	d->hardness[r][c] = 0;
       }
     }
@@ -96,7 +103,10 @@ int place_corridors(dungeon_t *d)
       else if(c < d->rooms[room2].x){ c++; }
       else if(c > d->rooms[room2].x){ c--; }
       
-      if(d->hardness[r][c] != 255){ d->hardness[r][c] = 0; }
+      if(d->hardness[r][c] != 255 && d->map[r][c] != ter_floor){
+	d->map[r][c] = ter_corridor;
+	d->hardness[r][c] = 0;
+      }
     }while( r != d->rooms[room2].y || c != d->rooms[room2].x);
   }
 
@@ -120,6 +130,7 @@ int place_stairs(dungeon_t *d)
     d->u_stairs[i].x = rand_col;
     d->u_stairs[i].y = rand_row;
     d->u_stairs[i].dir = 'u';
+    d->map[rand_row][rand_col] = ter_stair_up;
     r_index++;
   }
 
@@ -130,6 +141,7 @@ int place_stairs(dungeon_t *d)
     d->d_stairs[i].x = rand_col;
     d->d_stairs[i].y = rand_row;
     d->d_stairs[i].dir = 'd';
+    d->map[rand_row][rand_col] = ter_stair_down;
     r_index++;
   }
 
@@ -138,6 +150,8 @@ int place_stairs(dungeon_t *d)
 
 int gen_dungeon(dungeon_t *d)
 {
+  srand(time(NULL));
+  
   place_rooms(d);
   place_corridors(d);
   place_stairs(d);
@@ -145,31 +159,36 @@ int gen_dungeon(dungeon_t *d)
   return 0;
 }
 
+int place_characters(dungeon_t *d)
+{
+  uint32_t i, r, c;
+  
+  for(r = 0; r < DUNGEON_Y; r++) {
+    for(c = 0; c < DUNGEON_X; c++) {
+      d->characters[r][c] = NULL;
+    }
+  }
+
+  pc_init(d);
+  if(!d->nummon){ d->nummon = (rand() % (MAX_MONSTERS - 1)) + 1; }
+  for(i = 0; i < d->nummon; i++) {
+    npc_init(d, i);
+  }
+  
+  return 0;
+}
+
 /* ----------------------------- */
 /*          Pathfinding          */
 /* ----------------------------- */
 
-int pathfind_dungeon(dungeon_t *d, uint8_t x, uint8_t y)
-{
-  
-  pathfinder_init(d->hardness, d->floor_dis);
-  pathfinder_dijkstra_floor(d->hardness, d->floor_dis, x, y);
-  pathfinder_print(d->floor_dis);
-  
-  pathfinder_init(d->hardness, d->all_dis);
-  pathfinder_dijkstra_all(d->hardness, d->all_dis, x, y);
-  pathfinder_print(d->all_dis);
-
-  return 0;
-}
-
-int update_distances(dungeon_t *d, uint8_t x, uint8_t y)
+int update_distances(dungeon_t *d)
 { 
-  pathfinder_init(d->hardness, d->floor_dis);
-  pathfinder_dijkstra_floor(d->hardness, d->floor_dis, x, y);
+  pathfinder_init(d->hardness, d->pc_cost_floor);
+  pathfinder_dijkstra_floor(d->hardness, d->pc_cost_floor, d->pc.x, d->pc.y);
   
-  pathfinder_init(d->hardness, d->all_dis);
-  pathfinder_dijkstra_all(d->hardness, d->all_dis, x, y);
+  pathfinder_init(d->hardness, d->pc_cost_all);
+  pathfinder_dijkstra_all(d->hardness, d->pc_cost_all, d->pc.x, d->pc.y);
 
   return 0;
 }
@@ -178,41 +197,32 @@ int update_distances(dungeon_t *d, uint8_t x, uint8_t y)
 /*       Output Formatting       */
 /* ----------------------------- */
 
-int render_dungeon(dungeon_t *d)
+int update_output(dungeon_t *d)
 {
-  int r, c, i;
-
-  // Render rock
-  for(r = 0; r < DUNGEON_Y; r++){
-    for(c = 0; c < DUNGEON_X; c++){
-      d->char_arr[r][c] = ' ';
-    }
-  }
-
-  // Render rooms
-  for(i = 0; i < d->num_rooms; i++){
-    for(r = d->rooms[i].y; r < d->rooms[i].y+d->rooms[i].height; r++){
-      for(c = d->rooms[i].x; c < d->rooms[i].x+d->rooms[i].width; c++){
-	d->char_arr[r][c] = '.';
-      }
-    }
-  }
-
-  // Render stairs
-  for(i = 0; i < d->num_up; i++){ 
-    d->char_arr[d->u_stairs[i].y][d->u_stairs[i].x] = '<';
-  }
-  for(i = 0; i < d->num_down; i++){ 
-    d->char_arr[d->d_stairs[i].y][d->d_stairs[i].x] = '>';
-  }
-
-  // Render corridors
-  for(r = 0; r < DUNGEON_Y; r++){
-    for(c = 0; c < DUNGEON_X; c++){
-      if(d->char_arr[r][c] != '.' && 
-	d->char_arr[r][c] != '>' &&
-	d->char_arr[r][c] != '<'){
-	if(d->hardness[r][c] == 0){ d->char_arr[r][c] = '#'; }
+  int r, c;
+  
+  for(r = 0; r < DUNGEON_Y; r++) {
+    for(c = 0; c < DUNGEON_X; c++) {
+      if(d->characters[r][c]){ d->output[r][c] = d->characters[r][c]->symbol; }
+      else {
+	switch(d->map[r][c]) {
+	case ter_wall:
+	case ter_immutable:
+	  d->output[r][c] = ' ';
+	  break;
+	case ter_floor:
+	  d->output[r][c] = '.';
+	  break;
+	case ter_corridor:
+	  d->output[r][c] = '#';
+	  break;
+	case ter_stair_up:
+	  d->output[r][c] = '>';
+	  break;
+	case ter_stair_down:
+	  d->output[r][c] = '<';
+	  break;
+	}
       }
     }
   }
@@ -220,13 +230,27 @@ int render_dungeon(dungeon_t *d)
   return 0;
 }
 
-int display_dungeon(dungeon_t *d)
+int render_pc_cost_floor(dungeon_t *d)
 {
-  int r, c;
-  
+  uint32_t r, c;
   for(r = 0; r < DUNGEON_Y; r++){
     for(c = 0; c < DUNGEON_X; c++){
-      printf("%c", d->char_arr[r][c]);
+      if(d->pc_cost_floor[r][c].cost == INT_MAX){ printf(" "); } 
+      else {printf("%d", d->pc_cost_floor[r][c].cost % 10); }
+    }
+    printf("\n");
+  }
+
+  return 0;
+}
+
+int render_pc_cost_all(dungeon_t *d)
+{
+  uint32_t r, c;
+  for(r = 0; r < DUNGEON_Y; r++){
+    for(c = 0; c < DUNGEON_X; c++){
+      if(d->pc_cost_all[r][c].cost == INT_MAX){ printf(" "); } 
+      else {printf("%d", d->pc_cost_all[r][c].cost % 10); }
     }
     printf("\n");
   }
@@ -256,8 +280,8 @@ int write_dungeon(dungeon_t *d)
   fwrite(&be_file_size, sizeof(uint32_t), 1, f);
   
   // PC data
-  //uint8_t pc_location[2] = { pc_x, pc_y };
-  //fwrite(pc_location, sizeof(uint8_t), 2, f);
+  uint8_t pc_location[2] = { d->pc.x, d->pc.y };
+  fwrite(pc_location, sizeof(uint8_t), 2, f);
   
   // Hardness matrix
   int i;
@@ -325,8 +349,8 @@ int read_dungeon(dungeon_t *d, uint8_t test, char *n)
   // PC data
   uint8_t pc_location[2];
   fread(pc_location, sizeof(uint8_t), 2, f);
-  //d->pc.x = pc_location[0];
-  //d->pc.y = pc_location[1];
+  d->pc.x = pc_location[0];
+  d->pc.y = pc_location[1];
 
   // Hardness matrix
   int i, j;

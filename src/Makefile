@@ -6,10 +6,10 @@ RM = rm -f
 CFLAGS = -Wall -Werror -ggdb -funroll-loops
 CXXFLAGS = -Wall -Werror -ggdb -funroll-loops
 
-LDFLAGS = 
+LDFLAGS = -lncurses
 
 BIN = rlg327
-OBJS = rlg327.o dungeon.o heap.o pathfinder.o character.o
+OBJS = rlg327.o dungeon.o heap.o pathfinder.o character.o npc.o pc.o
 
 all: $(BIN) etags
 

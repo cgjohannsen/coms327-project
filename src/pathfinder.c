@@ -271,17 +271,3 @@ int pathfinder_dijkstra_all(uint8_t h[DUNGEON_Y][DUNGEON_X],
 
   return 0;
 }
-
-int pathfinder_print(dungeon_path_t path[DUNGEON_Y][DUNGEON_X])
-{
-  uint32_t r, c;
-  for(r = 0; r < DUNGEON_Y; r++){
-    for(c = 0; c < DUNGEON_X; c++){
-      if(path[r][c].cost == INT_MAX){ printf(" "); } 
-      else {printf("%d", path[r][c].cost % 10); }
-    }
-    printf("\n");
-  }
-
-  return 0;
-}

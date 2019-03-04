@@ -22,6 +22,5 @@ int pathfinder_dijkstra_floor(uint8_t h[DUNGEON_Y][DUNGEON_X],
 int pathfinder_dijkstra_all(uint8_t h[DUNGEON_Y][DUNGEON_X],
 			    dungeon_path_t path[DUNGEON_Y][DUNGEON_X],
 			    uint8_t x, uint8_t y);
-int pathfinder_print(dungeon_path_t path[DUNGEON_Y][DUNGEON_X]);
 
 #endif
