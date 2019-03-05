@@ -47,6 +47,7 @@ typedef struct stair {
 } stair_t;
 
 typedef struct dungeon {
+  char *message;
   uint16_t num_rooms;
   room_t *rooms;
   uint16_t num_up;

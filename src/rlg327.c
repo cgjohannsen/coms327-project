@@ -44,23 +44,34 @@ int play_game(dungeon_t *d)
 
   while(d->pc.isAlive) {
     cur = heap_remove_min(&event_queue);
+    
     if(cur->pc) {
       clear();
       update_output(d);
-      for(i = 0; i < DUNGEON_Y+1; i++) {
-	mvprintw(i, 0, d->output[i]);
+      mvprintw(0, 0, d->message);
+      for(i = 1; i < DUNGEON_Y; i++) {
+	mvprintw(i, 0, d->output[i-1]);
       }
       cmd = getch();
-      pc_move(d, cmd);
+      if(pc_move(d, cmd)){
+	mvprintw(0, 0, "You're a quitter!");
+	getch();
+	endwin();
+	return 1;
+      }
+      update_distances(d);
     }
+    
     if(cur->npc && cur->isAlive) { npc_move(d, cur); }
     cur->move_time = cur->move_time + (1000 / (cur->speed));
     heap_insert(&event_queue, cur);   
   }
 
   if(d->nummon){
+    // PC loss
     printw("Oof that's some hot tea, better luck next time bucko\n");
   } else {
+    // PC win
     printw("Nice job man, way to live!\n");
   }
 

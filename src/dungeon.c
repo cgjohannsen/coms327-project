@@ -41,6 +41,8 @@ int init_dungeon(dungeon_t *d)
       }
     }
   }
+  
+  d->message = "";
 
   return 0;
 }
@@ -200,7 +202,7 @@ int update_distances(dungeon_t *d)
 int update_output(dungeon_t *d)
 {
   int r, c;
-  
+
   for(r = 0; r < DUNGEON_Y; r++) {
     for(c = 0; c < DUNGEON_X; c++) {
       if(d->characters[r][c]){ d->output[r][c] = d->characters[r][c]->symbol; }

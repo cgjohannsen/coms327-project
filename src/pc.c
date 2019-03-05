@@ -28,61 +28,93 @@ void pc_delete(pc_t *pc)
 int pc_move(dungeon_t *d, int c)
 {
   switch(c) {
-  case 7:
+  case (int) '7':
   case (int) 'y':
-    d->characters[d->pc.y][d->pc.y] = NULL;
-    d->pc.x = d->pc.x-1;
-    d->pc.y = d->pc.y-1;
-    d->characters[d->pc.y][d->pc.y] = &d->pc;
+    if(d->hardness[d->pc.y-1][d->pc.x-1] == 0) {
+      d->characters[d->pc.y][d->pc.x] = NULL;
+      d->pc.x = d->pc.x-1;
+      d->pc.y = d->pc.y-1;
+      d->characters[d->pc.y][d->pc.x] = &d->pc;
+    } else {
+      d->message = "There's a wall in the way!";
+    }
     break;
-  case 8:
+  case (int) '8':
   case (int) 'k':
-    d->characters[d->pc.y][d->pc.y] = NULL;
-    d->pc.x = d->pc.x  ;
-    d->pc.y = d->pc.y-1;
-    d->characters[d->pc.y][d->pc.y] = &d->pc;
+    if(d->hardness[d->pc.y-1][d->pc.x  ] == 0) {
+      d->characters[d->pc.y][d->pc.x] = NULL;
+      d->pc.x = d->pc.x  ;
+      d->pc.y = d->pc.y-1;
+      d->characters[d->pc.y][d->pc.x] = &d->pc;
+    } else {
+      d->message = "There's a wall in the way!";
+    }
     break;
-  case 9:
+  case (int) '9':
   case (int) 'u':
-    d->characters[d->pc.y][d->pc.y] = NULL;
-    d->pc.x = d->pc.x+1;
-    d->pc.y = d->pc.y-1;
-    d->characters[d->pc.y][d->pc.y] = &d->pc;
+    if(d->hardness[d->pc.y-1][d->pc.x+1] == 0) {
+      d->characters[d->pc.y][d->pc.x] = NULL;
+      d->pc.x = d->pc.x+1;
+      d->pc.y = d->pc.y-1;
+      d->characters[d->pc.y][d->pc.x] = &d->pc;
+    } else {
+      d->message = "There's a wall in the way!";
+    }
     break;
-  case 6:
+  case (int) '6':
   case (int) 'l':
-    d->characters[d->pc.y][d->pc.y] = NULL;
-    d->pc.x = d->pc.x+1;
-    d->pc.y = d->pc.y  ;
-    d->characters[d->pc.y][d->pc.y] = &d->pc;
+    if(d->hardness[d->pc.y  ][d->pc.x+1] == 0) {
+      d->characters[d->pc.y][d->pc.x] = NULL;
+      d->pc.x = d->pc.x+1;
+      d->pc.y = d->pc.y  ;
+      d->characters[d->pc.y][d->pc.x] = &d->pc;
+    } else {
+      d->message = "There's a wall in the way!";
+    }
     break;
-  case 3:
+  case (int) '3':
   case (int) 'n':
-    d->characters[d->pc.y][d->pc.y] = NULL;
-    d->pc.x = d->pc.x+1;
-    d->pc.y = d->pc.y+1;
-    d->characters[d->pc.y][d->pc.y] = &d->pc;
+    if(d->hardness[d->pc.y+1][d->pc.x+1] == 0) {
+      d->characters[d->pc.y][d->pc.x] = NULL;
+      d->pc.x = d->pc.x+1;
+      d->pc.y = d->pc.y+1;
+      d->characters[d->pc.y][d->pc.x] = &d->pc;
+    } else {
+      d->message = "There's a wall in the way!";
+    }
     break;
-  case 2:
+  case (int) '2':
   case (int) 'j':
-    d->characters[d->pc.y][d->pc.y] = NULL;
-    d->pc.x = d->pc.x  ;
-    d->pc.y = d->pc.y+1;
-    d->characters[d->pc.y][d->pc.y] = &d->pc;
+    if(d->hardness[d->pc.y+1][d->pc.x] == 0) {
+      d->characters[d->pc.y][d->pc.x] = NULL;
+      d->pc.x = d->pc.x  ;
+      d->pc.y = d->pc.y+1;
+      d->characters[d->pc.y][d->pc.x] = &d->pc;
+    } else {
+      d->message = "There's a wall in the way!";
+    }
     break;
-  case 1:
+  case (int) '1':
   case (int) 'b':
-    d->characters[d->pc.y][d->pc.y] = NULL;
-    d->pc.x = d->pc.x-1;
-    d->pc.y = d->pc.y+1;
-    d->characters[d->pc.y][d->pc.y] = &d->pc;
+    if(d->hardness[d->pc.y+1][d->pc.x-1] == 0) {
+      d->characters[d->pc.y][d->pc.x] = NULL;
+      d->pc.x = d->pc.x-1;
+      d->pc.y = d->pc.y+1;
+      d->characters[d->pc.y][d->pc.x] = &d->pc;
+    } else {
+      d->message = "There's a wall in the way!";
+    }
     break;
-  case 4:
+  case (int) '4':
   case (int) 'h':
-    d->characters[d->pc.y][d->pc.y] = NULL;
-    d->pc.x = d->pc.x-1;
-    d->pc.y = d->pc.y  ;
-    d->characters[d->pc.y][d->pc.y] = &d->pc;
+    if(d->hardness[d->pc.y  ][d->pc.x-1] == 0) {
+      d->characters[d->pc.y][d->pc.x] = NULL;
+      d->pc.x = d->pc.x-1;
+      d->pc.y = d->pc.y  ;
+      d->characters[d->pc.y][d->pc.x] = &d->pc;
+    } else {
+      d->message = "There's a wall in the way!";
+    }
     break;
   case (int) '>':
     break;
