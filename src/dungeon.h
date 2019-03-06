@@ -15,6 +15,8 @@
 # define DUNGEON_X    80
 # define MIN_ROOMS    6
 # define MAX_ROOMS    10
+# define MIN_UP       1
+# define MIN_DOWN     1
 # define MAX_UP       3
 # define MAX_DOWN     3 
 # define ROOM_MIN_X   4
@@ -22,7 +24,7 @@
 # define ROOM_MAX_X   20
 # define ROOM_MAX_Y   15
 # define MAX_BUFFER   1000
-# define MAX_MONSTERS 20
+# define MAX_MONSTERS 50
 
 typedef enum terrain {
   ter_wall,
@@ -65,11 +67,13 @@ typedef struct dungeon {
 } dungeon_t;
 
 int init_dungeon(dungeon_t *d);
+int delete_dungeon(dungeon_t *d);
 int place_rooms(dungeon_t *d);
 int place_corridors(dungeon_t *d);
 int place_stairs(dungeon_t *d);
 int gen_dungeon(dungeon_t *d);
-int place_characters(dungeon_t *d);
+int clear_dungeon(dungeon_t *d);
+int place_characters(dungeon_t *d, heap_t *h);
 int update_distances(dungeon_t *d);
 int update_output(dungeon_t *d);
 int render_pc_cost_floor(dungeon_t *d);

@@ -3,6 +3,7 @@
 
 #include "pc.h"
 #include "dungeon.h"
+#include "heap.h"
 
 int pc_init(dungeon_t *d)
 {
@@ -25,7 +26,7 @@ void pc_delete(pc_t *pc)
   if(pc){ free(pc); }
 }
 
-int pc_move(dungeon_t *d, int c)
+int pc_move(dungeon_t *d, int c, heap_t *h)
 {
   switch(c) {
   case (int) '7':
@@ -117,8 +118,28 @@ int pc_move(dungeon_t *d, int c)
     }
     break;
   case (int) '>':
+    if(d->map[d->pc.y][d->pc.x] == ter_stair_up) {
+      clear();
+      clear_dungeon(d);
+      gen_dungeon(d);
+      d->pc.y = d->rooms[0].y;
+      d->pc.x = d->rooms[0].x;
+      place_characters(d, h);
+    } else {
+      d->message = "There is no set of upstairs here!";
+    }
     break;
   case (int) '<':
+    if(d->map[d->pc.y][d->pc.x] == ter_stair_down) {
+      clear();
+      clear_dungeon(d);
+      gen_dungeon(d);
+      d->pc.y = d->rooms[0].y;
+      d->pc.x = d->rooms[0].x;
+      place_characters(d, h);
+    } else {
+      d->message = "There is no set of downstairs here!";
+    }
     break;
   case (int) 'm':
     break;

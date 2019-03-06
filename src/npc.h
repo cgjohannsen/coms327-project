@@ -9,6 +9,9 @@
 # define has_characterstic(character, bit) \
      (character.characterstics & NPC_##bit)
 
+# define SCREEN_HEIGHT 20
+# define MAX_MONSTERS  50
+
 typedef struct dungeon dungeon_t;
 typedef struct character character_t;
 
@@ -19,6 +22,7 @@ typedef struct npc {
 int npc_init(dungeon_t *d, int seed);
 void npc_delete(npc_t *npc);
 int npc_move(dungeon_t *d, character_t *npc);
+int display_monsters(dungeon_t *d, char m);
 
 int npc_move00(dungeon_t *d, character_t *c);
 int npc_move01(dungeon_t *d, character_t *c);

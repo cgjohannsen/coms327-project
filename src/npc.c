@@ -67,6 +67,73 @@ void npc_delete(npc_t *npc)
   if(npc){ free(npc); }
 }
 
+int display_monsters(dungeon_t  *d, char m)
+{
+  uint32_t cmd = m;
+  int r, c, i = 0;
+
+  character_t *monsters[SCREEN_HEIGHT];
+
+  for(r = 0; r < SCREEN_HEIGHT; r++) {
+    monsters[r] = NULL;
+  }
+  
+  // Collect list of monsters
+  for(r = 0; r < DUNGEON_Y; r++) {
+    for(c = 0; c < DUNGEON_X; c++) {
+      if(d->characters[r][c] &&
+	 d->characters[r][c]->symbol != '@'){
+	monsters[i] = d->characters[r][c];
+	i++;
+      }
+    }
+  }
+
+  i = 0;
+  do{
+    i = 0;
+    clear();
+    if(d->nummon > 20) {
+      switch(cmd) {
+      case KEY_UP:
+	if(i > 0) { i--; }
+	break;
+      case KEY_DOWN:
+	if(d->nummon - i < SCREEN_HEIGHT) { i++; }
+	break;
+      }
+    }
+
+    
+    for(r = 1; r < SCREEN_HEIGHT+1 && monsters[i]; r++, i++) {
+      if(monsters[i]) {
+	printw(" %d ", i);
+	char *dir_x, *dir_y;
+	
+	int dis_x = d->pc.x - monsters[i]->x;
+        if(dis_x > 0) {
+	  dir_x = "west";
+	} else {
+	  dir_x = "east";
+	}
+	
+	int dis_y = d->pc.y - monsters[i]->y;
+        if(dis_y > 0) {
+	  dir_y = "north";
+	} else {
+	  dir_y = "south";
+	}
+	
+	mvprintw(r, 0, "%c, %d %s and %d %s", monsters[i]->symbol,
+		 dis_x, dir_x, dis_y, dir_y);
+      }
+    }
+    cmd = getch();
+  } while(cmd != 27); // Escape key
+  
+  return 0;
+}
+
 int npc_move(dungeon_t *d, character_t *c)
 { 
   moves[(c->npc)->characteristics](d, c);

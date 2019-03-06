@@ -32,8 +32,6 @@ int init_dungeon(dungeon_t *d)
   
   for(r = 0; r < DUNGEON_Y; r++) {
     for(c = 0; c < DUNGEON_X; c++) {
-      d->map[r][c] = ter_wall;
-      d->hardness[r][c] = rand() % 254 + 1;
       if(r == 0 || r == DUNGEON_Y-1 ||
 	 c == 0 || c == DUNGEON_X-1) {
 	d->map[r][c] = ter_immutable;
@@ -41,9 +39,49 @@ int init_dungeon(dungeon_t *d)
       }
     }
   }
-  
+
+  d->rooms = malloc(sizeof(room_t) * MIN_ROOMS);
+  d->u_stairs = malloc(sizeof(stair_t) * MIN_UP);
+  d->d_stairs = malloc(sizeof(stair_t) * MIN_DOWN);
+
   d->message = "";
 
+  return 0;
+}
+
+int clear_dungeon(dungeon_t *d)
+{
+  int r, c;
+  for(r = 0; r < DUNGEON_Y; r++) {
+    for(c = 0; c < DUNGEON_X; c++) {
+      d->characters[r][c] = NULL;
+    }
+  }
+  
+  return 0;
+}
+
+int delete_dungeon(dungeon_t *d)
+{
+  if(d->rooms) {
+    free(d->rooms);
+  }
+  if(d->u_stairs) {
+    free(d->u_stairs);
+  }
+  if(d->d_stairs) {
+    free(d->d_stairs);
+  }
+
+  d->message = "";
+
+  int r, c;
+  for(r = 0; r < DUNGEON_Y; r++) {
+    for(c = 0; c < DUNGEON_X; c++) {
+      d->characters[r][c] = NULL;
+    }
+  }
+  
   return 0;
 }
 
@@ -54,7 +92,7 @@ int place_rooms(dungeon_t *d)
   srand(time(NULL));
 
   d->num_rooms = (rand() % (MAX_ROOMS-MIN_ROOMS)) + MIN_ROOMS;
-  d->rooms = malloc(sizeof(room_t) * d->num_rooms);
+  d->rooms = realloc(d->rooms, sizeof(room_t) * d->num_rooms);
 
   /* Begin creating and placing rooms */
   for(i = 0; i < d->num_rooms; i++){
@@ -120,10 +158,10 @@ int place_stairs(dungeon_t *d)
   uint16_t i, rand_row, rand_col, r_index;
   srand(time(NULL));
 
-  d->num_up = (rand() % MAX_UP) + 1;
-  d->num_down = (rand() % MAX_DOWN) + 1;
-  d->u_stairs = malloc(sizeof(stair_t) * d->num_up);
-  d->d_stairs = malloc(sizeof(stair_t) * d-> num_down);
+  d->num_up = (rand() % MAX_UP) + MIN_UP;
+  d->num_down = (rand() % MAX_DOWN) + MIN_DOWN;
+  d->u_stairs = realloc(d->u_stairs, sizeof(stair_t) * d->num_up);
+  d->d_stairs = realloc(d->d_stairs, sizeof(stair_t) * d-> num_down);
   
   for(i = 0; i < d->num_up; i++){
     r_index = r_index % d->num_rooms;
@@ -153,6 +191,14 @@ int place_stairs(dungeon_t *d)
 int gen_dungeon(dungeon_t *d)
 {
   srand(time(NULL));
+
+  int r, c;
+  for(r = 1; r < DUNGEON_Y-1; r++) {
+    for(c = 1; c < DUNGEON_X-1; c++) {
+      d->hardness[r][c] = rand() % 254 + 1;
+      d->map[r][c] = ter_wall;
+    }
+  }
   
   place_rooms(d);
   place_corridors(d);
@@ -161,7 +207,7 @@ int gen_dungeon(dungeon_t *d)
   return 0;
 }
 
-int place_characters(dungeon_t *d)
+int place_characters(dungeon_t *d, heap_t *h)
 {
   uint32_t i, r, c;
   
@@ -175,6 +221,14 @@ int place_characters(dungeon_t *d)
   if(!d->nummon){ d->nummon = (rand() % (MAX_MONSTERS - 1)) + 1; }
   for(i = 0; i < d->nummon; i++) {
     npc_init(d, i);
+  }
+
+  for(r = 0; r < DUNGEON_Y; r++) {
+    for(c = 0; c < DUNGEON_X; c++) {
+      if(d->characters[r][c]){
+	heap_insert(h, d->characters[r][c]);
+      }
+    }
   }
   
   return 0;
