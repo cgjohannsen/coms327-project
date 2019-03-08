@@ -43,10 +43,16 @@ int pc_move(dungeon_t *d, int c, heap_t *h)
   case (int) '8':
   case (int) 'k':
     if(d->hardness[d->pc.y-1][d->pc.x  ] == 0) {
-      d->characters[d->pc.y][d->pc.x] = NULL;
-      d->pc.x = d->pc.x  ;
-      d->pc.y = d->pc.y-1;
-      d->characters[d->pc.y][d->pc.x] = &d->pc;
+      if(d->characters[d->pc.y-1][d->pc.x  ]) {
+	d->characters[d->pc.y-1][d->pc.x  ]->isAlive = 0;
+	d->nummon--;
+	d->characters[d->pc.y-1][d->pc.x  ] = NULL;
+      } else {
+	d->characters[d->pc.y][d->pc.x] = NULL;
+	d->pc.x = d->pc.x  ;
+	d->pc.y = d->pc.y-1;
+	d->characters[d->pc.y][d->pc.x] = &d->pc;
+      }
     } else {
       d->message = "There's a wall in the way!";
     }
@@ -54,10 +60,16 @@ int pc_move(dungeon_t *d, int c, heap_t *h)
   case (int) '9':
   case (int) 'u':
     if(d->hardness[d->pc.y-1][d->pc.x+1] == 0) {
-      d->characters[d->pc.y][d->pc.x] = NULL;
-      d->pc.x = d->pc.x+1;
-      d->pc.y = d->pc.y-1;
-      d->characters[d->pc.y][d->pc.x] = &d->pc;
+      if(d->characters[d->pc.y-1][d->pc.x+1]) {
+	d->characters[d->pc.y-1][d->pc.x+1]->isAlive = 0;
+	d->nummon--;
+	d->characters[d->pc.y-1][d->pc.x+1] = NULL;
+      } else {
+	d->characters[d->pc.y][d->pc.x] = NULL;
+	d->pc.x = d->pc.x+1;
+	d->pc.y = d->pc.y-1;
+	d->characters[d->pc.y][d->pc.x] = &d->pc;
+      }
     } else {
       d->message = "There's a wall in the way!";
     }
@@ -65,10 +77,16 @@ int pc_move(dungeon_t *d, int c, heap_t *h)
   case (int) '6':
   case (int) 'l':
     if(d->hardness[d->pc.y  ][d->pc.x+1] == 0) {
-      d->characters[d->pc.y][d->pc.x] = NULL;
-      d->pc.x = d->pc.x+1;
-      d->pc.y = d->pc.y  ;
-      d->characters[d->pc.y][d->pc.x] = &d->pc;
+      if(d->characters[d->pc.y  ][d->pc.x+1]) {
+	d->characters[d->pc.y  ][d->pc.x+1]->isAlive = 0;
+	d->nummon--;
+	d->characters[d->pc.y  ][d->pc.x+1] = NULL;
+      } else {
+	d->characters[d->pc.y][d->pc.x] = NULL;
+	d->pc.x = d->pc.x+1;
+	d->pc.y = d->pc.y  ;
+	d->characters[d->pc.y][d->pc.x] = &d->pc;
+      }
     } else {
       d->message = "There's a wall in the way!";
     }
@@ -76,21 +94,33 @@ int pc_move(dungeon_t *d, int c, heap_t *h)
   case (int) '3':
   case (int) 'n':
     if(d->hardness[d->pc.y+1][d->pc.x+1] == 0) {
-      d->characters[d->pc.y][d->pc.x] = NULL;
-      d->pc.x = d->pc.x+1;
-      d->pc.y = d->pc.y+1;
-      d->characters[d->pc.y][d->pc.x] = &d->pc;
+      if(d->characters[d->pc.y+1][d->pc.x+1]) {
+	d->characters[d->pc.y+1][d->pc.x+1]->isAlive = 0;
+	d->nummon--;
+	d->characters[d->pc.y+1][d->pc.x+1] = NULL;
+      } else {
+	d->characters[d->pc.y][d->pc.x] = NULL;
+	d->pc.x = d->pc.x+1;
+	d->pc.y = d->pc.y+1;
+	d->characters[d->pc.y][d->pc.x] = &d->pc;
+      }
     } else {
       d->message = "There's a wall in the way!";
     }
     break;
   case (int) '2':
   case (int) 'j':
-    if(d->hardness[d->pc.y+1][d->pc.x] == 0) {
-      d->characters[d->pc.y][d->pc.x] = NULL;
-      d->pc.x = d->pc.x  ;
-      d->pc.y = d->pc.y+1;
-      d->characters[d->pc.y][d->pc.x] = &d->pc;
+    if(d->hardness[d->pc.y+1][d->pc.x  ] == 0) {
+      if(d->characters[d->pc.y+1][d->pc.x  ]) {
+	d->characters[d->pc.y+1][d->pc.x  ]->isAlive = 0;
+	d->nummon--;
+	d->characters[d->pc.y+1][d->pc.x  ] = NULL;
+      } else {
+	d->characters[d->pc.y][d->pc.x] = NULL;
+	d->pc.x = d->pc.x  ;
+	d->pc.y = d->pc.y+1;
+	d->characters[d->pc.y][d->pc.x] = &d->pc;
+      }
     } else {
       d->message = "There's a wall in the way!";
     }
@@ -109,10 +139,16 @@ int pc_move(dungeon_t *d, int c, heap_t *h)
   case (int) '4':
   case (int) 'h':
     if(d->hardness[d->pc.y  ][d->pc.x-1] == 0) {
-      d->characters[d->pc.y][d->pc.x] = NULL;
-      d->pc.x = d->pc.x-1;
-      d->pc.y = d->pc.y  ;
-      d->characters[d->pc.y][d->pc.x] = &d->pc;
+      if(d->characters[d->pc.y  ][d->pc.x-1]) {
+	d->characters[d->pc.y  ][d->pc.x-1]->isAlive = 0;
+	d->nummon--;
+	d->characters[d->pc.y  ][d->pc.x-1] = NULL;
+      } else {
+	d->characters[d->pc.y][d->pc.x] = NULL;
+	d->pc.x = d->pc.x-1;
+	d->pc.y = d->pc.y  ;
+	d->characters[d->pc.y][d->pc.x] = &d->pc;
+      }
     } else {
       d->message = "There's a wall in the way!";
     }
@@ -141,13 +177,10 @@ int pc_move(dungeon_t *d, int c, heap_t *h)
       d->message = "There is no set of downstairs here!";
     }
     break;
-  case (int) 'm':
-    break;
-  case KEY_UP:
-    break;
-  case KEY_DOWN:
-    break;
-  case 27: // Esacpe
+  case (int) '5':
+  case (int) '.':
+  case (int) ' ':
+    d->message = "The PC bides his (or her) time...";
     break;
   case (int) 'Q':
     return 1;

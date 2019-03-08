@@ -88,7 +88,7 @@ int play_game(dungeon_t *d)
   noecho();
   keypad(stdscr, TRUE);
 
-  while(d->pc.isAlive) {
+  while(d->pc.isAlive && d->nummon) {
     cur = heap_remove_min(&event_queue);
     
     if(cur->pc) {
@@ -105,13 +105,13 @@ int play_game(dungeon_t *d)
 	if(cmd == 'm') {
 	  display_monsters(d, cmd);
 	} else if(pc_move(d, cmd, &event_queue)){
-	  mvprintw(0, 0, "You're a quitter!");
+	  mvprintw(0, 0, "You're a quitter!                                                               ");
 	  getch();
 	  endwin();
 	  return 1;
 	}
 	update_distances(d);
-      } while(cmd == 'm');
+      } while(cmd == (int) 'm');
     }
     
     if(cur->npc && cur->isAlive) { npc_move(d, cur); }

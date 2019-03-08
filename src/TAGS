@@ -1,0 +1,217 @@
+
+character.c,49
+void character_delete(6,110
+int can_see(20,257
+
+character.h,449
+# define CHARACTER_H2,20
+typedef struct dungeon dungeon_t;7,83
+typedef struct npc npc_t;8,117
+typedef struct pc pc_t;9,143
+typedef struct character 11,168
+  heap_node_t *hn;hn12,195
+  pc_t *pc;pc13,214
+  npc_t *npc;npc14,226
+  uint8_t isAlive;15,240
+  uint8_t speed;16,259
+  uint32_t move_time;17,276
+  char symbol;18,298
+  uint8_t x;19,313
+  uint8_t y;20,326
+  uint8_t next_x;21,339
+  uint8_t next_y;22,357
+} character_t;23,375
+
+dungeon.c,479
+static char *file_type file_type21,387
+static uint32_t file_version 22,428
+int init_dungeon(28,583
+int clear_dungeon(52,1070
+int delete_dungeon(64,1250
+int place_rooms(88,1587
+int place_corridors(129,2808
+int place_stairs(156,3427
+int gen_dungeon(191,4538
+int place_characters(210,4844
+int update_distances(241,5459
+int update_output(256,5875
+int render_pc_cost_floor(289,6444
+int render_pc_cost_all(303,6744
+int write_dungeon(321,7147
+int read_dungeon(376,8802
+
+dungeon.h,1394
+# define DUNGEON_H2,18
+# define DUNGEON_Y 14,211
+# define DUNGEON_X 15,236
+# define MIN_ROOMS 16,261
+# define MAX_ROOMS 17,285
+# define MIN_UP 18,310
+# define MIN_DOWN 19,334
+# define MAX_UP 20,358
+# define MAX_DOWN 21,382
+# define ROOM_MIN_X 22,407
+# define ROOM_MIN_Y 23,431
+# define ROOM_MAX_X 24,455
+# define ROOM_MAX_Y 25,480
+# define MAX_BUFFER 26,505
+# define MAX_MONSTERS 27,532
+typedef enum terrain 29,558
+  ter_wall,30,581
+  ter_immutable,31,593
+  ter_floor,32,610
+  ter_corridor,33,623
+  ter_stair_up,34,639
+  ter_stair_down35,655
+} terrain_t;36,672
+typedef struct room 38,686
+  uint8_t x;39,708
+  uint8_t y;40,721
+  uint8_t width;41,734
+  uint8_t height;42,751
+} room_t;43,769
+typedef struct stair 45,780
+  uint8_t x;46,803
+  uint8_t y;47,816
+  char dir;48,829
+} stair_t;49,841
+typedef struct dungeon 51,853
+  char *message;message52,878
+  uint16_t num_rooms;53,895
+  room_t *rooms;rooms54,917
+  uint16_t num_up;55,934
+  uint16_t num_down;56,953
+  stair_t *u_stairs;u_stairs57,974
+  stair_t *d_stairs;d_stairs58,995
+  uint16_t nummon;59,1016
+  character_t pc;60,1035
+  character_t *characters[characters61,1053
+  dungeon_path_t pc_cost_floor[pc_cost_floor62,1102
+  dungeon_path_t pc_cost_all[pc_cost_all63,1156
+  uint8_t hardness[hardness64,1208
+  terrain_t map[map65,1250
+  char output[output66,1289
+} dungeon_t;67,1326
+
+heap.c,1020
+struct heap_node 8,99
+  heap_node_t *next;next9,118
+  heap_node_t *prev;prev10,139
+  heap_node_t *parent;parent11,160
+  heap_node_t *child;child12,183
+  void *datum;datum13,205
+  uint32_t degree;14,220
+  uint32_t mark;15,239
+#define swap(18,260
+#define splice_heap_node_lists(24,372
+#define insert_heap_node_in_list(33,684
+#define remove_heap_node_from_list(40,908
+void print_heap_node(45,1041
+void print_heap(61,1363
+void print_heap_node_list(78,1665
+void heap_init(94,1864
+void heap_node_delete(104,2100
+void heap_delete(122,2404
+heap_node_t *heap_insert(heap_insert133,2569
+void *heap_peek_min(heap_peek_min153,2895
+static void heap_link(158,2971
+static void heap_consolidate(172,3293
+void *heap_remove_min(heap_remove_min213,4226
+int heap_combine(248,4760
+static void heap_cut(277,5411
+static void heap_cascading_cut(291,5692
+int heap_decrease_key(305,5918
+int heap_decrease_key_no_replace(319,6160
+int32_t compare(343,6734
+char *print_int(print_int348,6833
+int main(357,6951
+
+heap.h,245
+# define HEAP_H2,15
+typedef struct heap_node heap_node_t;11,114
+typedef struct heap 13,153
+  heap_node_t *min;min14,175
+  uint32_t size;15,195
+  int32_t (*compare)compare16,212
+  void (*datum_delete)datum_delete17,269
+} heap_t;18,301
+
+npc.c,499
+int npc_init(28,408
+void npc_delete(67,1301
+int display_monsters(72,1358
+int npc_move(133,2532
+int npc_move00(165,3397
+int npc_move01(197,4065
+int npc_move02(204,4185
+int npc_move03(211,4305
+int npc_move04(239,5096
+int npc_move05(245,5215
+int npc_move06(251,5334
+int npc_move07(257,5453
+int npc_move08(314,7316
+int npc_move09(320,7450
+int npc_move10(326,7569
+int npc_move11(332,7688
+int npc_move12(338,7807
+int npc_move13(344,7926
+int npc_move14(350,8045
+int npc_move15(356,8164
+
+npc.h,383
+# define NPC_H2,14
+# define NPC_SMART 4,30
+# define NPC_TELE 5,77
+# define NPC_TUNNEL 6,124
+# define NPC_ERRATIC 7,171
+# define has_characterstic(9,219
+# define SCREEN_HEIGHT 12,309
+# define MAX_MONSTERS 13,335
+typedef struct dungeon dungeon_t;15,362
+typedef struct character character_t;16,396
+typedef struct npc 18,435
+  uint16_t characteristics;19,456
+} npc_t;20,484
+
+pathfinder.c,243
+#define DUNGEON_X 9,123
+#define DUNGEON_Y 10,144
+#define x 11,165
+#define y 12,185
+heap_t heap;14,206
+static int32_t path_cmp(16,220
+int pathfinder_init(20,360
+int pathfinder_dijkstra_floor(37,708
+int pathfinder_dijkstra_all(146,4479
+
+pathfinder.h,258
+# define PATHFINDER_H2,21
+# define DUNGEON_X 7,85
+# define DUNGEON_Y 8,107
+typedef struct dungeon_path{dungeon_path10,130
+  heap_node_t *hn;hn11,159
+  uint8_t pos[pos12,178
+  uint8_t from[from13,196
+  int32_t cost;14,215
+} dungeon_path_t;15,231
+
+pc.c,61
+int pc_init(8,98
+void pc_delete(24,404
+int pc_move(29,456
+
+pc.h,129
+# define PC_H2,13
+typedef struct dungeon dungeon_t;4,28
+typedef struct heap heap_t;5,62
+typedef struct pc 7,91
+} pc_t;8,111
+
+rlg327.c,217
+#define DUNGEON_Y 13,201
+#define DUNGEON_X 14,223
+static char *win_screen win_screen16,246
+static char *loss_screen loss_screen45,1025
+static int32_t event_cmp(69,2135
+int play_game(73,2279
+int main(138,3534

@@ -33,7 +33,7 @@ int npc_init(dungeon_t *d, int seed)
   
   
   char symbols[] = "0123456789abcdef";
-  srand(time(NULL) + seed);
+  srand(time(NULL) + (seed*17));
 
   // (n->npc)->characteristics = rand() % 16;
 
@@ -42,17 +42,19 @@ int npc_init(dungeon_t *d, int seed)
   else if(r == 1){ (n->npc)->characteristics = 3; }
   else { (n->npc)->characteristics = 7; }
   
-   n->pc = NULL;
-   n->isAlive = 1;
-   n->speed = (rand() % 16) + 5;
-   n->move_time = 1000/(n->speed);
-   n->symbol = symbols[(n->npc)->characteristics];
+  n->pc = NULL;
+  n->isAlive = 1;
+  n->speed = (rand() % 16) + 5;
+  n->move_time = 1000/(n->speed);
+  n->symbol = symbols[(n->npc)->characteristics];
 
   do{
     room_t room = d->rooms[rand()%d->num_rooms];
     n->x = room.x + rand()%room.width;
     n->y = room.y + rand()%room.height;    
-  }while(d->characters[n->y][n->x]);
+  }while(d->characters[n->y][n->x] ||
+	 abs(d->pc.y - n->y) < 3 ||
+	 abs(d->pc.x - n->x) < 3);
 
   n->next_x = n->x;
   n->next_y = n->y;
@@ -72,11 +74,7 @@ int display_monsters(dungeon_t  *d, char m)
   uint32_t cmd = m;
   int r, c, i = 0;
 
-  character_t *monsters[SCREEN_HEIGHT];
-
-  for(r = 0; r < SCREEN_HEIGHT; r++) {
-    monsters[r] = NULL;
-  }
+  character_t *monsters[d->nummon];
   
   // Collect list of monsters
   for(r = 0; r < DUNGEON_Y; r++) {
@@ -91,43 +89,41 @@ int display_monsters(dungeon_t  *d, char m)
 
   i = 0;
   do{
-    i = 0;
     clear();
+    printw("Number of monsters alive: %d", d->nummon);
     if(d->nummon > 20) {
       switch(cmd) {
       case KEY_UP:
-	if(i > 0) { i--; }
+	if(i > 0)
+	{ i -= 20; }
 	break;
       case KEY_DOWN:
-	if(d->nummon - i < SCREEN_HEIGHT) { i++; }
+	if(d->nummon - i >= 20)
+	{ i += 20; }
 	break;
       }
     }
-
     
-    for(r = 1; r < SCREEN_HEIGHT+1 && monsters[i]; r++, i++) {
-      if(monsters[i]) {
-	printw(" %d ", i);
-	char *dir_x, *dir_y;
+    for(r = 1; r < SCREEN_HEIGHT+1 && i+(r-1) < d->nummon; r++) {
+      char *dir_x, *dir_y;
 	
-	int dis_x = d->pc.x - monsters[i]->x;
-        if(dis_x > 0) {
-	  dir_x = "west";
-	} else {
-	  dir_x = "east";
-	}
-	
-	int dis_y = d->pc.y - monsters[i]->y;
-        if(dis_y > 0) {
-	  dir_y = "north";
-	} else {
-	  dir_y = "south";
-	}
-	
-	mvprintw(r, 0, "%c, %d %s and %d %s", monsters[i]->symbol,
-		 dis_x, dir_x, dis_y, dir_y);
+      int dis_x = d->pc.x - monsters[i+(r-1)]->x;
+      if(dis_x > 0) {
+	dir_x = "west";
+      } else {
+	dir_x = "east";
       }
-    }
+	
+      int dis_y = d->pc.y - monsters[i+(r-1)]->y;
+      if(dis_y > 0) {
+	dir_y = "north";
+      } else {
+	dir_y = "south";
+      }
+	
+      mvprintw(r, 0, "%c, %d %s and %d %s", monsters[i+(r-1)]->symbol,
+	       dis_x, dir_x, dis_y, dir_y);
+      }
     cmd = getch();
   } while(cmd != 27); // Escape key
   
