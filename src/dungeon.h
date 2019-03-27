@@ -1,14 +1,17 @@
 #ifndef DUNGEON_H
 # define DUNGEON_H
 
-# include <stdint.h>
-# include <stdlib.h>
-# include <string.h>
-# include <time.h>
+# include <cstdint>
+# include <cstdlib>
+# include <cstring>
+# include <cstring>
+# include <string>
+
 # include <endian.h>
 
 # include "heap.h"
 # include "character.h"
+# include "pc.h"
 # include "pathfinder.h"
 
 # define DUNGEON_Y    21
@@ -26,59 +29,81 @@
 # define MAX_BUFFER   1000
 # define MAX_MONSTERS 50
 
-typedef enum terrain {
-  ter_wall,
-  ter_immutable,
-  ter_floor,
-  ter_corridor,
-  ter_stair_up,
-  ter_stair_down
-} terrain_t;
 
-typedef struct room {
-  uint8_t x;
-  uint8_t y;
-  uint8_t width;
-  uint8_t height;
-} room_t;
 
-typedef struct stair {
-  uint8_t x;
-  uint8_t y;
-  char dir;
-} stair_t;
+class dungeon {
 
-typedef struct dungeon {
-  char *message;
-  uint16_t num_rooms;
-  room_t *rooms;
-  uint16_t num_up;
-  uint16_t num_down;
-  stair_t *u_stairs;
-  stair_t *d_stairs;
-  uint16_t nummon;
-  character_t pc;
-  character_t *characters[DUNGEON_Y][DUNGEON_X];
-  dungeon_path_t pc_cost_floor[DUNGEON_Y][DUNGEON_X];
-  dungeon_path_t pc_cost_all[DUNGEON_Y][DUNGEON_X];
-  uint8_t hardness[DUNGEON_Y][DUNGEON_X];
-  terrain_t map[DUNGEON_Y][DUNGEON_X];
-  char output[DUNGEON_Y][DUNGEON_X];
-} dungeon_t;
+private:
 
-int init_dungeon(dungeon_t *d);
-int delete_dungeon(dungeon_t *d);
-int place_rooms(dungeon_t *d);
-int place_corridors(dungeon_t *d);
-int place_stairs(dungeon_t *d);
-int gen_dungeon(dungeon_t *d);
-int clear_dungeon(dungeon_t *d);
-int place_characters(dungeon_t *d, heap_t *h);
-int update_distances(dungeon_t *d);
-int update_output(dungeon_t *d);
-int render_pc_cost_floor(dungeon_t *d);
-int render_pc_cost_all(dungeon_t *d);
-int write_dungeon(dungeon_t *d);
-int read_dungeon(dungeon_t *d, uint8_t test, char *n);
+	const std::string file_type = "RLG327-S2019";
+	uint32_t file_version = 0, file_size;
+
+public:
+
+	enum terrain {
+  		ter_wall,
+  		ter_immutable,
+  		ter_floor,
+  		ter_corridor,
+  		ter_stair_up,
+  		ter_stair_down
+	};
+
+	class room {
+	public:
+  		uint8_t x;
+  		uint8_t y;
+  		uint8_t width;
+  		uint8_t height;
+	};
+
+	class stair {
+	public:
+  		uint8_t x;
+  		uint8_t y;
+  		char dir;
+	};
+
+	std::string message;
+	uint16_t num_rooms;
+	room *rooms;
+	uint16_t num_up;
+	uint16_t num_down;
+	stair *u_stairs;
+	stair *d_stairs;
+	uint16_t nummon;
+	pc player;
+	character *characters[DUNGEON_Y][DUNGEON_X];
+	pathfinder floor_pathfinder;
+	pathfinder all_pathfinder;
+	uint8_t hardness[DUNGEON_Y][DUNGEON_X];
+	terrain map[DUNGEON_Y][DUNGEON_X];
+	char output[DUNGEON_Y][DUNGEON_X];
+
+	// Constructor/Destructor
+	dungeon();
+	~dungeon();
+
+	// Generation handling
+	int place_rooms();
+	int place_corridors();
+	int place_stairs();
+	int place_characters(heap_t *h);
+	int gen_dungeon();
+	int clear_dungeon();
+
+	// Character functionality
+	int update_distances();
+	int update_output();
+	int render_pc_cost_floor();
+	int render_pc_cost_all();
+
+	// IO
+	int write_dungeon();
+	int read_dungeon(uint8_t test, char *n);
+
+};
+
+
 
 #endif

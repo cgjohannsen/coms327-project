@@ -1,14 +1,24 @@
 #ifndef PC_H
 # define PC_H
 
-typedef struct dungeon dungeon_t;
+# include <cstdint>
+
+# include "character.h"
+
 typedef struct heap heap_t;
 
-typedef struct pc {
-} pc_t;
+class dungeon;
 
-int pc_init(dungeon_t *d);
-void pc_delete(pc_t *pc);
-int pc_move(dungeon_t *d, int c, heap_t *h);
+class pc : public character{
+
+public:
+
+	pc();
+
+	int init();
+	int set_pos(uint8_t, uint8_t);
+	int pc_move(dungeon &, int c, heap_t *h);
+
+};
 
 #endif
