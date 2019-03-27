@@ -9,8 +9,10 @@ public:
 
 	io();
 
-	int display_monsters(dungeon &);
+	int display(int, dungeon &);	
+	int display_all(dungeon &);
 	int display_map(dungeon &);
+	int display_monsters(dungeon &);
 
 };
 

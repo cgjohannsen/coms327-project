@@ -3,8 +3,87 @@
 #include <ncurses.h>
 
 #include "io.h"
+#include "dungeon.h"
+
+#define DUNGEON_X 80
+#define DUNGEON_Y 21
+
+#define DISPLAY_ALL_CMD       0
+#define DISPLAY_MAP_CMD       1
+#define DISPLAY_MONSTERS_CMD  2
 
 io::io(){}
+
+int io::display(int cmd, dungeon &d)
+{
+  switch(cmd){
+    case DISPLAY_ALL_CMD:
+      display_all(d);
+      break;
+    case DISPLAY_MAP_CMD:
+      display_map(d);
+      break;
+    case DISPLAY_MONSTERS_CMD:
+      display_monsters(d);
+      break;
+  }
+
+  return 0;
+}
+
+
+
+int io::display_all(dungeon &d)
+{
+	uint8_t r, c, cmd = ' ';
+
+	mvprintw(0, 0, "Revealing dungeon...");
+  do{
+	for(r = 1; r < DUNGEON_Y+1; r++) {
+		for(c = 0; c < DUNGEON_X; c++) {
+      if(d.characters[r-1][c]){ mvaddch(r, c, d.characters[r-1][c]->symbol); }
+      else{
+      switch(d.map[r-1][c]) {
+        case dungeon::ter_wall:
+        case dungeon::ter_unknown:
+        case dungeon::ter_immutable:
+          mvaddch(r, c, ' ');
+          break;
+        case dungeon::ter_floor:
+          mvaddch(r, c, '.');
+          break;
+        case dungeon::ter_corridor:
+          mvaddch(r, c, '#');
+          break;
+        case dungeon::ter_stair_up:
+          mvaddch(r, c, '>');
+          break;
+        case dungeon::ter_stair_down:
+          mvaddch(r, c, '<');
+          break;
+        }
+      }
+		}      
+	}
+  cmd = getch();
+  } while(cmd != 'f');
+
+	return 0;
+}
+
+int io::display_map(dungeon &d)
+{
+  uint8_t r, c;
+
+  mvprintw(0, 0, d.message.c_str());
+  for(r = 1; r < DUNGEON_Y+1; r++) {
+    for(c = 0; c < DUNGEON_X; c++) {
+      mvaddch(r, c, d.output[r-1][c]);
+    }      
+  }
+
+  return 0;
+}
 
 int io::display_monsters(dungeon &d)
 {
@@ -71,18 +150,4 @@ int io::display_monsters(dungeon &d)
   } while(cmd != 27); // Escape key
   
   return 0;
-}
-
-int io::display_map(dungeon &d)
-{
-	uint8_t r, c;
-
-	mvprintw(0, 0, d.message.c_str());
-	for(r = 1; r < DUNGEON_Y+1; r++) {
-		for(c = 0; c < DUNGEON_X; c++) {
-			mvaddch(r, c, d.output[r-1][c]);
-		}      
-	}
-
-	return 0;
 }

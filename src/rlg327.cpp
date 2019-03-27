@@ -16,6 +16,10 @@
 #define DUNGEON_Y  21
 #define DUNGEON_X  80
 
+#define DISPLAY_ALL_CMD       0
+#define DISPLAY_MAP_CMD       1
+#define DISPLAY_MONSTERS_CMD  2
+
 static char win_screen[] =
 "           .__    _\n"
 "           @ V; .Z~M\n"
@@ -73,11 +77,13 @@ static int32_t event_cmp(const void *key, const void *with) {
   return ((character *) key)->move_time - ((character *) with)->move_time;
 }
 
-int play_game(dungeon &d)
+dungeon d;
+io out;
+
+int play_game()
 {
   heap_t event_queue;
   character *cur;
-  io out;
   int cmd;
 
   heap_init(&event_queue, event_cmp, NULL);
@@ -96,12 +102,15 @@ int play_game(dungeon &d)
     if(cur->is_pc) {
       do {
         d.update_output();
-        out.display_map(d);
+        out.display(DISPLAY_MAP_CMD, d);
 
         cmd = getch();
 
         if(cmd == 'm') {
-          out.display_monsters(d);
+          out.display(DISPLAY_MONSTERS_CMD, d);
+        } else if(cmd == 'f'){
+          out.display(DISPLAY_ALL_CMD, d);
+          mvprintw(0, 0, "Printing");
         } else if(( (pc*)cur )->pc_move(d, cmd, &event_queue)){
           mvprintw(0, 0, "You're a quitter!                         ");
           getch();
@@ -110,7 +119,7 @@ int play_game(dungeon &d)
         }
 
         d.update_distances();
-      } while(cmd == (int) 'm');
+      } while(cmd == (int) 'm' || cmd == (int) 'f');
     } else if(cur->isAlive) { 
       ((npc*)cur)->npc_move(d); 
     }
@@ -137,8 +146,6 @@ int play_game(dungeon &d)
 
 int main(int argc, char *argv[])
 {
-  dungeon d;
-
   // Commands:
   //
   // --load -l     Load file from /.rlg327
@@ -177,7 +184,7 @@ int main(int argc, char *argv[])
     }
   }
 
-  play_game(d);
+  play_game();
 
   return 0;
 }

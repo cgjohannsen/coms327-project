@@ -29,6 +29,7 @@ dungeon::dungeon()
       if(r == 0 || r == DUNGEON_Y-1 ||
          c == 0 || c == DUNGEON_X-1) {
           map[r][c] = ter_immutable;
+          seen[r][c] = ter_immutable;
           hardness[r][c] = 255;
       }
     }
@@ -212,6 +213,7 @@ int dungeon::gen_dungeon()
     for(c = 1; c < DUNGEON_X-1; c++) {
       hardness[r][c] = rand() % 254 + 1;
       map[r][c] = ter_wall;
+      seen[r][c] = ter_unknown;
     }
   }
   
@@ -247,11 +249,36 @@ int dungeon::update_output()
 
   for(r = 0; r < DUNGEON_Y; r++) {
     for(c = 0; c < DUNGEON_X; c++) {
-      if(characters[r][c]){ output[r][c] = characters[r][c]->symbol; }
-      else {
-        switch(map[r][c]) {
+      //if(characters[r][c]){ output[r][c] = characters[r][c]->symbol; }
+      if(r < player.y+2 && r > player.y-2 && c < player.x+2 && c > player.x-2) {
+        seen[r][c] = map[r][c];
+        if(characters[r][c]){ output[r][c] = characters[r][c]->symbol; }
+        else{
+        switch(seen[r][c]) {
         case ter_wall:
         case ter_immutable:
+        case ter_unknown:
+          output[r][c] = ' ';
+          break;
+        case ter_floor:
+          output[r][c] = '.';
+          break;
+        case ter_corridor:
+          output[r][c] = '#';
+          break;
+        case ter_stair_up:
+          output[r][c] = '>';
+          break;
+        case ter_stair_down:
+          output[r][c] = '<';
+          break;
+        }
+        }
+      } else {
+        switch(seen[r][c]) {
+        case ter_wall:
+        case ter_immutable:
+        case ter_unknown:
           output[r][c] = ' ';
           break;
         case ter_floor:

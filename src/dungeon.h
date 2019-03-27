@@ -46,7 +46,8 @@ public:
   		ter_floor,
   		ter_corridor,
   		ter_stair_up,
-  		ter_stair_down
+  		ter_stair_down,
+  		ter_unknown
 	};
 
 	class room {
@@ -78,6 +79,7 @@ public:
 	pathfinder all_pathfinder;
 	uint8_t hardness[DUNGEON_Y][DUNGEON_X];
 	terrain map[DUNGEON_Y][DUNGEON_X];
+	terrain seen[DUNGEON_Y][DUNGEON_X];
 	char output[DUNGEON_Y][DUNGEON_X];
 
 	// Constructor/Destructor

@@ -13,7 +13,7 @@ class character{character10,99
   uint8_t next_x;22,261
   uint8_t next_y;23,279
 
-dungeon.h,1373
+dungeon.h,1426
 # define DUNGEON_H2,18
 # define DUNGEON_Y 17,246
 # define DUNGEON_X 18,271
@@ -39,31 +39,33 @@ class dungeon 34,595
   		ter_floor,46,767
   		ter_corridor,47,782
   		ter_stair_up,48,800
-  		ter_stair_down49,818
-	class room 52,842
-  		uint8_t x;54,865
-  		uint8_t y;55,880
-  		uint8_t width;56,895
-  		uint8_t height;57,914
-	class stair 60,939
-  		uint8_t x;62,963
-  		uint8_t y;63,978
-  		char dir;64,993
-	std::string message;67,1012
-	uint16_t num_rooms;68,1034
-	room *rooms;rooms69,1055
-	uint16_t num_up;70,1069
-	uint16_t num_down;71,1087
-	stair *u_stairs;u_stairs72,1107
-	stair *d_stairs;d_stairs73,1125
-	uint16_t nummon;74,1143
-	pc player;75,1161
-	character *characters[characters76,1173
-	pathfinder floor_pathfinder;77,1219
-	pathfinder all_pathfinder;78,1249
-	uint8_t hardness[hardness79,1277
-	terrain map[map80,1318
-	char output[output81,1354
+  		ter_stair_down,49,818
+  		ter_unknown50,838
+	class room 53,859
+  		uint8_t x;55,882
+  		uint8_t y;56,897
+  		uint8_t width;57,912
+  		uint8_t height;58,931
+	class stair 61,956
+  		uint8_t x;63,980
+  		uint8_t y;64,995
+  		char dir;65,1010
+	std::string message;68,1029
+	uint16_t num_rooms;69,1051
+	room *rooms;rooms70,1072
+	uint16_t num_up;71,1086
+	uint16_t num_down;72,1104
+	stair *u_stairs;u_stairs73,1124
+	stair *d_stairs;d_stairs74,1142
+	uint16_t nummon;75,1160
+	pc player;76,1178
+	character *characters[characters77,1190
+	pathfinder floor_pathfinder;78,1236
+	pathfinder all_pathfinder;79,1266
+	uint8_t hardness[hardness80,1294
+	terrain map[map81,1335
+	terrain seen[seen82,1371
+	char output[output83,1408
 
 heap.c,1020
 struct heap_node 8,99
