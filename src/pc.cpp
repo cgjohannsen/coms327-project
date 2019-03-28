@@ -10,7 +10,7 @@
 
 pc::pc() {}
 
-int pc::init()
+int pc::init(uint8_t x_in, uint8_t y_in)
 {
   this->is_pc = 1;
   this->isAlive = 1;
@@ -18,11 +18,6 @@ int pc::init()
   this->move_time = 1000/(this->speed);
   this->symbol = '@';
 
-  return 0;
-}
-
-int pc::set_pos(uint8_t x_in, uint8_t y_in)
-{
   this->x = x_in;
   this->y = y_in;
   this->next_x = x_in;
@@ -133,10 +128,16 @@ int pc::pc_move(dungeon &d, int c, heap_t *h)
   case (int) '1':
   case (int) 'b':
     if(d.hardness[this->y+1][this->x-1] == 0) {
-      d.characters[this->y][this->x] = NULL;
-      this->x = this->x-1;
-      this->y = this->y+1;
-      d.characters[this->y][this->x] = this;
+      if(d.characters[this->y+1][this->x-1]) {
+        d.characters[this->y+1][this->x-1]->isAlive = 0;
+        d.nummon--;
+        d.characters[this->y+1][this->x-1] = NULL;
+      } else {
+        d.characters[this->y][this->x] = NULL;
+        this->x = this->x  ;
+        this->y = this->y+1;
+        d.characters[this->y][this->x] = this;
+      }
     } else {
       d.message = "There's a wall in the way!";
     }

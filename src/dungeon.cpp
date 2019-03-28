@@ -180,8 +180,7 @@ int dungeon::place_characters(heap_t *h)
     }
   }
 
-  player.init();
-  player.set_pos(rooms[0].x, rooms[0].y);
+  player.init(rooms[0].x, rooms[0].y);
   this->characters[player.y][player.x] = &player;
   heap_insert(h, (character*)&player);
 

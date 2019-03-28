@@ -19,6 +19,7 @@
 #define DISPLAY_ALL_CMD       0
 #define DISPLAY_MAP_CMD       1
 #define DISPLAY_MONSTERS_CMD  2
+#define DISPLAY_TELEPORT_CMD  3
 
 static char win_screen[] =
 "           .__    _\n"
@@ -102,6 +103,7 @@ int play_game()
     if(cur->is_pc) {
       do {
         d.update_output();
+        clear();
         out.display(DISPLAY_MAP_CMD, d);
 
         cmd = getch();
@@ -109,8 +111,19 @@ int play_game()
         if(cmd == 'm') {
           out.display(DISPLAY_MONSTERS_CMD, d);
         } else if(cmd == 'f'){
-          out.display(DISPLAY_ALL_CMD, d);
-          mvprintw(0, 0, "Printing");
+          clear();
+          d.message = "Revealing dungeon.... (Press f to exit)";
+          cmd = ' ';
+          do{
+            out.display(DISPLAY_ALL_CMD, d);
+            cmd = getch();
+          }while(cmd != 'f' );
+          d.message = "";
+        } else if(cmd == 't'){
+          clear();
+          d.message = "Entering teleport mode... (Press t to teleport)";
+          out.display(DISPLAY_TELEPORT_CMD, d);
+          d.message = "";
         } else if(( (pc*)cur )->pc_move(d, cmd, &event_queue)){
           mvprintw(0, 0, "You're a quitter!                         ");
           getch();
@@ -119,7 +132,7 @@ int play_game()
         }
 
         d.update_distances();
-      } while(cmd == (int) 'm' || cmd == (int) 'f');
+      } while(cmd == 'm' || cmd == 'f' || cmd == 't');
     } else if(cur->isAlive) { 
       ((npc*)cur)->npc_move(d); 
     }

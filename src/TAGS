@@ -13,59 +13,59 @@ class character{character10,99
   uint8_t next_x;22,261
   uint8_t next_y;23,279
 
-dungeon.h,1426
+dungeon.h,1425
 # define DUNGEON_H2,18
-# define DUNGEON_Y 17,246
-# define DUNGEON_X 18,271
-# define MIN_ROOMS 19,296
-# define MAX_ROOMS 20,320
-# define MIN_UP 21,345
-# define MIN_DOWN 22,369
-# define MAX_UP 23,393
-# define MAX_DOWN 24,417
-# define ROOM_MIN_X 25,442
-# define ROOM_MIN_Y 26,466
-# define ROOM_MAX_X 27,490
-# define ROOM_MAX_Y 28,515
-# define MAX_BUFFER 29,540
-# define MAX_MONSTERS 30,567
-class dungeon 34,595
-	const std::string file_type 38,622
-	uint32_t file_version 39,669
-	uint32_t file_version = 0, file_size;39,669
-	enum terrain 43,718
-  		ter_wall,44,734
-  		ter_immutable,45,748
-  		ter_floor,46,767
-  		ter_corridor,47,782
-  		ter_stair_up,48,800
-  		ter_stair_down,49,818
-  		ter_unknown50,838
-	class room 53,859
-  		uint8_t x;55,882
-  		uint8_t y;56,897
-  		uint8_t width;57,912
-  		uint8_t height;58,931
-	class stair 61,956
-  		uint8_t x;63,980
-  		uint8_t y;64,995
-  		char dir;65,1010
-	std::string message;68,1029
-	uint16_t num_rooms;69,1051
-	room *rooms;rooms70,1072
-	uint16_t num_up;71,1086
-	uint16_t num_down;72,1104
-	stair *u_stairs;u_stairs73,1124
-	stair *d_stairs;d_stairs74,1142
-	uint16_t nummon;75,1160
-	pc player;76,1178
-	character *characters[characters77,1190
-	pathfinder floor_pathfinder;78,1236
-	pathfinder all_pathfinder;79,1266
-	uint8_t hardness[hardness80,1294
-	terrain map[map81,1335
-	terrain seen[seen82,1371
-	char output[output83,1408
+# define DUNGEON_Y 16,226
+# define DUNGEON_X 17,251
+# define MIN_ROOMS 18,276
+# define MAX_ROOMS 19,300
+# define MIN_UP 20,325
+# define MIN_DOWN 21,349
+# define MAX_UP 22,373
+# define MAX_DOWN 23,397
+# define ROOM_MIN_X 24,422
+# define ROOM_MIN_Y 25,446
+# define ROOM_MAX_X 26,470
+# define ROOM_MAX_Y 27,495
+# define MAX_BUFFER 28,520
+# define MAX_MONSTERS 29,547
+class dungeon 33,575
+	const std::string file_type 37,602
+	uint32_t file_version 38,649
+	uint32_t file_version = 0, file_size;38,649
+	enum terrain 42,698
+  		ter_wall,43,714
+  		ter_immutable,44,728
+  		ter_floor,45,747
+  		ter_corridor,46,762
+  		ter_stair_up,47,780
+  		ter_stair_down,48,798
+  		ter_unknown49,818
+	class room 52,839
+  		uint8_t x;54,862
+  		uint8_t y;55,877
+  		uint8_t width;56,892
+  		uint8_t height;57,911
+	class stair 60,936
+  		uint8_t x;62,960
+  		uint8_t y;63,975
+  		char dir;64,990
+	std::string message;67,1009
+	uint16_t num_rooms;68,1031
+	room *rooms;rooms69,1052
+	uint16_t num_up;70,1066
+	uint16_t num_down;71,1084
+	stair *u_stairs;u_stairs72,1104
+	stair *d_stairs;d_stairs73,1122
+	uint16_t nummon;74,1140
+	pc player;75,1158
+	character *characters[characters76,1170
+	pathfinder floor_pathfinder;77,1216
+	pathfinder all_pathfinder;78,1246
+	uint8_t hardness[hardness79,1274
+	terrain map[map80,1315
+	terrain seen[seen81,1351
+	char output[output82,1388
 
 heap.c,1020
 struct heap_node 8,99
@@ -110,9 +110,15 @@ typedef struct heap 13,153
   void (*datum_delete)datum_delete17,269
 } heap_t;18,301
 
-io.h,34
+io.h,226
 # define IO_H2,13
-class io 6,51
+# define DUNGEON_X 6,51
+# define DUNGEON_Y 7,73
+# define DISPLAY_ALL_CMD 9,96
+# define DISPLAY_MAP_CMD 10,129
+# define DISPLAY_MONSTERS_CMD 11,162
+# define DISPLAY_TELEPORT_CMD 12,195
+class io 14,229
 
 npc.h,69
 # define NPC_H2,14

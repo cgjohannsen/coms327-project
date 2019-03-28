@@ -46,8 +46,6 @@ int pathfinder::init(uint8_t hardness[DUNGEON_Y][DUNGEON_X])
 
 int pathfinder::pathfinder_dijkstra_floor(uint8_t pc_x, uint8_t pc_y)
 {
-  if(h[pc_y][pc_x] != 0){ return -1; }
-
   uint32_t r, c;
   pathfinder::dungeon_path *p;
   path[pc_y][pc_x].cost = 0;
@@ -151,8 +149,6 @@ int pathfinder::pathfinder_dijkstra_floor(uint8_t pc_x, uint8_t pc_y)
 
 int pathfinder::pathfinder_dijkstra_all(uint8_t pc_x, uint8_t pc_y)
 {
-  if(h[pc_y][pc_x] != 0){ return -1; }
-  
   uint32_t r, c;
   pathfinder::dungeon_path *p;
   path[pc_y][pc_x].cost = 0;
