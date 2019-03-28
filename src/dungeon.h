@@ -4,7 +4,6 @@
 # include <cstdint>
 # include <cstdlib>
 # include <cstring>
-# include <cstring>
 # include <string>
 
 # include <endian.h>

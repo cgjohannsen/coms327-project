@@ -15,8 +15,7 @@ public:
 
 	pc();
 
-	int init();
-	int set_pos(uint8_t, uint8_t);
+	int init(uint8_t, uint8_t);
 	int pc_move(dungeon &, int c, heap_t *h);
 
 };

@@ -1,16 +1,12 @@
 #include <cstdint>
+#include <cstdlib>
+#include <ctime>
+#include <cmath>
 
 #include <ncurses.h>
 
 #include "io.h"
 #include "dungeon.h"
-
-#define DUNGEON_X 80
-#define DUNGEON_Y 21
-
-#define DISPLAY_ALL_CMD       0
-#define DISPLAY_MAP_CMD       1
-#define DISPLAY_MONSTERS_CMD  2
 
 io::io(){}
 
@@ -26,19 +22,19 @@ int io::display(int cmd, dungeon &d)
     case DISPLAY_MONSTERS_CMD:
       display_monsters(d);
       break;
+    case DISPLAY_TELEPORT_CMD:
+      display_teleport(d);
+      break;
   }
 
   return 0;
 }
 
-
-
 int io::display_all(dungeon &d)
 {
-	uint8_t r, c, cmd = ' ';
+	uint8_t r, c;
 
-	mvprintw(0, 0, "Revealing dungeon...");
-  do{
+	mvprintw(0, 0, d.message.c_str());
 	for(r = 1; r < DUNGEON_Y+1; r++) {
 		for(c = 0; c < DUNGEON_X; c++) {
       if(d.characters[r-1][c]){ mvaddch(r, c, d.characters[r-1][c]->symbol); }
@@ -65,8 +61,6 @@ int io::display_all(dungeon &d)
       }
 		}      
 	}
-  cmd = getch();
-  } while(cmd != 'f');
 
 	return 0;
 }
@@ -141,7 +135,7 @@ int io::display_monsters(dungeon &d)
       }
   
       mvprintw(r, 25, "  %c, %d %s and %d %s      ", monsters[i+(r-5)]->symbol,
-         dis_x, dir_x.c_str(), dis_y, dir_y.c_str());
+         abs(dis_x), dir_x.c_str(), abs(dis_y), dir_y.c_str());
       }
     for(; r < DUNGEON_Y+1; r++) {
       mvprintw(r, 25, "                                ");
@@ -149,5 +143,87 @@ int io::display_monsters(dungeon &d)
     cmd = getch();
   } while(cmd != 27); // Escape key
   
+  return 0;
+}
+
+int io::display_teleport(dungeon &d)
+{
+  uint8_t cmd = ' ', tx = d.player.x, ty = d.player.y;
+  srand(time(NULL));
+
+  mvprintw(0, 0, d.message.c_str());
+  do{
+    display_all(d);
+    mvaddch(ty+1, tx, '*');
+
+    cmd = getch();
+    switch(cmd){
+      case 'r':
+        do{
+          ty = (rand() % (DUNGEON_Y-1)) + 1;
+          tx = (rand() % (DUNGEON_X-1)) + 1;
+        }while(d.hardness[ty][tx]);
+        break;
+      case '7':
+      case 'y':
+        if(tx-1 > 0 && ty-1 > 0){
+          tx--;
+          ty--;
+        }
+        break;
+      case '8':
+      case 'k':
+        if(ty-1 > 0){
+          ty--;
+        }
+        break;
+      case '9':
+      case 'u':
+        if(tx+1 < DUNGEON_X && ty-1 > 0){
+          tx++;
+          ty--;
+        }
+        break;
+      case '6':
+      case 'l':
+        if(tx+1 < DUNGEON_X){
+          tx++;
+        }
+        break;
+      case '3':
+      case 'n':
+        if(tx+1 < DUNGEON_X && ty+1 < DUNGEON_Y){
+          tx++;
+          ty++;
+        }
+        break;
+      case '2':
+      case 'j':
+        if(ty+1 < DUNGEON_Y){
+          ty++;
+        }
+        break;
+      case '1':
+      case 'b':
+        if(tx-1 > 0 && ty+1 < DUNGEON_Y){
+          tx--;
+          ty++;
+        }
+        break;
+      case '4':
+      case 'h':
+        if(tx-1 > 0){
+          tx--;
+        }
+        break;
+    }
+
+  }while(cmd != 't' && cmd != 'r');
+
+  d.characters[d.player.y][d.player.x] = NULL;
+  d.characters[ty][tx] = &(d.player);
+  d.player.y = ty;
+  d.player.x = tx;
+
   return 0;
 }

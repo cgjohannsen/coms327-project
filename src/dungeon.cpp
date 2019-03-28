@@ -180,8 +180,7 @@ int dungeon::place_characters(heap_t *h)
     }
   }
 
-  player.init();
-  player.set_pos(rooms[0].x, rooms[0].y);
+  player.init(rooms[0].x, rooms[0].y);
   this->characters[player.y][player.x] = &player;
   heap_insert(h, (character*)&player);
 
@@ -249,8 +248,7 @@ int dungeon::update_output()
 
   for(r = 0; r < DUNGEON_Y; r++) {
     for(c = 0; c < DUNGEON_X; c++) {
-      //if(characters[r][c]){ output[r][c] = characters[r][c]->symbol; }
-      if(r < player.y+2 && r > player.y-2 && c < player.x+2 && c > player.x-2) {
+      if(r < player.y+3 && r > player.y-3 && c < player.x+3 && c > player.x-3) {
         seen[r][c] = map[r][c];
         if(characters[r][c]){ output[r][c] = characters[r][c]->symbol; }
         else{
