@@ -6,12 +6,12 @@
 #include <ncurses.h>
 
 #include "heap.h"
-#include "Character.h"
-#include "NPC.h"
-#include "PC.h"
-#include "Dungeon.h"
-#include "IO.h"
-#include "Pathfinder.h"
+#include "character.h"
+#include "npc.h"
+#include "pc.h"
+#include "dungeon.h"
+#include "io.h"
+#include "pathfinder.h"
 
 #define DUNGEON_Y  21
 #define DUNGEON_X  80
@@ -75,16 +75,16 @@ static char loss_screen[] =
 "   ::::::`:::::;'  /  /   `#\n";
 
 static int32_t event_cmp(const void *key, const void *with) {
-  return ((Character *) key)->move_time - ((Character *) with)->move_time;
+  return ((character *) key)->move_time - ((character *) with)->move_time;
 }
 
-Dungeon d;
-IO out;
+dungeon d;
+io out;
 
 int play_game()
 {
   heap_t event_queue;
-  Character *cur;
+  character *cur;
   int cmd;
 
   heap_init(&event_queue, event_cmp, NULL);
@@ -98,7 +98,7 @@ int play_game()
   keypad(stdscr, TRUE);
 
   while(d.player.isAlive && d.nummon) {
-    cur = (Character *)heap_remove_min(&event_queue);
+    cur = (character *)heap_remove_min(&event_queue);
     
     if(cur->is_pc) {
       do {
@@ -124,7 +124,7 @@ int play_game()
           d.message = "Entering teleport mode... (Press t to teleport, r for random)";
           out.display(DISPLAY_TELEPORT_CMD, d);
           d.message = "";
-        } else if(( (PC*)cur )->move(d, cmd, &event_queue)){
+        } else if(( (pc*)cur )->pc_move(d, cmd, &event_queue)){
           mvprintw(0, 0, "You're a quitter!                         ");
           getch();
           endwin();
@@ -134,7 +134,7 @@ int play_game()
         d.update_distances();
       } while(cmd == 'm' || cmd == 'f' || cmd == 't');
     } else if(cur->isAlive) { 
-      ((NPC*)cur)->move(d); 
+      ((npc*)cur)->npc_move(d); 
     }
 
     cur->move_time = cur->move_time + (1000 / (cur->speed));
@@ -170,20 +170,20 @@ int main(int argc, char *argv[])
   int arg, load = 0;
   for(arg = 1; arg < argc; arg++){
     if(!strcmp(argv[arg],"--load") || !strcmp(argv[arg],"-l")){ 
-      d.read((uint8_t)0, NULL);
+      d.read_dungeon((uint8_t)0, NULL);
       load++;
     }
     if(!strcmp(argv[arg], "-lt")) {
-      d.read((uint8_t)1, argv[arg+1]);
+      d.read_dungeon((uint8_t)1, argv[arg+1]);
       load++;
     }
   }
   if(!load){
-    d.generate();
+    d.gen_dungeon();
   }
   for(arg = 1; arg < argc; arg++){
     if(!strcmp(argv[arg],"--save") || !strcmp(argv[arg], "-s"))
-      { d.write(); }
+      { d.write_dungeon(); }
   } 
   for(arg = 1; arg < argc; arg++){
     if(!strcmp(argv[arg],"--pathfind")){
