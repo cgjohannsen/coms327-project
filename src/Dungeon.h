@@ -32,13 +32,11 @@
 
 
 class Dungeon {
-
-private:
+	
+public:
 
 	const std::string file_type = "RLG327-S2019";
 	uint32_t file_version = 0, file_size;
-
-public:
 
 	enum terrain {
   		ter_wall,
@@ -100,10 +98,6 @@ public:
 	int update_output();
 	int render_pc_cost_floor();
 	int render_pc_cost_all();
-
-	// IO
-	int write();
-	int read(uint8_t test, char *n);
 
 };
 

@@ -24,6 +24,8 @@ public:
 	int display_teleport(Dungeon &);
 	int parse_monsters(Dungeon &);
 	int print_monster_templates(Dungeon &);
+	int read_dungeon(Dungeon &);
+	int write_dungeon(Dungeon &);
 
 };
 

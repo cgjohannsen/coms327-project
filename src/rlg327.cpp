@@ -155,10 +155,10 @@ int main(int argc, char *argv[])
 {
   // Commands:
   //
-  // --load -l     Load file from /.rlg327
-  // --save -s     Saves dungeon to file in /.rlg327
+  // --load -l     Load file from ~/.rlg327
+  // --save -s     Saves dungeon to file in ~/.rlg327
   // --pathfind    Output pathfinding dungeons
-  // -lt [file]    Load file from .rlg327/saved_dungeons/ 
+  // --parse       Output monster templates from ~/.rlg327
 
   // init ncurses
   initscr();
@@ -169,11 +169,7 @@ int main(int argc, char *argv[])
   int arg, load = 0;
   for(arg = 1; arg < argc; arg++){
     if(!strcmp(argv[arg],"--load") || !strcmp(argv[arg],"-l")){ 
-      d.read((uint8_t)0, NULL);
-      load++;
-    }
-    if(!strcmp(argv[arg], "-lt")) {
-      d.read((uint8_t)1, argv[arg+1]);
+      out.read_dungeon(d);
       load++;
     }
   }
@@ -182,7 +178,7 @@ int main(int argc, char *argv[])
   }
   for(arg = 1; arg < argc; arg++){
     if(!strcmp(argv[arg],"--save") || !strcmp(argv[arg], "-s"))
-      { d.write(); }
+      { out.write_dungeon(d); }
   } 
   for(arg = 1; arg < argc; arg++){
     if(!strcmp(argv[arg],"--pathfind")){

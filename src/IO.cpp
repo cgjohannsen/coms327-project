@@ -436,3 +436,150 @@ int IO::print_monster_templates(Dungeon &d)
 
   return 0;
 }  
+
+int IO::read_dungeon(Dungeon &d)
+{
+  char *home = getenv("HOME");
+  char *path;
+  path = (char*)malloc(strlen(home) + strlen("/.rlg327/dungeon") + 1);
+  strcpy(path, home);
+  strcat(path, "/.rlg327/dungeon");
+  FILE *f = fopen(path, "r");
+
+  // File data
+  char *be_file_type = (char*)malloc(sizeof(char)*12);
+  fread(be_file_type, sizeof(char), 12, f);
+
+  uint32_t be_file_version;
+  fread(&be_file_version, sizeof(uint32_t), 1, f);
+  d.file_version = be32toh(be_file_version);
+
+  uint32_t be_file_size;
+  fread(&be_file_size, sizeof(uint32_t), 1, f);
+  d.file_size = be32toh(be_file_size);
+
+  // PC data
+  uint8_t pc_location[2];
+  fread(pc_location, sizeof(uint8_t), 2, f);
+  d.player.x = pc_location[0];
+  d.player.y = pc_location[1];
+
+  // Hardness matrix
+  int i, j, r, c;
+  uint8_t hardness_row[DUNGEON_X];
+  for(i = 0; i < DUNGEON_Y; i++){
+    fread(hardness_row, sizeof(uint8_t), DUNGEON_X, f);
+    for(j = 0; j < DUNGEON_X; j++){ 
+      d.hardness[i][j] = hardness_row[j]; 
+      if(d.hardness[i][j] == 255)
+        d.map[i][j] = Dungeon::ter_immutable;
+      else if(d.hardness[i][j] == 0)
+        d.map[i][j] = Dungeon::ter_corridor;
+      else
+        d.map[i][j] = Dungeon::ter_wall;
+    }
+  }
+
+  // Room data
+  uint16_t be_num_rooms;
+  fread(&be_num_rooms, sizeof(uint16_t), 1, f);
+  d.num_rooms = be16toh(be_num_rooms);
+  d.rooms = (Dungeon::room*)malloc(sizeof(Dungeon::room) * d.num_rooms);
+  uint8_t room_data[4];
+  for(i = 0; i < d.num_rooms; i++){
+    fread(room_data, sizeof(uint8_t), 4, f);
+    d.rooms[i].x = room_data[0];
+    d.rooms[i].y = room_data[1];
+    d.rooms[i].width = room_data[2];
+    d.rooms[i].height = room_data[3];
+    for(r = d.rooms[i].y; r < d.rooms[i].y+d.rooms[i].height; r++){
+    for(c = d.rooms[i].x; c < d.rooms[i].x+d.rooms[i].width ; c++){
+      d.map[r][c] = Dungeon::ter_floor;
+    }
+    }
+  }
+
+  // Stair data
+  uint16_t be_num_up;
+  fread(&be_num_up, sizeof(uint16_t), 1, f);
+  d.num_up = be16toh(be_num_up);
+  d.u_stairs = (Dungeon::stair*)malloc(sizeof(Dungeon::stair) * d.num_up);
+
+  uint8_t stair_data[2];
+  for(i = 0; i < d.num_up; i++){
+    fread(stair_data, sizeof(uint8_t), 2, f);
+    d.u_stairs[i].x = stair_data[0];
+    d.u_stairs[i].y = stair_data[1];
+    d.map[d.u_stairs[i].y][d.u_stairs[i].x] = Dungeon::ter_stair_up;
+  }
+  uint16_t be_num_down;
+  fread(&be_num_down, sizeof(uint16_t), 1, f);
+  d.num_down = be16toh(be_num_down);
+  d.d_stairs = (Dungeon::stair*)malloc(sizeof(Dungeon::stair) * d.num_down);
+
+  for(i = 0; i < d.num_down; i++){
+    fread(stair_data, sizeof(uint8_t), 2, f);
+    d.d_stairs[i].x = stair_data[0];
+    d.d_stairs[i].y = stair_data[1];
+    d.map[d.d_stairs[i].y][d.d_stairs[i].x] = Dungeon::ter_stair_down;
+  }
+            
+  fclose(f);
+  free(path);
+  return 0;
+}
+
+int IO::write_dungeon(Dungeon &d)
+{
+  char *home = getenv("HOME");
+  char *path;
+  path = (char*)malloc(strlen(home) + strlen("/.rlg327/dungeon") + 1);
+  strcpy(path, home);
+  strcat(path, "/.rlg327/dungeon");
+  FILE *f = fopen(path, "w");
+
+  // File data
+  uint32_t be_file_version = htobe32(d.file_version);
+  uint32_t be_file_size = htobe32(1708 + d.num_rooms*4 +
+          d.num_up*2 + d.num_down*2);
+  fwrite(d.file_type.c_str(), sizeof(char), 12, f);
+  fwrite(&be_file_version, sizeof(uint32_t), 1, f);
+  fwrite(&be_file_size, sizeof(uint32_t), 1, f);
+  
+  // PC data
+  uint8_t pc_location[2] = { d.player.x, d.player.y };
+  fwrite(pc_location, sizeof(uint8_t), 2, f);
+  
+  // Hardness matrix
+  int i;
+  for(i = 0; i < DUNGEON_Y; i++){
+    fwrite(d.hardness[i], sizeof(uint8_t), DUNGEON_X, f);
+  }
+
+  // Room data
+  uint16_t be_num_rooms = htobe16(d.num_rooms);
+  fwrite(&be_num_rooms, sizeof(uint16_t), 1, f);
+  for(i = 0; i < d.num_rooms; i++){
+    uint8_t room_data[4] = { d.rooms[i].x, d.rooms[i].y, 
+           d.rooms[i].width, d.rooms[i].height };
+    fwrite(room_data, sizeof(uint8_t), 4, f);
+  }
+
+  // Stair data
+  uint16_t be_num_up = htobe16(d.num_up);
+  fwrite(&be_num_up, sizeof(uint16_t), 1, f);
+  for(i = 0; i < d.num_up; i++){
+    uint8_t stair_location[2] = { d.u_stairs[i].x, d.u_stairs[i].y };
+    fwrite(stair_location, sizeof(uint8_t), 2, f);
+  }
+  uint16_t be_num_down = htobe16(d.num_down);
+  fwrite(&be_num_down, sizeof(uint16_t), 1, f);
+  for(i = 0; i < d.num_down; i++){
+    uint8_t stair_location[2] = { d.d_stairs[i].x, d.d_stairs[i].y };
+    fwrite(stair_location, sizeof(uint8_t), 2, f);
+  }
+
+  fclose(f);
+  free(path);
+  return 0;
+}
