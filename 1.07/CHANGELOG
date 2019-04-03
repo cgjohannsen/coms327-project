@@ -1,0 +1,96 @@
+1/23
+	Read assignment and began dungeon_gen.c file
+	Added struct to represent terrain with char field
+	Had dungeon_gen.c output a set of 21x80 '.' to terminal
+	Began thinking about how to impelement placing rooms
+
+1/25
+	Continued thinking about placing rooms
+	Replaced array of terrain struct with a char array
+	Created struct for rooms with 4 fields
+
+1/26
+	Implemented place_rooms function
+	Randomly creates room
+	Checks for validity, then places
+
+1/27
+	Debugged issues with place_rooms
+	Implemented place_corridors
+	Simple algorithm, path reaches desired row first, then column
+
+1/31
+	Implemented place_stairs
+	palce_stairs randomly places one upwards and one downwards
+	Places stairs in rooms
+	Ran into issue with terminal printing random '>' and '.' sparsely
+
+2/1
+	Completed assignment
+	Initialized char array to print with ' ' in every index
+	Solved all previous issues
+
+2/7/19
+	Added helper methods
+	Improved stair placement and implemented file saving
+	Configured save file to comply with big-endian specification
+	Implemented file loading functionality
+
+2/8/19
+	Made room and stair structures global
+	Changed command line switches to comply with assignment specs
+
+2/13/19
+	Making dungeon a struct: reworking format of dungeon.c
+	Fixing bugs
+
+2/14/19
+	Adding pathfinding over floor cells
+	Adding output for pathfinder
+	Added pathfinding over all cells, segmentation faults galore
+
+2/19/19
+	Fixed bug with pathfinding over walls
+	Completed assignment
+
+2/26/19
+	Began working on 1.04
+	Ran into issues with how to organize various data
+	Attempted to implement basic gameplay, unsuccessful
+
+2/27/19
+	Implemented basic simulated gameplay with random motion for all characters
+	Implemented more advanced motion for all characters
+	Implemented system to keep track of killing of characters
+
+3/3/19
+	Implemented ncurses: no PC movemnt but dungeon updates every PC turn
+
+3/5/19
+	Updating correct PC movement
+
+3/6/19
+	Beginning to implement monster view
+
+3/8/19
+	Fixing monster list view
+
+3/12/19
+	Updating monster view to be more pretty
+	Finishing assignment 1.05
+
+3/26/19
+	Porting game to c++
+
+3/27/19
+	Fog of war functionaliy w/ "revealing" f key
+	Adding teleport functionality
+	Finishing assignment 1.06
+
+4/1/19
+	Renamed classes: now begin with capital letter
+	Implemented parsing, no error checking
+
+4/3/19
+	Implemented error checking parsing: only add templates with each field filled exactly once
+	Finishing assignment 1.07
