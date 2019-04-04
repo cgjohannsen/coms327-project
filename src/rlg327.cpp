@@ -195,6 +195,7 @@ int main(int argc, char *argv[])
     if(!strcmp(argv[arg],"--parse")) {
       out.parse_monsters(d);
       out.print_monster_templates(d);
+      out.parse_objects(d);
     }
   }
 

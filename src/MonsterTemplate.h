@@ -31,7 +31,6 @@ public:
 					std::string, // attack_damage
 					std::string, // symbol
 					std::string);// rarity
-	~MonsterTemplate();
 };
 
 #endif

@@ -242,8 +242,6 @@ int IO::parse_monsters(Dungeon &d)
   
   std::ifstream file(path);
   std::string line, param, n, des, c, sp, ab, hp, ad, sy, r;
-  //uint8_t flag_n = 0, flag_des = 0, flag_c = 0, flag_sp = 0,flag_ab = 0, 
-  //flag_sy = 0, flag_r = 0, flag_ad = 0, flag_hp = 0, in_progress = 0;
 
   uint8_t param_flags[] = {0, 0, 0, 0, 0, 0, 0, 0, 0}, in_progress = 0, i;
   
@@ -310,6 +308,111 @@ int IO::parse_monsters(Dungeon &d)
           }
         }
         for(i = 0; i < 9; i++){
+          param_flags[i] = 0;
+        }
+      }
+    }
+  } else { return -1; }
+  
+
+  return 0;
+}
+
+int IO::parse_objects(Dungeon &d)
+{
+  char *home = getenv("HOME");
+  char *path;
+  path = (char*)malloc(strlen(home) + strlen("/.rlg327/object_desc.txt") + 1);
+  strcpy(path, home);
+  strcat(path, "/.rlg327/object_desc.txt");
+  
+  std::ifstream file(path);
+  std::string line, param, n, des, ty, c, hb, damb,
+  dogb, defb, w, sb, attr, val, art, rrty;
+
+  uint8_t param_flags[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+  in_progress = 0, i;
+  
+  if(file.is_open()){
+
+    getline(file,line);
+    if(line.compare("RLG327 OBJECT DESCRIPTION 1")){ return -1; }
+
+    while(getline(file, line)) {
+      if(!line.compare("BEGIN OBJECT")){
+        in_progress = 1;
+        while(getline(file,line) && in_progress) {
+          std::stringstream str(line);
+          getline(str, param, ' ');
+          if(param == "NAME"){
+            param_flags[0]++;;
+            getline(str, n);
+          } else if(param == "DESC"){
+            param_flags[1]++;
+            getline(file, line);
+            des = "";
+            while(line.compare(".")){
+              des += line;
+              getline(file, line);
+              if(line.compare("."))
+                des += "\n";
+            }
+
+          } else if(param == "TYPE"){
+            param_flags[2]++;
+            getline(str, ty);
+          } else if(param == "COLOR"){
+            param_flags[3]++;
+            getline(str, c);
+          } else if(param == "HIT"){
+            param_flags[4]++;
+            getline(str, hb);
+          } else if(param == "DAM"){
+            param_flags[5]++;
+            getline(str, damb);
+          } else if(param == "DODGE"){
+            param_flags[6]++;
+            getline(str, dogb);
+          } else if(param == "DEF"){
+            param_flags[7]++;
+            getline(str, defb);
+          } else if(param == "WEIGHT"){
+            param_flags[8]++;
+            getline(str, w);
+          } else if(param == "SPEED"){
+            param_flags[9]++;
+            getline(str, sb);
+          } else if(param == "ATTR"){
+            param_flags[10]++;
+            getline(str, attr);
+          } else if(param == "VAL"){
+            param_flags[11]++;
+            getline(str, val);
+          } else if(param == "ART"){
+            param_flags[12]++;
+            getline(str, art);
+          } else if(param == "RRTY"){
+            param_flags[13]++;
+            getline(str, rrty);
+          } else if(param == "END") {
+            for(i = 0; i < 15; i++){
+              if(param_flags[i] != 1)
+                in_progress = 0;
+            }
+            if(in_progress) {
+              d.object_templates
+              .push_back(ObjectTemplate(n, des, ty, c, hb, damb, dogb, defb,
+                  w, sb, attr, val, art, rrty));
+              in_progress = 0;
+            }
+            des = "";
+          }
+          for(i = 0; i < 14; i++){
+            if(param_flags[i] > 1)
+              in_progress = 0;
+          }
+        }
+        for(i = 0; i < 14; i++){
           param_flags[i] = 0;
         }
       }

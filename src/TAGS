@@ -30,60 +30,61 @@ class Dice 4,32
 	int base, num, sides;8,56
 	char str[str9,79
 
-Dungeon.h,1484
+Dungeon.h,1541
 # define DUNGEON_H2,18
-# define DUNGEON_Y 18,275
-# define DUNGEON_X 19,300
-# define MIN_ROOMS 20,325
-# define MAX_ROOMS 21,349
-# define MIN_UP 22,374
-# define MIN_DOWN 23,398
-# define MAX_UP 24,422
-# define MAX_DOWN 25,446
-# define ROOM_MIN_X 26,471
-# define ROOM_MIN_Y 27,495
-# define ROOM_MAX_X 28,519
-# define ROOM_MAX_Y 29,544
-# define MAX_BUFFER 30,569
-# define MAX_MONSTERS 31,596
-class Dungeon 34,623
-	const std::string file_type 38,650
-	uint32_t file_version 39,697
-	uint32_t file_version = 0, file_size;39,697
-	enum terrain 41,737
-  		ter_wall,42,753
-  		ter_immutable,43,767
-  		ter_floor,44,786
-  		ter_corridor,45,801
-  		ter_stair_up,46,819
-  		ter_stair_down,47,837
-  		ter_unknown48,857
-	class room 51,878
-  		uint8_t x;53,901
-  		uint8_t y;54,916
-  		uint8_t width;55,931
-  		uint8_t height;56,950
-	class stair 59,975
-  		uint8_t x;61,999
-  		uint8_t y;62,1014
-  		char dir;63,1029
-	std::string message;66,1048
-	uint16_t num_rooms;67,1070
-	room *rooms;rooms68,1091
-	uint16_t num_up;69,1105
-	uint16_t num_down;70,1123
-	stair *u_stairs;u_stairs71,1143
-	stair *d_stairs;d_stairs72,1161
-	uint16_t nummon;73,1179
-	PC player;74,1197
-	Character *characters[characters75,1209
-	Pathfinder floor_pathfinder;76,1255
-	Pathfinder all_pathfinder;77,1285
-	uint8_t hardness[hardness78,1313
-	terrain map[map79,1354
-	terrain seen[seen80,1390
-	char output[output81,1427
-	std::vector<MonsterTemplate> monster_templates;82,1463
+# define DUNGEON_Y 19,304
+# define DUNGEON_X 20,329
+# define MIN_ROOMS 21,354
+# define MAX_ROOMS 22,378
+# define MIN_UP 23,403
+# define MIN_DOWN 24,427
+# define MAX_UP 25,451
+# define MAX_DOWN 26,475
+# define ROOM_MIN_X 27,500
+# define ROOM_MIN_Y 28,524
+# define ROOM_MAX_X 29,548
+# define ROOM_MAX_Y 30,573
+# define MAX_BUFFER 31,598
+# define MAX_MONSTERS 32,625
+class Dungeon 35,652
+	const std::string file_type 39,679
+	uint32_t file_version 40,726
+	uint32_t file_version = 0, file_size;40,726
+	enum terrain 42,766
+  		ter_wall,43,782
+  		ter_immutable,44,796
+  		ter_floor,45,815
+  		ter_corridor,46,830
+  		ter_stair_up,47,848
+  		ter_stair_down,48,866
+  		ter_unknown49,886
+	class room 52,907
+  		uint8_t x;54,930
+  		uint8_t y;55,945
+  		uint8_t width;56,960
+  		uint8_t height;57,979
+	class stair 60,1004
+  		uint8_t x;62,1028
+  		uint8_t y;63,1043
+  		char dir;64,1058
+	std::string message;67,1077
+	uint16_t num_rooms;68,1099
+	room *rooms;rooms69,1120
+	uint16_t num_up;70,1134
+	uint16_t num_down;71,1152
+	stair *u_stairs;u_stairs72,1172
+	stair *d_stairs;d_stairs73,1190
+	uint16_t nummon;74,1208
+	PC player;75,1226
+	Character *characters[characters76,1238
+	Pathfinder floor_pathfinder;77,1284
+	Pathfinder all_pathfinder;78,1314
+	uint8_t hardness[hardness79,1342
+	terrain map[map80,1383
+	terrain seen[seen81,1419
+	char output[output82,1456
+	std::vector<MonsterTemplate> monster_templates;83,1492
+	std::vector<ObjectTemplate> object_templates;84,1541
 
 IO.h,226
 # define IO_H2,13
@@ -124,6 +125,25 @@ class NPC 8,79
 		destroy,25,281
 		unique,26,292
 		boss27,302
+
+ObjectTemplate.h,459
+# define OBJECTTEMPLATE_H2,25
+class ObjectTemplate{ObjectTemplate11,153
+	std::string name;15,186
+	std::string description;16,205
+	std::string type;17,231
+	Character::Color color;18,250
+	Dice hit_bonus;19,275
+	Dice damage_bonus;20,292
+	Dice dodge_bonus;21,312
+	Dice defense_bonus;22,331
+	Dice weight;23,352
+	Dice speed_bonus;24,366
+	Dice attribute;25,385
+	Dice value;26,402
+	std::string artifact;27,415
+	char symbol;28,438
+	int rarity;29,452
 
 PC.h,69
 # define PC_H2,13

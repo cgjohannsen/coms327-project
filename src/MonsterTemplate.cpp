@@ -79,6 +79,4 @@ MonsterTemplate::MonsterTemplate(std::string n,  	// Name
 
 }
 
-MonsterTemplate::~MonsterTemplate(){}
-
 

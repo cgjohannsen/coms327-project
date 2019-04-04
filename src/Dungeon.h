@@ -14,6 +14,7 @@
 # include "PC.h"
 # include "Pathfinder.h"
 # include "MonsterTemplate.h"
+# include "ObjectTemplate.h"
 
 # define DUNGEON_Y    21
 # define DUNGEON_X    80
@@ -80,6 +81,7 @@ public:
 	terrain seen[DUNGEON_Y][DUNGEON_X];
 	char output[DUNGEON_Y][DUNGEON_X];
 	std::vector<MonsterTemplate> monster_templates;
+	std::vector<ObjectTemplate> object_templates;
 
 	// Constructor/Destructor
 	Dungeon();
