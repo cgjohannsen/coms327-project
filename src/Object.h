@@ -14,7 +14,7 @@ public:
 	std::string name;
 	std::string description;
 	std::string type;
-	Character::Color color;
+	uint32_t color;
 	Dice hit_bonus;
 	Dice damage_bonus;
 	Dice dodge_bonus;
@@ -30,7 +30,7 @@ public:
 	Object( std::string,		// Name
 			std::string,		// Description
 			std::string,		// Type
-			Character::Color,	// Color
+			uint32_t,			// Color
 			uint32_t,			// Hit Bonus
 			uint32_t,			// Damage Bonus
 			uint32_t,			// Dodge Bonus

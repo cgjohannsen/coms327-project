@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <ncurses.h>
 
 #include "ObjectTemplate.h"
 #include "Object.h"
@@ -26,21 +27,21 @@ ObjectTemplate::ObjectTemplate( std::string n, // Name
 	type = std::string(ty);
 
 	if(co == "RED"){
-		color = Character::red;
+		color = COLOR_RED;
 	} else if(co == "GREEN"){
-		color = Character::green;
+		color = COLOR_GREEN;
 	} else if(co == "BLUE"){
-		color = Character::blue;
+		color = COLOR_BLUE;
 	} else if(co == "CYAN"){
-		color = Character::cyan;
+		color = COLOR_CYAN;
 	} else if(co == "YELLOW"){
-		color = Character::yellow;
+		color = COLOR_YELLOW;
 	} else if(co == "MAGENTA"){
-		color = Character::magenta;
+		color = COLOR_MAGENTA;
 	} else if(co == "WHITE"){
-		color = Character::white;
+		color = COLOR_WHITE;
 	} else if(co == "BLACK"){
-		color = Character::black;
+		color = COLOR_BLACK;
 	}
 
 	int b, d, s;

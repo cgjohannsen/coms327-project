@@ -12,17 +12,6 @@ class Character{
 
 public:
 
-  enum Color{
-    red,
-    green,
-    blue,
-    cyan,
-    yellow,
-    magenta,
-    white,
-    black
-  };
-
   uint8_t is_pc;
   heap_node_t *hn;
   uint8_t isAlive;
@@ -30,7 +19,7 @@ public:
   uint32_t move_time;
   uint32_t hitpoints;
   uint32_t attack_damage;
-  Object *bbject;
+  Object *object;
   char symbol;
   uint8_t x;
   uint8_t y;

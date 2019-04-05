@@ -3,6 +3,7 @@
 
 # include <string>
 # include <vector>
+# include <cstdint>
 
 # include "Dice.h"
 # include "Character.h"
@@ -14,7 +15,7 @@ public:
 
 	std::string name;
 	std::string description;
-	std::vector<Character::Color> color;
+	std::vector<uint32_t> color;
 	Dice speed;
 	std::vector<NPC::Ability> abilities;
 	Dice hitpoints;

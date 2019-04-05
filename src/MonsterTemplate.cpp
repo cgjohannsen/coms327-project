@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <ncurses.h>
 
 #include "MonsterTemplate.h"
 
@@ -22,21 +23,21 @@ MonsterTemplate::MonsterTemplate(std::string n,  	// Name
 	std::string t;
 	while(getline(stream_c, t, ' ')){
 		if(t == "RED"){
-			color.push_back(Character::red);
+			color.push_back(COLOR_RED);
 		} else if(t == "GREEN"){
-			color.push_back(Character::green);
+			color.push_back(COLOR_GREEN);
 		} else if(t == "BLUE"){
-			color.push_back(Character::blue);
+			color.push_back(COLOR_BLUE);
 		} else if(t == "CYAN"){
-			color.push_back(Character::cyan);
+			color.push_back(COLOR_CYAN);
 		} else if(t == "YELLOW"){
-			color.push_back(Character::yellow);
+			color.push_back(COLOR_YELLOW);
 		} else if(t == "MAGENTA"){
-			color.push_back(Character::magenta);
+			color.push_back(COLOR_MAGENTA);
 		} else if(t == "WHITE"){
-			color.push_back(Character::white);
+			color.push_back(COLOR_WHITE);
 		} else if(t == "BLACK"){
-			color.push_back(Character::black);
+			color.push_back(COLOR_BLACK);
 		}
 	}
 

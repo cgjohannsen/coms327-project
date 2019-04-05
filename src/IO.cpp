@@ -442,28 +442,28 @@ int IO::print_monster_templates(Dungeon &d)
     for (auto j = d.monster_templates.at(i).color.begin(); 
       j != d.monster_templates.at(i).color.end(); ++j) {
       switch(*j){
-        case Character::red:
+        case COLOR_RED:
           printw("RED");
           break;
-        case Character::green:
+        case COLOR_GREEN:
           printw("GREEN");
           break;
-        case Character::blue:
+        case COLOR_BLUE:
           printw("BLUE");
           break;
-        case Character::cyan:
+        case COLOR_CYAN:
           printw("CYAN");
           break;
-        case Character::yellow:
+        case COLOR_YELLOW:
           printw("YELLOW");
           break;
-        case Character::magenta:
+        case COLOR_MAGENTA:
           printw("MAGENTA");
           break;
-        case Character::white:
+        case COLOR_WHITE:
           printw("WHITE");
           break;
-        case Character::black:
+        case COLOR_BLACK:
           printw("BLACK");
           break;
       }
@@ -560,30 +560,30 @@ int IO::print_object_templates(Dungeon &d)
     printw("\n");
 
     switch(d.object_templates.at(i).color){
-      case Character::red:
-        printw("RED");
-        break;
-      case Character::green:
-        printw("GREEN");
-        break;
-      case Character::blue:
-        printw("BLUE");
-        break;
-      case Character::cyan:
-        printw("CYAN");
-        break;
-      case Character::yellow:
-        printw("YELLOW");
-        break;
-      case Character::magenta:
-        printw("MAGENTA");
-        break;
-      case Character::white:
-        printw("WHITE");
-        break;
-      case Character::black:
-        printw("BLACK");
-        break;
+        case COLOR_RED:
+          printw("RED");
+          break;
+        case COLOR_GREEN:
+          printw("GREEN");
+          break;
+        case COLOR_BLUE:
+          printw("BLUE");
+          break;
+        case COLOR_CYAN:
+          printw("CYAN");
+          break;
+        case COLOR_YELLOW:
+          printw("YELLOW");
+          break;
+        case COLOR_MAGENTA:
+          printw("MAGENTA");
+          break;
+        case COLOR_WHITE:
+          printw("WHITE");
+          break;
+        case COLOR_BLACK:
+          printw("BLACK");
+          break;
       }
     printw("\n");
 

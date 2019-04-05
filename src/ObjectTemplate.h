@@ -17,7 +17,7 @@ public:
 	std::string name;
 	std::string description;
 	std::string type;
-	Character::Color color;
+	uint32_t color;
 	Dice hit_bonus;
 	Dice damage_bonus;
 	Dice dodge_bonus;
