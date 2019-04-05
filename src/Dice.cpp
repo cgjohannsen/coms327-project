@@ -1,11 +1,12 @@
 #include <cstdlib>
 #include <ctime>
+#include <cstdint>
 #include <string>
 
 #include "Dice.h"
 
 
-int Dice::init(int &b, int &n, int &s)
+int Dice::init(const uint32_t &b, const uint32_t &n, const uint32_t &s)
 {
 	base = b,
 	num = n;
@@ -14,11 +15,11 @@ int Dice::init(int &b, int &n, int &s)
 	return 0;
 }
 
-int Dice::roll()
+uint32_t Dice::roll()
 {
 	srand(time(NULL));
 
-	int i, sum = base;
+	uint32_t i, sum = base;
 	for(i = 0; i < num; i++) {
 		sum += (rand() % sides) + 1;
 	}

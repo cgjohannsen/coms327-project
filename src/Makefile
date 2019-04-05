@@ -9,7 +9,7 @@ CXXFLAGS = -Wall -Werror -ggdb -funroll-loops
 LDFLAGS = -lncurses
 
 BIN = rlg327
-OBJS = rlg327.o Dungeon.o heap.o Pathfinder.o Character.o NPC.o PC.o MonsterTemplate.o IO.o Dice.o ObjectTemplate.o
+OBJS = rlg327.o Dungeon.o heap.o Pathfinder.o Character.o NPC.o PC.o MonsterTemplate.o IO.o Dice.o ObjectTemplate.o Object.o
 
 all: $(BIN) etags
 

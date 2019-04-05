@@ -4,6 +4,7 @@
 #include <sstream>
 
 #include "ObjectTemplate.h"
+#include "Object.h"
 
 ObjectTemplate::ObjectTemplate( std::string n, // Name
 								std::string des, // Description
@@ -71,6 +72,63 @@ ObjectTemplate::ObjectTemplate( std::string n, // Name
 
 	sscanf(rrty.c_str(), "%d", &rarity);
 
+	if(name == "WEAPON"){
+		symbol = '|';
+	} else if(name == "OFFHAND"){
+		symbol = ')';
+	} else if(name == "RANGED"){
+		symbol = '}';
+	} else if(name == "ARMOR"){
+		symbol = '[';
+	} else if(name == "HELMET"){
+		symbol = ']';
+	} else if(name == "CLOAK"){
+		symbol = '(';
+	} else if(name == "GLOVES"){
+		symbol = '{';
+	} else if(name == "BOOTS"){
+		symbol = '\\';
+	} else if(name == "RING"){
+		symbol = '=';
+	} else if(name == "AMULET"){
+		symbol = '"';
+	} else if(name == "LIGHT"){
+		symbol = '_';
+	} else if(name == "SCROLL"){
+		symbol = '~';
+	} else if(name == "BOOK"){
+		symbol = '?';
+	} else if(name == "FLASK"){
+		symbol = '!';
+	} else if(name == "GOLD"){
+		symbol = '$';
+	} else if(name == "AUMMUNITION"){
+		symbol = '/';
+	} else if(name == "FOOD"){
+		symbol = ',';
+	} else if(name == "WAND"){
+		symbol = '-';
+	} else if(name == "CONTAINER"){
+		symbol = '%';
+	}
+
+}
+
+Object ObjectTemplate::generate()
+{
+
+	bool art;
+
+	if(artifact == "TRUE"){
+		art = true;
+	} else if(artifact == "FALSE"){
+		art = false;
+	}
+
+	return Object(name, description, type, color, hit_bonus.roll(), 
+		damage_bonus.roll(), dodge_bonus.roll(), defense_bonus.roll(),
+		weight.roll(), speed_bonus.roll(), attribute.roll(),
+		value.roll(), art, symbol, rarity);
 }
 
 

@@ -1,34 +1,37 @@
 
-Character.h,472
+Character.h,567
 # define CHARACTER_H2,20
-class Character{Character10,99
-  enum Color{Color14,126
-    red,15,140
-    green,16,149
-    blue,17,160
-    cyan,18,170
-    yellow,19,180
-    magenta,20,192
-    white,21,205
-    black22,216
-  uint8_t is_pc;25,232
-  heap_node_t *hn;hn26,249
-  uint8_t isAlive;27,268
-  uint8_t speed;28,287
-  uint32_t move_time;29,304
-  char symbol;30,326
-  uint8_t x;31,341
-  uint8_t y;32,354
-  uint8_t next_x;33,367
-  uint8_t next_y;34,385
+class Character{Character11,113
+  enum Color{Color15,140
+    red,16,154
+    green,17,163
+    blue,18,174
+    cyan,19,184
+    yellow,20,194
+    magenta,21,206
+    white,22,219
+    black23,230
+  uint8_t is_pc;26,246
+  heap_node_t *hn;hn27,263
+  uint8_t isAlive;28,282
+  uint8_t speed;29,301
+  uint32_t move_time;30,318
+  uint32_t hitpoints;31,340
+  uint32_t attack_damage;32,362
+  Object *bbject;bbject33,388
+  char symbol;34,406
+  uint8_t x;35,421
+  uint8_t y;36,434
+  uint8_t next_x;37,447
+  uint8_t next_y;38,465
 
-Dice.h,123
+Dice.h,143
 # define DICE_H2,15
-class Dice 4,32
-	int base,8,56
-	int base, num,8,56
-	int base, num, sides;8,56
-	char str[str9,79
+class Dice 6,53
+	uint32_t base,10,77
+	uint32_t base, num,10,77
+	uint32_t base, num, sides;10,77
+	char str[str11,105
 
 Dungeon.h,1541
 # define DUNGEON_H2,18
@@ -126,24 +129,43 @@ class NPC 8,79
 		unique,26,292
 		boss27,302
 
+Object.h,440
+# define OBJECT_H2,17
+class Object{Object10,120
+	std::string name;14,144
+	std::string description;15,163
+	std::string type;16,189
+	Character::Color color;17,208
+	Dice hit_bonus;18,233
+	Dice damage_bonus;19,250
+	Dice dodge_bonus;20,270
+	Dice defense_bonus;21,289
+	Dice weight;22,310
+	Dice speed_bonus;23,324
+	Dice attribute;24,343
+	Dice value;25,360
+	std::string artifact;26,373
+	char symbol;27,396
+	uint32_t rarity;28,410
+
 ObjectTemplate.h,459
 # define OBJECTTEMPLATE_H2,25
-class ObjectTemplate{ObjectTemplate11,153
-	std::string name;15,186
-	std::string description;16,205
-	std::string type;17,231
-	Character::Color color;18,250
-	Dice hit_bonus;19,275
-	Dice damage_bonus;20,292
-	Dice dodge_bonus;21,312
-	Dice defense_bonus;22,331
-	Dice weight;23,352
-	Dice speed_bonus;24,366
-	Dice attribute;25,385
-	Dice value;26,402
-	std::string artifact;27,415
-	char symbol;28,438
-	int rarity;29,452
+class ObjectTemplate{ObjectTemplate13,168
+	std::string name;17,201
+	std::string description;18,220
+	std::string type;19,246
+	Character::Color color;20,265
+	Dice hit_bonus;21,290
+	Dice damage_bonus;22,307
+	Dice dodge_bonus;23,327
+	Dice defense_bonus;24,346
+	Dice weight;25,367
+	Dice speed_bonus;26,381
+	Dice attribute;27,400
+	Dice value;28,417
+	std::string artifact;29,430
+	char symbol;30,453
+	int rarity;31,467
 
 PC.h,69
 # define PC_H2,13

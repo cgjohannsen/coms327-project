@@ -25,6 +25,7 @@ public:
 	int parse_monsters(Dungeon &);
 	int parse_objects(Dungeon &);
 	int print_monster_templates(Dungeon &);
+	int print_object_templates(Dungeon &);
 	int read_dungeon(Dungeon &);
 	int write_dungeon(Dungeon &);
 

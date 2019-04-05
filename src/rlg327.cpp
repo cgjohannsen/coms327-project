@@ -1,8 +1,6 @@
 #include <cstdio>
 #include <cstdint>
 #include <cstring>
-
-//#include <unistd.h>
 #include <ncurses.h>
 
 #include "heap.h"
@@ -164,6 +162,7 @@ int main(int argc, char *argv[])
   initscr();
   cbreak();
   noecho();
+  //start_color();
   keypad(stdscr, TRUE);
 
   int arg, load = 0;
@@ -196,6 +195,7 @@ int main(int argc, char *argv[])
       out.parse_monsters(d);
       out.print_monster_templates(d);
       out.parse_objects(d);
+      out.print_object_templates(d);
     }
   }
 

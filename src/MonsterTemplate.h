@@ -31,6 +31,8 @@ public:
 					std::string, // attack_damage
 					std::string, // symbol
 					std::string);// rarity
+
+	//NPC generate();
 };
 
 #endif

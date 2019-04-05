@@ -395,7 +395,7 @@ int IO::parse_objects(Dungeon &d)
             param_flags[13]++;
             getline(str, rrty);
           } else if(param == "END") {
-            for(i = 0; i < 15; i++){
+            for(i = 0; i < 14; i++){
               if(param_flags[i] != 1)
                 in_progress = 0;
             }
@@ -539,6 +539,104 @@ int IO::print_monster_templates(Dungeon &d)
 
   return 0;
 }  
+
+int IO::print_object_templates(Dungeon &d)
+{
+  uint32_t cmd, i = 0;
+  char buffer[21];
+  
+  do{
+    clear();
+    printw("Press enter to proceed to game, use arrow keys to navigate templates\n\n");
+    printw("OBJECT TEMPLATES\n\n");
+
+    printw(d.object_templates.at(i).name.c_str());
+    printw("\n");
+
+    printw(d.object_templates.at(i).description.c_str());
+    printw("\n");
+
+    printw(d.object_templates.at(i).type.c_str());
+    printw("\n");
+
+    switch(d.object_templates.at(i).color){
+      case Character::red:
+        printw("RED");
+        break;
+      case Character::green:
+        printw("GREEN");
+        break;
+      case Character::blue:
+        printw("BLUE");
+        break;
+      case Character::cyan:
+        printw("CYAN");
+        break;
+      case Character::yellow:
+        printw("YELLOW");
+        break;
+      case Character::magenta:
+        printw("MAGENTA");
+        break;
+      case Character::white:
+        printw("WHITE");
+        break;
+      case Character::black:
+        printw("BLACK");
+        break;
+      }
+    printw("\n");
+
+    printw(d.object_templates.at(i).hit_bonus.c_str());
+    printw("\n");
+
+    printw(d.object_templates.at(i).damage_bonus.c_str());
+    printw("\n");
+
+    printw(d.object_templates.at(i).dodge_bonus.c_str());
+    printw("\n");
+
+    printw(d.object_templates.at(i).defense_bonus.c_str());
+    printw("\n");
+
+    printw(d.object_templates.at(i).weight.c_str());
+    printw("\n");
+
+    printw(d.object_templates.at(i).speed_bonus.c_str());
+    printw("\n");
+
+    printw(d.object_templates.at(i).attribute.c_str());
+    printw("\n");
+
+    printw(d.object_templates.at(i).value.c_str());
+    printw("\n");
+
+    printw(d.object_templates.at(i).artifact.c_str());
+    printw("\n");
+
+    printw(&(d.object_templates.at(i).symbol));
+    printw("\n");
+
+    sprintf(buffer, "%d", d.object_templates.at(i).rarity);
+    printw(buffer);
+    printw("\n");
+
+    cmd = getch();
+
+    switch(cmd){
+      case KEY_UP:
+        if(i > 0)
+          i--;
+        break;
+      case KEY_DOWN:
+        if(i < d.object_templates.size()-1)
+          i++;
+        break;
+    }
+  } while(cmd != 10);
+
+  return 0;
+}
 
 int IO::read_dungeon(Dungeon &d)
 {

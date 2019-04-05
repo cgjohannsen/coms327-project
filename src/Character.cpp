@@ -6,11 +6,6 @@
 #include "Character.h"
 #include "Dungeon.h"
 
-Character::Character()
-{
-	speed = 10;
-}
-
 int *Character::next_pos(int x0, int y0, int x1, int y1)
 {
 	int *pos = (int*)malloc(2 * sizeof(int));

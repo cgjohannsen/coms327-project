@@ -40,7 +40,7 @@ MonsterTemplate::MonsterTemplate(std::string n,  	// Name
 		}
 	}
 
-	int b, d, s;
+	uint32_t b, d, s;
 	sscanf(sp.c_str(), "%d+%dd%d", &b, &d, &s);
 	speed.init(b, d, s);
 
@@ -78,5 +78,3 @@ MonsterTemplate::MonsterTemplate(std::string n,  	// Name
 	sscanf(r.c_str(), "%d", &rarity);
 
 }
-
-
