@@ -17,7 +17,7 @@ public:
 	std::string description;
 	std::vector<uint32_t> color;
 	Dice speed;
-	std::vector<NPC::Ability> abilities;
+	uint32_t abilities;
 	Dice hitpoints;
 	Dice attack_damage;
 	char symbol;
@@ -32,8 +32,6 @@ public:
 					std::string, // attack_damage
 					std::string, // symbol
 					std::string);// rarity
-
-	//NPC generate();
 };
 
 #endif

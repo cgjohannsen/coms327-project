@@ -15,7 +15,8 @@ public:
   uint8_t is_pc;
   heap_node_t *hn;
   uint8_t isAlive;
-  uint8_t speed;
+  uint32_t color;
+  uint32_t speed;
   uint32_t move_time;
   uint32_t hitpoints;
   uint32_t attack_damage;

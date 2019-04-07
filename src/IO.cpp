@@ -41,7 +41,11 @@ int IO::display_all(Dungeon &d)
 	mvprintw(0, 0, d.message.c_str());
 	for(r = 1; r < DUNGEON_Y+1; r++) {
 		for(c = 0; c < DUNGEON_X; c++) {
-      if(d.characters[r-1][c]){ mvaddch(r, c, d.characters[r-1][c]->symbol); }
+      if(d.characters[r-1][c]){ 
+        attron(COLOR_PAIR(d.characters[r-1][c]->color));
+        mvaddch(r, c, d.characters[r-1][c]->symbol);
+        attroff(COLOR_PAIR(d.characters[r-1][c]->color));
+      }
       else{
       switch(d.map[r-1][c]) {
         case Dungeon::ter_wall:
@@ -76,7 +80,12 @@ int IO::display_map(Dungeon &d)
   mvprintw(0, 0, d.message.c_str());
   for(r = 1; r < DUNGEON_Y+1; r++) {
     for(c = 0; c < DUNGEON_X; c++) {
-      mvaddch(r, c, d.output[r-1][c]);
+      if(d.characters[r-1][c]){
+        attron(COLOR_PAIR(d.characters[r-1][c]->color));
+        mvaddch(r, c, d.output[r-1][c]);
+        attroff(COLOR_PAIR(d.characters[r-1][c]->color));
+      } else 
+        mvaddch(r, c, d.output[r-1][c]);
     }      
   }
 
@@ -475,40 +484,27 @@ int IO::print_monster_templates(Dungeon &d)
     printw(d.monster_templates.at(i).speed.c_str());
     printw("\n");
 
-    for (auto j = d.monster_templates.at(i).abilities.begin(); 
-      j != d.monster_templates.at(i).abilities.end(); ++j) {
-      switch(*j){
-        case NPC::smart:
-          printw("SMART");
-          break;
-        case NPC::telepathic:
-          printw("TELE");
-          break;
-        case NPC::tunneling:
-          printw("TUNNEL");
-          break;
-        case NPC::erratic:
-          printw("ERRATIC");
-          break;
-        case NPC::pass:
-          printw("PASS");
-          break;
-        case NPC::pickup:
-          printw("PICKUP");
-          break;
-        case NPC::destroy:
-          printw("DESTROY");
-          break;
-        case NPC::unique:
-          printw("UNIQ");
-          break;
-        case NPC::boss:
-          printw("BOSS");
-          break;
-      }
-      printw(" ");
-    }
+    if(d.monster_templates.at(i).abilities & NPC_SMART)
+      printw("SMART ");
+    if(d.monster_templates.at(i).abilities & NPC_TELEPATHIC)
+      printw("TELEPATHIC ");
+    if(d.monster_templates.at(i).abilities & NPC_TUNNELING)
+      printw("TUNNELING ");
+    if(d.monster_templates.at(i).abilities & NPC_ERRATIC)
+      printw("ERRATIC ");
+    if(d.monster_templates.at(i).abilities & NPC_PASS)
+      printw("PASS ");
+    if(d.monster_templates.at(i).abilities & NPC_DESTROY)
+      printw("DESTROY ");
+    if(d.monster_templates.at(i).abilities & NPC_PICKUP)
+      printw("PICKUP ");
+    if(d.monster_templates.at(i).abilities & NPC_UNIQUE)
+      printw("UNIQUE ");
+    if(d.monster_templates.at(i).abilities & NPC_BOSS)
+      printw("BOSS ");
+
     printw("\n");
+    
 
     printw(d.monster_templates.at(i).hitpoints.c_str());
     printw("\n");

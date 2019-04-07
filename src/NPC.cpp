@@ -6,7 +6,6 @@
 
 #include "NPC.h"
 #include "Dungeon.h"
-#include "Character.h"
 #include "Pathfinder.h"
 #include "MonsterTemplate.h"
 
@@ -19,16 +18,19 @@ NPC::NPC(int x, int y, int seed)
 
   //*****************************************
   int r = rand()%3;
-  if(r == 0){ this->characteristics = 1; }
-  else if(r == 1){ this->characteristics = 3; }
-  else { this->characteristics = 7; }
+  if(r == 0){ this->abilities = 1; }
+  else if(r == 1){ this->abilities = 3; }
+  else { this->abilities = 7; }
   //*****************************************
+
 
   this->is_pc = 0;
   this->isAlive = 1;
   this->speed = (rand() % 16) + 5;
   this->move_time = 1000/(this->speed);
-  this->symbol = symbols[this->characteristics];
+  this->symbol = symbols[abilities];
+  this->hitpoints = 10;
+  this->attack_damage = 10;
   this->x = x;
   this->y = y;
   this->next_x = x;
@@ -37,21 +39,32 @@ NPC::NPC(int x, int y, int seed)
   this->last_seen_y = y;
 }
 
-NPC::NPC(MonsterTemplate &m)
+
+NPC::NPC(MonsterTemplate &temp, int x, int y)
 {
   this->is_pc = 0;
   this->isAlive = 1;
+  this->x = x;
+  this->y = y;
+  this->next_x = x;
+  this->next_y = y;
+  this->last_seen_x = x;
+  this->last_seen_y = y;
+
+  this->speed = temp.speed.roll();
+  this->move_time = 1000/(this->speed);
+  this->symbol = temp.symbol;
+  this->color = temp.color.at(0);
+  this->abilities = temp.abilities;
+  this->hitpoints = temp.hitpoints.roll();
+  this->attack_damage = temp.attack_damage.roll();
+  this->symbol = temp.symbol;
 }
 
-NPC::~NPC()
-{
-  
-}
 
 int NPC::move(Dungeon &d)
 { 
-
-  switch(this->characteristics){
+  switch(this->abilities){
     case 0:
       move00(d);
       break;
@@ -135,22 +148,13 @@ int NPC::move00(Dungeon &d)
 /* b0001 => Telepathic                                */
 int NPC::move01(Dungeon &d)
 {
-  //int *p = this->next_pos(this->x, this->y, d.player.x, d.player.y);
+  if(this->x < d.player.x){ this->next_x = (this->x)+1; }
+  else if(this->x < d.player.x){ this->next_x = (this->x)-1; }
+  else{ this->next_x = this->x; }
 
-  int next_x_t, next_y_t;
-
-  if(this->x < d.player.x){ next_x_t = (this->x)+1; }
-  else if(this->x < d.player.x){ next_x_t = (this->x)-1; }
-  else{ next_x_t = this->x; }
-
-  if(this->y < d.player.y){ next_y_t = (this->y)+1; }
-  else if(this->y < d.player.y){ next_y_t = (this->y)-1; }
-  else{ next_y_t = this->y; }
-
-  //if(d.hardness[next_y_t][next_x_t] == 0){
-    this->next_x = next_x_t;
-    this->next_y = next_y_t;
-  //}
+  if(this->y < d.player.y){ this->next_y = (this->y)+1; }
+  else if(this->y < d.player.y){ this->next_y = (this->y)-1; }
+  else{ this->next_y = this->y; }
 
   return 0;
 }

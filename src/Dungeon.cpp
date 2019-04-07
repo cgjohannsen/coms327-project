@@ -71,7 +71,6 @@ int Dungeon::place_rooms()
 {
   /* Initialize some things */
   uint16_t i, r, c, isValid;
-  srand(time(NULL));
 
   num_rooms = (rand() % (MAX_ROOMS-MIN_ROOMS)) + MIN_ROOMS;
   rooms = (room*)realloc(rooms, sizeof(room) * num_rooms);
@@ -138,7 +137,6 @@ int Dungeon::place_corridors()
 int Dungeon::place_stairs()
 {
   uint16_t i, rand_row, rand_col, r_index;
-  srand(time(NULL));
 
   num_up = (rand() % MAX_UP) + MIN_UP;
   num_down = (rand() % MAX_DOWN) + MIN_DOWN;
@@ -173,6 +171,8 @@ int Dungeon::place_stairs()
 int Dungeon::place_characters(heap_t *h)
 {
   uint32_t i, r, c, x, y;
+  int rrty;
+  MonsterTemplate *temp;
   
   for(r = 0; r < DUNGEON_Y; r++) {
     for(c = 0; c < DUNGEON_X; c++) {
@@ -187,16 +187,24 @@ int Dungeon::place_characters(heap_t *h)
   if(!nummon){ nummon = (rand() % (MAX_MONSTERS - 1)) + 1; }
 
   for(i = 0; i < nummon; i++) {
+
+    rrty = rand() % 100;
+
+    // Randomly select monster template (check for rarity)
+    do{
+      temp = &this->monster_templates.at(rand()%monster_templates.size());
+    } while(rrty > temp->rarity);
+
     do{
       room room = this->rooms[rand()%this->num_rooms];
       x = room.x + rand()%room.width;
       y = room.y + rand()%room.height;    
     }while(this->characters[y][x] ||
-    abs(this->player.y - y) < 3 ||
-    abs(this->player.x - x) < 3);
+       abs(this->player.y - y) < 3 ||
+       abs(this->player.x - x) < 3);
 
-    //NPC n(x, y, i);
-    this->characters[y][x] = new NPC(x, y, i);
+    this->characters[y][x] = new NPC(*temp, x, y);
+    
     heap_insert(h, this->characters[y][x]);
   }
   
@@ -205,8 +213,6 @@ int Dungeon::place_characters(heap_t *h)
 
 int Dungeon::generate()
 {
-  srand(time(NULL));
-
   int r, c;
   for(r = 1; r < DUNGEON_Y-1; r++) {
     for(c = 1; c < DUNGEON_X-1; c++) {

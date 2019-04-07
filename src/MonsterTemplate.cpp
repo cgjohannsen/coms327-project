@@ -46,25 +46,26 @@ MonsterTemplate::MonsterTemplate(std::string n,  	// Name
 	speed.init(b, d, s);
 
 	std::stringstream stream_a(a);
+	abilities = 0x0000;
 	while(getline(stream_a, t, ' ')){
 		if(t == "SMART"){
-			abilities.push_back(NPC::smart);
+			abilities += NPC_SMART;
 		} else if(t == "TELE"){
-			abilities.push_back(NPC::telepathic);
+			abilities += NPC_TELEPATHIC;
 		} else if(t == "TUNNEL"){
-			abilities.push_back(NPC::tunneling);
+			abilities += NPC_TUNNELING;
 		} else if(t == "ERRATIC"){
-			abilities.push_back(NPC::erratic);
+			abilities += NPC_ERRATIC;
 		} else if(t == "PASS"){
-			abilities.push_back(NPC::pass);
+			abilities += NPC_PASS;
 		} else if(t == "PICKUP"){
-			abilities.push_back(NPC::pickup);
+			abilities += NPC_PICKUP;
 		} else if(t == "DESTROY"){
-			abilities.push_back(NPC::destroy);
+			abilities += NPC_DESTROY;
 		} else if(t == "UNIQ"){
-			abilities.push_back(NPC::unique);
+			abilities += NPC_UNIQUE;
 		} else if(t == "BOSS"){
-			abilities.push_back(NPC::boss);
+			abilities += NPC_BOSS;
 		}
 	}
 

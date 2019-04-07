@@ -197,11 +197,13 @@ int main(int argc, char *argv[])
       d.nummon = atoi(argv[arg+1]);
     }
   }
+
+  out.parse_monsters(d);
+  out.parse_objects(d);
+
   for(arg = 1; arg < argc; arg++){
     if(!strcmp(argv[arg],"--parse")) {
-      out.parse_monsters(d);
       out.print_monster_templates(d);
-      out.parse_objects(d);
       out.print_object_templates(d);
     }
   }

@@ -14,6 +14,7 @@ int PC::init(uint8_t x_in, uint8_t y_in)
 {
   this->is_pc = 1;
   this->isAlive = 1;
+  this->color = COLOR_WHITE;
   this->speed = 10;
   this->move_time = 1000/(this->speed);
   this->symbol = '@';

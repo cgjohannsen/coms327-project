@@ -1,20 +1,21 @@
 
-Character.h,398
+Character.h,424
 # define CHARACTER_H2,20
 class Character{Character11,113
   uint8_t is_pc;15,140
   heap_node_t *hn;hn16,157
   uint8_t isAlive;17,176
-  uint8_t speed;18,195
-  uint32_t move_time;19,212
-  uint32_t hitpoints;20,234
-  uint32_t attack_damage;21,256
-  Object *object;object22,282
-  char symbol;23,300
-  uint8_t x;24,315
-  uint8_t y;25,328
-  uint8_t next_x;26,341
-  uint8_t next_y;27,359
+  uint32_t color;18,195
+  uint32_t speed;19,213
+  uint32_t move_time;20,231
+  uint32_t hitpoints;21,253
+  uint32_t attack_damage;22,275
+  Object *object;object23,301
+  char symbol;24,319
+  uint8_t x;25,334
+  uint8_t y;26,347
+  uint8_t next_x;27,360
+  uint8_t next_y;28,378
 
 Dice.h,143
 # define DICE_H2,15
@@ -90,35 +91,36 @@ IO.h,226
 # define DISPLAY_TELEPORT_CMD 12,196
 class IO 14,230
 
-MonsterTemplate.h,332
+MonsterTemplate.h,315
 # define MONSTERTEMPLATE_H2,26
 class MonsterTemplate{MonsterTemplate12,175
 	std::string name;16,209
 	std::string description;17,228
 	std::vector<uint32_t> color;18,254
 	Dice speed;19,284
-	std::vector<NPC::Ability> abilities;20,297
-	Dice hitpoints;21,335
-	Dice attack_damage;22,352
-	char symbol;23,373
-	int rarity;24,387
+	uint32_t abilities;20,297
+	Dice hitpoints;21,318
+	Dice attack_damage;22,335
+	char symbol;23,356
+	int rarity;24,370
 
-NPC.h,314
+NPC.h,426
 # define NPC_H2,14
-class NPC 8,79
-	uint16_t characteristics;12,120
-	uint8_t last_seen_x;13,147
-	uint8_t last_seen_y;14,169
-	enum Ability{Ability18,201
-		smart,19,216
-		telepathic,20,225
-		tunneling,21,239
-		erratic,22,252
-		pass,23,263
-		pickup,24,271
-		destroy,25,281
-		unique,26,292
-		boss27,302
+#define NPC_SMART	7,74
+#define NPC_TELEPATHIC	8,100
+#define NPC_TUNNELING	9,130
+#define NPC_ERRATIC	10,159
+#define NPC_PASS	11,187
+#define NPC_DESTROY	12,212
+#define NPC_PICKUP	13,240
+#define NPC_UNIQUE	14,267
+#define NPC_BOSS	15,294
+class NPC 19,344
+	uint8_t last_seen_x;23,384
+	uint8_t last_seen_y;24,406
+	std::string name;25,428
+	std::string description;26,447
+	uint32_t abilities;27,473
 
 Object.h,432
 # define OBJECT_H2,17
