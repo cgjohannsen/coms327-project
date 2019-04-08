@@ -13,6 +13,7 @@
 # include "Character.h"
 # include "PC.h"
 # include "Pathfinder.h"
+# include "Object.h"
 # include "MonsterTemplate.h"
 # include "ObjectTemplate.h"
 
@@ -74,6 +75,7 @@ public:
 	uint16_t nummon;
 	PC player;
 	Character *characters[DUNGEON_Y][DUNGEON_X];
+	Object *objects[DUNGEON_Y][DUNGEON_X];
 	Pathfinder floor_pathfinder;
 	Pathfinder all_pathfinder;
 	uint8_t hardness[DUNGEON_Y][DUNGEON_X];
@@ -92,6 +94,7 @@ public:
 	int place_corridors();
 	int place_stairs();
 	int place_characters(heap_t *h);
+	int place_objects();
 	int generate();
 	int clear();
 

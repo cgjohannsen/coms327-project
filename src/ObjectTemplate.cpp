@@ -73,63 +73,46 @@ ObjectTemplate::ObjectTemplate( std::string n, // Name
 
 	sscanf(rrty.c_str(), "%d", &rarity);
 
-	if(name == "WEAPON"){
+	if(!type.compare("WEAPON")){
 		symbol = '|';
-	} else if(name == "OFFHAND"){
+	} else if(!type.compare("OFFHAND")){
 		symbol = ')';
-	} else if(name == "RANGED"){
+	} else if(!type.compare("RANGED")){
 		symbol = '}';
-	} else if(name == "ARMOR"){
+	} else if(!type.compare("ARMOR")){
 		symbol = '[';
-	} else if(name == "HELMET"){
+	} else if(!type.compare("HELMET")){
 		symbol = ']';
-	} else if(name == "CLOAK"){
+	} else if(!type.compare("CLOAK")){
 		symbol = '(';
-	} else if(name == "GLOVES"){
+	} else if(!type.compare("GLOVES")){
 		symbol = '{';
-	} else if(name == "BOOTS"){
+	} else if(!type.compare("BOOTS")){
 		symbol = '\\';
-	} else if(name == "RING"){
+	} else if(!type.compare("RING")){
 		symbol = '=';
-	} else if(name == "AMULET"){
+	} else if(!type.compare("AMULET")){
 		symbol = '"';
-	} else if(name == "LIGHT"){
+	} else if(!type.compare("LIGHT")){
 		symbol = '_';
-	} else if(name == "SCROLL"){
+	} else if(!type.compare("SCROLL")){
 		symbol = '~';
-	} else if(name == "BOOK"){
+	} else if(!type.compare("BOOK")){
 		symbol = '?';
-	} else if(name == "FLASK"){
+	} else if(!type.compare("FLASK")){
 		symbol = '!';
-	} else if(name == "GOLD"){
+	} else if(!type.compare("GOLD")){
 		symbol = '$';
-	} else if(name == "AUMMUNITION"){
+	} else if(!type.compare("AUMMUNITION")){
 		symbol = '/';
-	} else if(name == "FOOD"){
+	} else if(!type.compare("FOOD")){
 		symbol = ',';
-	} else if(name == "WAND"){
+	} else if(!type.compare("WAND")){
 		symbol = '-';
-	} else if(name == "CONTAINER"){
+	} else if(!type.compare("CONTAINER")){
 		symbol = '%';
 	}
 
-}
-
-Object ObjectTemplate::generate()
-{
-
-	bool art;
-
-	if(artifact == "TRUE"){
-		art = true;
-	} else if(artifact == "FALSE"){
-		art = false;
-	}
-
-	return Object(name, description, type, color, hit_bonus.roll(), 
-		damage_bonus.roll(), dodge_bonus.roll(), defense_bonus.roll(),
-		weight.roll(), speed_bonus.roll(), attribute.roll(),
-		value.roll(), art, symbol, rarity);
 }
 
 

@@ -1,20 +1,28 @@
 #include "Object.h"
 
-Object::Object( std::string n,		// Name
-				std::string des,	// Description
-				std::string ty,		// Type
-				uint32_t c,			// Color
-				uint32_t hb,		// Hit Bonus
-				uint32_t damb,		// Damage Bonus
-				uint32_t dogb,		// Dodge Bonus
-				uint32_t defb,		// Defense Bonus
-				uint32_t w,			// Weight
-				uint32_t sb,		// Speed Bonus
-				uint32_t attr,		// Attribute
-				uint32_t val,		// Value
-				bool art,			// Artifact Flag
-				char sy,			// Symbol
-				int rrty)			// Rarity
+Object::Object(ObjectTemplate &ob, uint8_t pos_x, uint8_t pos_y)
 {
-	
+  name = ob.name;
+  description = ob.description;
+  type = ob.type;
+  color = ob.color;
+  hit_bonus = ob.hit_bonus.roll();
+  damage_bonus = ob.damage_bonus.roll();
+  dodge_bonus = ob.dodge_bonus.roll();
+  defense_bonus = ob.defense_bonus.roll();
+  weight = ob.weight.roll();
+  speed_bonus = ob.speed_bonus.roll();
+  attribute = ob.attribute.roll();
+  value = ob.value.roll();
+  
+  if(ob.artifact == "TRUE")
+    artifact = true;
+  else
+    artifact = false;
+
+  rarity = ob.rarity;
+  symbol = ob.symbol;
+
+  this->x = pos_x;
+  this->y = pos_y;
 }

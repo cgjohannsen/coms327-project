@@ -87,6 +87,7 @@ int play_game()
 
   heap_init(&event_queue, event_cmp, NULL);
   d.place_characters(&event_queue);
+  d.place_objects();
   d.update_distances();
 
   while(d.player.isAlive && d.nummon) {

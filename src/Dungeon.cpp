@@ -1,6 +1,3 @@
-#include <cstdint>
-#include <cstdlib>
-#include <cstring>
 #include <ctime>
 #include <climits>
 #include <string>
@@ -8,11 +5,7 @@
 #include <endian.h>
 #include <ncurses.h>
 
-#include "heap.h"
-#include "Pathfinder.h"
-#include "Character.h"
 #include "Dungeon.h"
-#include "PC.h"
 #include "NPC.h"
 
 /* ----------------------------- */
@@ -192,7 +185,7 @@ int Dungeon::place_characters(heap_t *h)
 
     // Randomly select monster template (check for rarity)
     do{
-      temp = &this->monster_templates.at(rand()%monster_templates.size());
+      temp = &this->monster_templates.at((rand())%monster_templates.size());
     } while(rrty > temp->rarity);
 
     do{
@@ -208,6 +201,41 @@ int Dungeon::place_characters(heap_t *h)
     heap_insert(h, this->characters[y][x]);
   }
   
+  return 0;
+}
+
+int Dungeon::place_objects()
+{
+  uint32_t i, r, c, x, y;
+  int rrty;
+  ObjectTemplate *temp;
+
+  for(r = 0; r < DUNGEON_Y; r++) {
+    for(c = 0; c < DUNGEON_X; c++) {
+      objects[r][c] = NULL;
+    }
+  }
+
+  for(i = 0; i < 10; i++) {
+
+    rrty = rand() % 100;
+
+    // Randomly select object template (check for rarity)
+    do{
+      temp = &this->object_templates.at((rand())%object_templates.size());
+    } while(rrty > temp->rarity);
+
+    do{
+      room room = this->rooms[rand()%this->num_rooms];
+      x = room.x + rand()%room.width;
+      y = room.y + rand()%room.height;    
+    }while(this->objects[y][x]     ||
+       abs(this->player.y - y) == 0||
+       abs(this->player.x - x) == 0);
+
+    this->objects[y][x] = new Object(*temp, x, y);
+  }
+
   return 0;
 }
 
@@ -256,6 +284,7 @@ int Dungeon::update_output()
     for(c = 0; c < DUNGEON_X; c++) {
       if(r < player.y+3 && r > player.y-3 && c < player.x+3 && c > player.x-3) {
         seen[r][c] = map[r][c];
+	if(objects[r][c]){ output[r][c] = objects[r][c]->symbol; }
         if(characters[r][c]){ output[r][c] = characters[r][c]->symbol; }
         else{
         switch(seen[r][c]) {

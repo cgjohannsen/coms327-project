@@ -8,8 +8,6 @@
 # include "Character.h"
 # include "NPC.h"
 
-class Object;
-
 class ObjectTemplate{
 
 public: 
@@ -44,8 +42,6 @@ public:
 					std::string, // Value
 					std::string, // Artifact
 					std::string);// Rarity
-
-	Object generate();
 };
 
 #endif

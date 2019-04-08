@@ -5,6 +5,7 @@
 # include <cstdint>
 
 # include "Character.h"
+# include "ObjectTemplate.h"
 # include "Dice.h"
 
 class Object{
@@ -15,33 +16,22 @@ public:
 	std::string description;
 	std::string type;
 	uint32_t color;
-	Dice hit_bonus;
-	Dice damage_bonus;
-	Dice dodge_bonus;
-	Dice defense_bonus;
-	Dice weight;
-	Dice speed_bonus;
-	Dice attribute;
-	Dice value;
-	std::string artifact;
+        uint32_t hit_bonus;
+	uint32_t damage_bonus;
+	uint32_t dodge_bonus;
+	uint32_t defense_bonus;
+	uint32_t weight;
+	uint32_t speed_bonus;
+	uint32_t attribute;
+	uint32_t value;
+        bool artifact;
 	char symbol;
 	uint32_t rarity;
 
-	Object( std::string,		// Name
-			std::string,		// Description
-			std::string,		// Type
-			uint32_t,			// Color
-			uint32_t,			// Hit Bonus
-			uint32_t,			// Damage Bonus
-			uint32_t,			// Dodge Bonus
-			uint32_t,			// Defense Bonus
-			uint32_t,			// Weight
-			uint32_t,			// Speed Bonus
-			uint32_t,			// Attribute
-			uint32_t,			// Value
-			bool,				// Artifact Flag
-			char,				// Symbol
-			int);				// Rarity
+	uint8_t x;
+	uint8_t y;
+
+	Object(ObjectTemplate &, uint8_t, uint8_t);
 
 };
 

@@ -4,7 +4,7 @@ ECHO = echo
 RM = rm -f
 
 CFLAGS = -Wall -Werror -ggdb -funroll-loops
-CXXFLAGS = -Wall -Werror -ggdb -funroll-loops
+CXXFLAGS = -Wall -Werror -ggdb -std=c++11 -funroll-loops
 
 LDFLAGS = -lncurses
 
