@@ -168,6 +168,7 @@ int PC::move(Dungeon &d, int c, heap_t *h)
       this->y = d.rooms[0].y;
       this->x = d.rooms[0].x;
       d.place_characters(h);
+      d.place_objects();
     } else {
       d.message = "There is no set of upstairs here!";
     }
@@ -180,6 +181,7 @@ int PC::move(Dungeon &d, int c, heap_t *h)
       this->y = d.rooms[0].y;
       this->x = d.rooms[0].x;
       d.place_characters(h);
+      d.place_objects();
     } else {
       d.message = "There is no set of downstairs here!";
     }

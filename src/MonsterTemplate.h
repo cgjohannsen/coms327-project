@@ -22,6 +22,10 @@ public:
 	Dice attack_damage;
 	char symbol;
 	int rarity;
+	uint16_t index;
+	bool unique = false;
+	bool isValid = true;
+	uint8_t num_generated = 0;
 
 	MonsterTemplate(std::string, // Name
 					std::string, // Description
@@ -31,7 +35,8 @@ public:
 					std::string, // hitpoints
 					std::string, // attack_damage
 					std::string, // symbol
-					std::string);// rarity
+					std::string, // rarity
+					uint16_t);	 // index
 };
 
 #endif

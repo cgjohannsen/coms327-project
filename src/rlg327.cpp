@@ -95,7 +95,6 @@ int play_game()
     
     if(cur->is_pc) {
       do {
-        d.update_output();
         clear();
         out.display(DISPLAY_MAP_CMD, d);
 
@@ -123,6 +122,8 @@ int play_game()
           endwin();
           return 1;
         }
+
+        mvprintw(0, 0, d.message.c_str());
 
         d.update_distances();
       } while(cmd == 'm' || cmd == 'f' || cmd == 't');

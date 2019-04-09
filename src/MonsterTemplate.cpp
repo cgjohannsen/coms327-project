@@ -14,7 +14,8 @@ MonsterTemplate::MonsterTemplate(std::string n,  	// Name
 								 std::string hp, 	// hitpoints
 								 std::string ad, 	// attack_damage
 								 std::string sy, 	// symbol
-								 std::string r)	 	// rarity
+								 std::string r,		// rarity
+								 uint16_t i)	 	// index
 {
 	name = std::string(n);
 	description = std::string(desc);
@@ -64,6 +65,7 @@ MonsterTemplate::MonsterTemplate(std::string n,  	// Name
 			abilities += NPC_DESTROY;
 		} else if(t == "UNIQ"){
 			abilities += NPC_UNIQUE;
+			unique = true;
 		} else if(t == "BOSS"){
 			abilities += NPC_BOSS;
 		}
@@ -79,4 +81,5 @@ MonsterTemplate::MonsterTemplate(std::string n,  	// Name
 	sscanf(sy.c_str(), "%c", &symbol);
 	sscanf(r.c_str(), "%d", &rarity);
 
+	index = i;
 }

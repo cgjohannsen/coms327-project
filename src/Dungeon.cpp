@@ -166,6 +166,7 @@ int Dungeon::place_characters(heap_t *h)
   uint32_t i, r, c, x, y;
   int rrty;
   MonsterTemplate *temp;
+  srand(time(0));
   
   for(r = 0; r < DUNGEON_Y; r++) {
     for(c = 0; c < DUNGEON_X; c++) {
@@ -180,27 +181,33 @@ int Dungeon::place_characters(heap_t *h)
   if(!nummon){ nummon = (rand() % (MAX_MONSTERS - 1)) + 1; }
 
   for(i = 0; i < nummon; i++) {
-
-    rrty = rand() % 100;
-
     // Randomly select monster template (check for rarity)
     do{
-      temp = &this->monster_templates.at((rand())%monster_templates.size());
-    } while(rrty > temp->rarity);
+      rrty = rand() % 100;
+      uint16_t index = rand() % monster_templates.size();
+      temp = &monster_templates.at(index);
+      //char buffer[100];
+      //sprintf(buffer, "%d", (int)monster_templates.size());
+      //message = std::string(buffer);
+    } while(rrty >= temp->rarity || !temp->isValid || 
+      (temp->unique && temp->num_generated != 0));
 
     do{
-      room room = this->rooms[rand()%this->num_rooms];
-      x = room.x + rand()%room.width;
-      y = room.y + rand()%room.height;    
+      room room_t = this->rooms[rand()%this->num_rooms];
+      x = room_t.x + rand()%room_t.width;
+      y = room_t.y + rand()%room_t.height;    
     }while(this->characters[y][x] ||
        abs(this->player.y - y) < 3 ||
        abs(this->player.x - x) < 3);
 
     this->characters[y][x] = new NPC(*temp, x, y);
-    
+    temp->num_generated++;
     heap_insert(h, this->characters[y][x]);
   }
-  
+
+  for (auto j = monster_templates.begin(); j != monster_templates.end(); ++j) 
+    j->num_generated = 0;
+
   return 0;
 }
 
@@ -217,24 +224,29 @@ int Dungeon::place_objects()
   }
 
   for(i = 0; i < 10; i++) {
-
-    rrty = rand() % 100;
-
     // Randomly select object template (check for rarity)
     do{
-      temp = &this->object_templates.at((rand())%object_templates.size());
-    } while(rrty > temp->rarity);
+      rrty = rand() % 100;
+      uint16_t index = rand() % object_templates.size();
+      temp = &object_templates.at(index);
+      //char buffer[100];
+      //sprintf(buffer, "%d", (int)monster_templates.size());
+      //message = std::string(buffer);
+    } while(rrty >= temp->rarity || !temp->isValid || 
+      (temp->unique && temp->num_generated != 0));
 
     do{
       room room = this->rooms[rand()%this->num_rooms];
       x = room.x + rand()%room.width;
       y = room.y + rand()%room.height;    
-    }while(this->objects[y][x]     ||
-       abs(this->player.y - y) == 0||
-       abs(this->player.x - x) == 0);
+    }while(this->objects[y][x]);
 
     this->objects[y][x] = new Object(*temp, x, y);
+    temp->num_generated++;
   }
+
+  for (auto j = object_templates.begin(); j != object_templates.end(); ++j) 
+    j->num_generated = 0;
 
   return 0;
 }
@@ -275,65 +287,6 @@ int Dungeon::update_distances()
 /* ----------------------------- */
 /*       Output Formatting       */
 /* ----------------------------- */
-
-int Dungeon::update_output()
-{
-  int r, c;
-
-  for(r = 0; r < DUNGEON_Y; r++) {
-    for(c = 0; c < DUNGEON_X; c++) {
-      if(r < player.y+3 && r > player.y-3 && c < player.x+3 && c > player.x-3) {
-        seen[r][c] = map[r][c];
-	if(objects[r][c]){ output[r][c] = objects[r][c]->symbol; }
-        if(characters[r][c]){ output[r][c] = characters[r][c]->symbol; }
-        else{
-        switch(seen[r][c]) {
-        case ter_wall:
-        case ter_immutable:
-        case ter_unknown:
-          output[r][c] = ' ';
-          break;
-        case ter_floor:
-          output[r][c] = '.';
-          break;
-        case ter_corridor:
-          output[r][c] = '#';
-          break;
-        case ter_stair_up:
-          output[r][c] = '>';
-          break;
-        case ter_stair_down:
-          output[r][c] = '<';
-          break;
-        }
-        }
-      } else {
-        switch(seen[r][c]) {
-        case ter_wall:
-        case ter_immutable:
-        case ter_unknown:
-          output[r][c] = ' ';
-          break;
-        case ter_floor:
-          output[r][c] = '.';
-          break;
-        case ter_corridor:
-          output[r][c] = '#';
-          break;
-        case ter_stair_up:
-          output[r][c] = '>';
-          break;
-        case ter_stair_down:
-          output[r][c] = '<';
-          break;
-        }
-      }
-    }
-  }
-
-  return 0;
-}
-
 
 int Dungeon::render_pc_cost_floor()
 {

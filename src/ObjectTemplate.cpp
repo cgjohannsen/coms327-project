@@ -70,6 +70,9 @@ ObjectTemplate::ObjectTemplate( std::string n, // Name
 	value.init(b, d, s);
 
 	artifact = std::string(art);
+	if(!art.compare("TRUE")){
+		unique = true;
+	}
 
 	sscanf(rrty.c_str(), "%d", &rarity);
 

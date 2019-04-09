@@ -16,6 +16,7 @@ IO::IO(){}
 
 int IO::display(int cmd, Dungeon &d)
 {
+  mvprintw(0, 0, d.message.c_str());
   switch(cmd){
     case DISPLAY_ALL_CMD:
       display_all(d);
@@ -38,7 +39,6 @@ int IO::display_all(Dungeon &d)
 {
   uint8_t r, c;
 
-  mvprintw(0, 0, d.message.c_str());
   for(r = 1; r < DUNGEON_Y+1; r++) {
       for(c = 0; c < DUNGEON_X; c++) {
 	if(d.characters[r-1][c]){ 
@@ -80,19 +80,62 @@ int IO::display_map(Dungeon &d)
 {
   uint8_t r, c;
 
-  mvprintw(0, 0, d.message.c_str());
-  for(r = 1; r < DUNGEON_Y+1; r++) {
+  for(r = 0; r < DUNGEON_Y; r++) {
     for(c = 0; c < DUNGEON_X; c++) {
-      if(d.characters[r-1][c]){
-        attron(COLOR_PAIR(d.characters[r-1][c]->color));
-        mvaddch(r, c, d.output[r-1][c]);
-        attroff(COLOR_PAIR(d.characters[r-1][c]->color));
-      } else if(d.objects[r-1][c]) {
-	attron(COLOR_PAIR(d.objects[r-1][c]->color));
-        mvaddch(r, c, d.output[r-1][c]);
-        attroff(COLOR_PAIR(d.objects[r-1][c]->color));
-      } else 
-        mvaddch(r, c, d.output[r-1][c]);
+
+      if(r < d.player.y+3 && r > d.player.y-3 && 
+         c < d.player.x+3 && c > d.player.x-3) {
+        d.seen[r][c] = d.map[r][c];
+        if(d.characters[r][c]){ 
+          attron(COLOR_PAIR(d.characters[r][c]->color));
+          mvaddch(r+1, c, d.characters[r][c]->symbol);
+          attroff(COLOR_PAIR(d.characters[r][c]->color));
+        } else if(d.objects[r][c]){ 
+          attron(COLOR_PAIR(d.objects[r][c]->color));
+          mvaddch(r+1, c, d.objects[r][c]->symbol);
+          attroff(COLOR_PAIR(d.objects[r][c]->color));
+        } else {
+          switch(d.seen[r][c]) {
+          case Dungeon::ter_wall:
+          case Dungeon::ter_immutable:
+          case Dungeon::ter_unknown:
+            mvaddch(r+1, c, ' ');
+            break;
+          case Dungeon::ter_floor:
+            mvaddch(r+1, c, '.');
+            break;
+          case Dungeon::ter_corridor:
+            mvaddch(r+1, c, '#');
+            break;
+          case Dungeon::ter_stair_up:
+            mvaddch(r+1, c, '>');
+            break;
+          case Dungeon::ter_stair_down:
+            mvaddch(r+1, c, '<');
+            break;
+          }
+        }
+      } else {
+        switch(d.seen[r][c]) {
+        case Dungeon::ter_wall:
+        case Dungeon::ter_immutable:
+        case Dungeon::ter_unknown:
+          mvaddch(r+1, c, ' ');
+          break;
+        case Dungeon::ter_floor:
+          mvaddch(r+1, c, '.');
+          break;
+        case Dungeon::ter_corridor:
+          mvaddch(r+1, c, '#');
+          break;
+        case Dungeon::ter_stair_up:
+          mvaddch(r+1, c, '>');
+          break;
+        case Dungeon::ter_stair_down:
+          mvaddch(r+1, c, '<');
+          break;
+        }
+      }
     }      
   }
 
@@ -154,7 +197,7 @@ int IO::display_monsters(Dungeon &d)
         dir_y = "south";
       }
   
-      mvprintw(r, 25, "  %c, %d %s and %d %s      ", monsters[i+(r-5)]->symbol,
+      mvprintw(r, 25, " %c, %d %s and %d %s      ", monsters[i+(r-5)]->symbol,
          abs(dis_x), dir_x.c_str(), abs(dis_y), dir_y.c_str());
       }
     for(; r < DUNGEON_Y+1; r++) {
@@ -171,7 +214,6 @@ int IO::display_teleport(Dungeon &d)
   uint8_t cmd = ' ', tx = d.player.x, ty = d.player.y;
   srand(time(NULL));
 
-  mvprintw(0, 0, d.message.c_str());
   do{
     display_all(d);
     mvaddch(ty+1, tx, '*');
@@ -260,7 +302,8 @@ int IO::parse_monsters(Dungeon &d)
   std::string line, param, n, des, c, sp, ab, hp, ad, sy, r;
 
   uint8_t param_flags[] = {0, 0, 0, 0, 0, 0, 0, 0, 0}, in_progress = 0, i;
-  
+  uint16_t index = 0;
+
   if(file.is_open()){
 
     getline(file,line);
@@ -313,8 +356,9 @@ int IO::parse_monsters(Dungeon &d)
             }
             if(in_progress) {
               d.monster_templates
-              .push_back(MonsterTemplate(n, des, c, sp, ab, hp, ad, sy, r));
+              .push_back(MonsterTemplate(n, des, c, sp, ab, hp, ad, sy, r, index));
               in_progress = 0;
+              index++;
             }
             des = "";
           }

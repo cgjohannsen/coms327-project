@@ -9,7 +9,7 @@
 #include "Pathfinder.h"
 #include "MonsterTemplate.h"
 
-NPC::NPC(int x, int y, int seed)
+NPC::NPC(int pos_x, int pos_y, int seed)
 { 
   char symbols[] = "0123456789abcdef";
   srand(time(NULL) + (seed*17));
@@ -18,53 +18,54 @@ NPC::NPC(int x, int y, int seed)
 
   //*****************************************
   int r = rand()%3;
-  if(r == 0){ this->abilities = 1; }
-  else if(r == 1){ this->abilities = 3; }
-  else { this->abilities = 7; }
+  if(r == 0){ abilities = 1; }
+  else if(r == 1){ abilities = 3; }
+  else { abilities = 7; }
   //*****************************************
 
 
-  this->is_pc = 0;
-  this->isAlive = 1;
-  this->speed = (rand() % 16) + 5;
-  this->move_time = 1000/(this->speed);
-  this->symbol = symbols[abilities];
-  this->hitpoints = 10;
-  this->attack_damage = 10;
-  this->x = x;
-  this->y = y;
-  this->next_x = x;
-  this->next_y = y;
-  this->last_seen_x = x;
-  this->last_seen_y = y;
+  is_pc = 0;
+  isAlive = 1;
+  speed = (rand() % 16) + 5;
+  move_time = 1000/(speed);
+  symbol = symbols[abilities];
+  hitpoints = 10;
+  attack_damage = 10;
+  x = pos_x;
+  y = pos_y;
+  next_x = pos_x;
+  next_y = pos_y;
+  last_seen_x = pos_x;
+  last_seen_y = pos_y;
 }
 
 
-NPC::NPC(MonsterTemplate &temp, int x, int y)
+NPC::NPC(MonsterTemplate &temp, int pos_x, int pos_y)
 {
-  this->is_pc = 0;
-  this->isAlive = 1;
-  this->x = x;
-  this->y = y;
-  this->next_x = x;
-  this->next_y = y;
-  this->last_seen_x = x;
-  this->last_seen_y = y;
+  is_pc = 0;
+  isAlive = 1;
+  x = pos_x;
+  y = pos_y;
+  next_x = pos_x;
+  next_y = pos_y;
+  last_seen_x = pos_x;
+  last_seen_y = pos_y;
 
-  this->speed = temp.speed.roll();
-  this->move_time = 1000/(this->speed);
-  this->symbol = temp.symbol;
-  this->color = temp.color.at(0);
-  this->abilities = temp.abilities;
-  this->hitpoints = temp.hitpoints.roll();
-  this->attack_damage = temp.attack_damage.roll();
-  this->symbol = temp.symbol;
+  speed = temp.speed.roll();
+  move_time = 1000/(speed);
+  symbol = temp.symbol;
+  color = temp.color.at(0);
+  abilities = temp.abilities;
+  hitpoints = temp.hitpoints.roll();
+  attack_damage = temp.attack_damage.roll();
+  symbol = temp.symbol;
+  template_index = temp.index;
 }
 
 
 int NPC::move(Dungeon &d)
 { 
-  switch(this->abilities){
+  switch(abilities){
     case 0:
       move00(d);
       break;
@@ -94,20 +95,27 @@ int NPC::move(Dungeon &d)
       break;
   };
 
-  if(d.characters[this->next_y][this->next_x] &&
-     !(this->next_x == this->x && this->next_y == this->y)) {
-    if(d.characters[this->next_y][this->next_x]->symbol != '@') {
-       d.characters[this->next_y][this->next_x]->isAlive = 0;
-       d.nummon--;
-       d.characters[this->next_y][this->next_x] = NULL;
+  if(d.characters[next_y][next_x] &&
+     !(next_x == x && next_y == y)) {
+    if(d.characters[next_y][next_x]->symbol != '@') {
+      d.characters[next_y][next_x]->isAlive = 0;
+      d.nummon--;
+       
+      if(d.monster_templates
+        .at(d.characters[next_y][next_x]->template_index).unique){
+        d.monster_templates
+        .at(d.characters[next_y][next_x]->template_index).isValid = false;
+      }
+
+      d.characters[next_y][next_x] = NULL;
     } else {
       d.player.isAlive = 0;
     }
   } else {
-    d.characters[this->y][this->x] = NULL;
-    this->x = this->next_x;
-    this->y = this->next_y;
-    d.characters[this->y][this->x] = this;
+    d.characters[y][x] = NULL;
+    x = next_x;
+    y = next_y;
+    d.characters[y][x] = this;
   }
     
   return 0;
@@ -117,30 +125,30 @@ int NPC::move(Dungeon &d)
 int NPC::move00(Dungeon &d)
 {
   srand(time(NULL));
-  uint8_t temp_x = this->x;
-  uint8_t temp_y = this->y;
+  uint8_t temp_x = x;
+  uint8_t temp_y = y;
     
   do{
-    this->next_x = temp_x;
-    this->next_y = temp_y;
+    next_x = temp_x;
+    next_y = temp_y;
     if(rand() % 2){
       if(rand() % 2){
-        this->next_y = (this->next_y)+1;
-        this->next_x = (this->next_x)  ;
+        next_y = (next_y)+1;
+        next_x = (next_x)  ;
       }else{
-        this->next_y = (this->next_y)-1;
-        this->next_x = (this->next_x)  ;
+        next_y = (next_y)-1;
+        next_x = (next_x)  ;
       }
     }else{
       if(rand() % 2){
-        this->next_y = (this->next_y)  ;
-        this->next_x = (this->next_x)+1;
+        next_y = (next_y)  ;
+        next_x = (next_x)+1;
       }else{
-        this->next_y = (this->next_y)  ;
-        this->next_x = (this->next_x)-1;
+        next_y = (next_y)  ;
+        next_x = (next_x)-1;
       }
     }
-  }while(d.hardness[this->next_y][this->next_x] != 0);
+  }while(d.hardness[next_y][next_x] != 0);
 
   return 0;
 }
@@ -148,13 +156,13 @@ int NPC::move00(Dungeon &d)
 /* b0001 => Telepathic                                */
 int NPC::move01(Dungeon &d)
 {
-  if(this->x < d.player.x){ this->next_x = (this->x)+1; }
-  else if(this->x < d.player.x){ this->next_x = (this->x)-1; }
-  else{ this->next_x = this->x; }
+  if(x < d.player.x){ next_x = (x)+1; }
+  else if(x < d.player.x){ next_x = (x)-1; }
+  else{ next_x = x; }
 
-  if(this->y < d.player.y){ this->next_y = (this->y)+1; }
-  else if(this->y < d.player.y){ this->next_y = (this->y)-1; }
-  else{ this->next_y = this->y; }
+  if(y < d.player.y){ next_y = (y)+1; }
+  else if(y < d.player.y){ next_y = (y)-1; }
+  else{ next_y = y; }
 
   return 0;
 }
@@ -170,26 +178,26 @@ int NPC::move02(Dungeon &d)
 /* b0011 => Smart + Telepathic                        */
 int NPC::move03(Dungeon &d)
 {
-  int up = d.floor_pathfinder.path[(this->y)-1][(this->x)  ].cost,
-    down = d.floor_pathfinder.path[(this->y)+1][(this->x)  ].cost,
-    left = d.floor_pathfinder.path[(this->y)  ][(this->x)-1].cost,
-   right = d.floor_pathfinder.path[(this->y)  ][(this->x)+1].cost;
+  int up = d.floor_pathfinder.path[(y)-1][(x)  ].cost,
+    down = d.floor_pathfinder.path[(y)+1][(x)  ].cost,
+    left = d.floor_pathfinder.path[(y)  ][(x)-1].cost,
+   right = d.floor_pathfinder.path[(y)  ][(x)+1].cost;
   
        if(up <= down && up <= left && up <= right) {
-    this->next_y = (this->y)-1;
-    this->next_x = (this->x)  ;
+    next_y = (y)-1;
+    next_x = (x)  ;
   }
   else if(right <= up && right <= down && right <= left) {
-    this->next_y = (this->y)  ;
-    this->next_x = (this->x)+1;
+    next_y = (y)  ;
+    next_x = (x)+1;
   }
   else if(left <= up && left <= down && left <= right) {
-    this->next_y = (this->y)  ;
-    this->next_x = (this->x)-1;
+    next_y = (y)  ;
+    next_x = (x)-1;
   }
   else if(down <= up && down <= left && down <= right) {
-    this->next_y = (this->y)+1;
-    this->next_x = (this->x)  ;
+    next_y = (y)+1;
+    next_x = (x)  ;
   }
   
   return 0;
@@ -216,54 +224,54 @@ int NPC::move06(Dungeon &)
 /* b0111 => Tunneling + Smart + Telepathic            */
 int NPC::move07(Dungeon &d)
 {
-  int up = d.all_pathfinder.path[(this->y)-1][(this->x)  ].cost,
-    down = d.all_pathfinder.path[(this->y)+1][(this->x)  ].cost,
-    left = d.all_pathfinder.path[(this->y)  ][(this->x)-1].cost,
-   right = d.all_pathfinder.path[(this->y)  ][(this->x)+1].cost;
+  int up = d.all_pathfinder.path[(y)-1][(x)  ].cost,
+    down = d.all_pathfinder.path[(y)+1][(x)  ].cost,
+    left = d.all_pathfinder.path[(y)  ][(x)-1].cost,
+   right = d.all_pathfinder.path[(y)  ][(x)+1].cost;
   
   if(up <= down && up <= left && up <= right) {
-    if(d.hardness[(this->y)-1][(this->x)  ] < 86) {
-       d.hardness[(this->y)-1][(this->x)  ] = 0;
-      if(   d.map[(this->y)-1][(this->x)  ] == Dungeon::ter_wall) {
-	    d.map[(this->y)-1][(this->x)  ] = Dungeon::ter_corridor;
+    if(d.hardness[(y)-1][(x)  ] < 86) {
+       d.hardness[(y)-1][(x)  ] = 0;
+      if(   d.map[(y)-1][(x)  ] == Dungeon::ter_wall) {
+	    d.map[(y)-1][(x)  ] = Dungeon::ter_corridor;
       }
-      this->next_y = (this->y)-1;
-      this->next_x = (this->x)  ;
+      next_y = (y)-1;
+      next_x = (x)  ;
     } else {
-      d.hardness[(this->y)-1][(this->x)  ] -= 85;
+      d.hardness[(y)-1][(x)  ] -= 85;
     }
   } else if(right <= up && right <= down && right <= left) {
-    if(d.hardness[(this->y)  ][(this->x)+1] < 86){
-       d.hardness[(this->y)  ][(this->x)+1] = 0;
-      if(   d.map[(this->y)  ][(this->x)+1] == Dungeon::ter_wall) {
-	    d.map[(this->y)  ][(this->x)+1] = Dungeon::ter_corridor;
+    if(d.hardness[(y)  ][(x)+1] < 86){
+       d.hardness[(y)  ][(x)+1] = 0;
+      if(   d.map[(y)  ][(x)+1] == Dungeon::ter_wall) {
+	    d.map[(y)  ][(x)+1] = Dungeon::ter_corridor;
       }
-      this->next_y = (this->y)  ;
-      this->next_x = (this->x)+1;
+      next_y = (y)  ;
+      next_x = (x)+1;
     } else {
-      d.hardness[(this->y)  ][(this->x)+1] -= 85;
+      d.hardness[(y)  ][(x)+1] -= 85;
     }
   } else if (left <= up && left <= down && left <= right) {
-    if( d.hardness[(this->y)  ][(this->x)-1] < 86){
-        d.hardness[(this->y)  ][(this->x)-1] = 0;
-      if(    d.map[(this->y)  ][(this->x)-1] == Dungeon::ter_wall) {
-	     d.map[(this->y)  ][(this->x)-1] = Dungeon::ter_corridor;
+    if( d.hardness[(y)  ][(x)-1] < 86){
+        d.hardness[(y)  ][(x)-1] = 0;
+      if(    d.map[(y)  ][(x)-1] == Dungeon::ter_wall) {
+	     d.map[(y)  ][(x)-1] = Dungeon::ter_corridor;
           }
-      this->next_y = (this->y)  ;
-      this->next_x = (this->x)-1;
+      next_y = (y)  ;
+      next_x = (x)-1;
     } else {
-      d.hardness[(this->y)  ][(this->x)-1] -= 85;
+      d.hardness[(y)  ][(x)-1] -= 85;
     }
   } else if (down <= up && down <= left && down <= right) {
-    if( d.hardness[(this->y)+1][(this->x)  ] < 86){
-        d.hardness[(this->y)+1][(this->x)  ] = 0;
-      if(    d.map[(this->y)+1][(this->x)  ] == Dungeon::ter_wall) {
-	     d.map[(this->y)+1][(this->x)  ] = Dungeon::ter_corridor;
+    if( d.hardness[(y)+1][(x)  ] < 86){
+        d.hardness[(y)+1][(x)  ] = 0;
+      if(    d.map[(y)+1][(x)  ] == Dungeon::ter_wall) {
+	     d.map[(y)+1][(x)  ] = Dungeon::ter_corridor;
           }
-      this->next_y = (this->y)+1;
-      this->next_x = (this->x)  ;
+      next_y = (y)+1;
+      next_x = (x)  ;
     } else {
-      d.hardness[(this->y)+1][(this->x)  ] -= 85;
+      d.hardness[(y)+1][(x)  ] -= 85;
     }
   }
   

@@ -25,6 +25,7 @@ public:
 	std::string name;
 	std::string description;
 	uint32_t abilities;
+	
 
 	NPC(int, int, int);
 	NPC(MonsterTemplate &, int, int);

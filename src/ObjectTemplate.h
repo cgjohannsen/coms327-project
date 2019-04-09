@@ -25,8 +25,11 @@ public:
 	Dice attribute;
 	Dice value;
 	std::string artifact;
+	bool unique = false;
 	char symbol;
 	int rarity;
+	bool isValid = true;
+	uint8_t num_generated = 0;
 
 	ObjectTemplate( std::string, // Name
 					std::string, // Description

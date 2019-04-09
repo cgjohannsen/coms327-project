@@ -26,6 +26,7 @@ public:
   uint8_t y;
   uint8_t next_x;
   uint8_t next_y;
+  uint16_t template_index = 0;
 
   int *next_pos(int, int, int, int);
   int can_see(Dungeon &, Character &, Character &);

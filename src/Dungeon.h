@@ -66,6 +66,7 @@ public:
 	};
 
 	std::string message;
+
 	uint16_t num_rooms;
 	room *rooms;
 	uint16_t num_up;
@@ -73,15 +74,17 @@ public:
 	stair *u_stairs;
 	stair *d_stairs;
 	uint16_t nummon;
-	PC player;
-	Character *characters[DUNGEON_Y][DUNGEON_X];
-	Object *objects[DUNGEON_Y][DUNGEON_X];
+	
 	Pathfinder floor_pathfinder;
 	Pathfinder all_pathfinder;
+
 	uint8_t hardness[DUNGEON_Y][DUNGEON_X];
 	terrain map[DUNGEON_Y][DUNGEON_X];
 	terrain seen[DUNGEON_Y][DUNGEON_X];
-	char output[DUNGEON_Y][DUNGEON_X];
+
+	PC player;
+	Character *characters[DUNGEON_Y][DUNGEON_X];
+	Object *objects[DUNGEON_Y][DUNGEON_X];
 	std::vector<MonsterTemplate> monster_templates;
 	std::vector<ObjectTemplate> object_templates;
 
@@ -100,7 +103,6 @@ public:
 
 	// Character functionality
 	int update_distances();
-	int update_output();
 	int render_pc_cost_floor();
 	int render_pc_cost_all();
 
