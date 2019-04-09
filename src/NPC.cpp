@@ -30,7 +30,9 @@ NPC::NPC(int pos_x, int pos_y, int seed)
   move_time = 1000/(speed);
   symbol = symbols[abilities];
   hitpoints = 10;
-  attack_damage = 10;
+  Dice temp;
+  temp.init(0, 3, 1);
+  attack_damage = temp;
   x = pos_x;
   y = pos_y;
   next_x = pos_x;
@@ -57,7 +59,7 @@ NPC::NPC(MonsterTemplate &temp, int pos_x, int pos_y)
   color = temp.color.at(0);
   abilities = temp.abilities;
   hitpoints = temp.hitpoints.roll();
-  attack_damage = temp.attack_damage.roll();
+  attack_damage = temp.attack_damage.copy();
   symbol = temp.symbol;
   template_index = temp.index;
 }

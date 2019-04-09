@@ -7,7 +7,7 @@ Object::Object(ObjectTemplate &ob, uint8_t pos_x, uint8_t pos_y)
   type = ob.type;
   color = ob.color;
   hit_bonus = ob.hit_bonus.roll();
-  damage_bonus = ob.damage_bonus.roll();
+  damage_bonus = ob.damage_bonus.copy();
   dodge_bonus = ob.dodge_bonus.roll();
   defense_bonus = ob.defense_bonus.roll();
   weight = ob.weight.roll();

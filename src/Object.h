@@ -16,15 +16,15 @@ public:
 	std::string description;
 	std::string type;
 	uint32_t color;
-        uint32_t hit_bonus;
-	uint32_t damage_bonus;
+    uint32_t hit_bonus;
+	Dice damage_bonus;
 	uint32_t dodge_bonus;
 	uint32_t defense_bonus;
 	uint32_t weight;
 	uint32_t speed_bonus;
 	uint32_t attribute;
 	uint32_t value;
-        bool artifact;
+    bool artifact;
 	char symbol;
 	uint32_t rarity;
 

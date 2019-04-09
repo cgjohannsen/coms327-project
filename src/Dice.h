@@ -15,6 +15,7 @@ public:
 	int init(const uint32_t &, const uint32_t &, const uint32_t &);
 	uint32_t roll();
 	char *c_str();
+	Dice copy();
 
 };
 

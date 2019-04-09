@@ -4,6 +4,7 @@
 # include <cstdint>
 
 # include "heap.h"
+# include "Dice.h"
 
 class Dungeon;
 class Object;
@@ -19,7 +20,7 @@ public:
   uint32_t speed;
   uint32_t move_time;
   uint32_t hitpoints;
-  uint32_t attack_damage;
+  Dice attack_damage;
   Object *object;
   char symbol;
   uint8_t x;

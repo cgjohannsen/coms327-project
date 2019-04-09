@@ -32,3 +32,10 @@ char *Dice::c_str()
 	sprintf(str, "%d+%dd%d", base, num, sides);
 	return str;
 }
+
+Dice Dice::copy()
+{
+	Dice temp;
+	temp.init(base, num, sides);
+	return temp;
+}
