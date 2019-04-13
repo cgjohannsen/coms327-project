@@ -102,6 +102,7 @@ public:
 	int clear();
 
 	// Character functionality
+	int same_room(Character &, Character &);
 	int update_distances();
 	int render_pc_cost_floor();
 	int render_pc_cost_all();

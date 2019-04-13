@@ -17,7 +17,7 @@ int Dice::init(const uint32_t &b, const uint32_t &n, const uint32_t &s)
 
 uint32_t Dice::roll()
 {
-	srand(time(NULL));
+	
 
 	uint32_t i, sum = base;
 	for(i = 0; i < num; i++) {

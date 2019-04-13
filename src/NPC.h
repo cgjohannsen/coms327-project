@@ -40,14 +40,6 @@ public:
 	int move05(Dungeon &);
 	int move06(Dungeon &);
 	int move07(Dungeon &);
-	int move08(Dungeon &);
-	int move09(Dungeon &);
-	int move10(Dungeon &);
-	int move11(Dungeon &);
-	int move12(Dungeon &);
-	int move13(Dungeon &);
-	int move14(Dungeon &);
-	int move15(Dungeon &);
 
 };
 

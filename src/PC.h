@@ -16,7 +16,7 @@ public:
 	PC();
 
 	int init(uint8_t, uint8_t);
-	int move(Dungeon &, int c, heap_t *h);
+	int move(Dungeon &, int c);
 
 };
 

@@ -10,6 +10,7 @@
 #include "Dungeon.h"
 #include "IO.h"
 #include "Pathfinder.h"
+#include "Move.h"
 
 #define DUNGEON_Y  21
 #define DUNGEON_X  80
@@ -105,30 +106,23 @@ int play_game()
         } else if(cmd == 'f'){
           clear();
           d.message = "Revealing dungeon.... (Press f to exit)";
-          cmd = ' ';
-          do{
-            out.display(DISPLAY_ALL_CMD, d);
-            cmd = getch();
-          }while(cmd != 'f' );
+          out.display(DISPLAY_ALL_CMD, d);
           d.message = "";
         } else if(cmd == 't'){
           clear();
           d.message = "Entering teleport mode... (Press t to teleport, r for random)";
           out.display(DISPLAY_TELEPORT_CMD, d);
           d.message = "";
-        } else if(( (PC*)cur )->move(d, cmd, &event_queue)){
-          mvprintw(0, 0, "You're a quitter!                         ");
+        } else if(move_pc(d, cmd)){
+          mvprintw(0, 0, "You're a quitter!                                                               ");
           getch();
           endwin();
           return 1;
         }
-
-        mvprintw(0, 0, d.message.c_str());
-
         d.update_distances();
       } while(cmd == 'm' || cmd == 'f' || cmd == 't');
     } else if(cur->isAlive) { 
-      ((NPC*)cur)->move(d); 
+      move_npc(d, *(NPC*)cur); 
     }
 
     cur->move_time = cur->move_time + (1000 / (cur->speed));
@@ -173,6 +167,8 @@ int main(int argc, char *argv[])
   init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_BLACK);
   init_pair(COLOR_WHITE, COLOR_WHITE, COLOR_BLACK);
   keypad(stdscr, TRUE);
+
+  srand(time(NULL));
 
   int arg, load = 0;
   for(arg = 1; arg < argc; arg++){

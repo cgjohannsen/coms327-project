@@ -27,7 +27,7 @@ int PC::init(uint8_t x_in, uint8_t y_in)
   return 0;
 }
 
-int PC::move(Dungeon &d, int c, heap_t *h)
+int PC::move(Dungeon &d, int c)
 {
   switch(c) {
   case (int) '7':
@@ -167,7 +167,6 @@ int PC::move(Dungeon &d, int c, heap_t *h)
       d.generate();
       this->y = d.rooms[0].y;
       this->x = d.rooms[0].x;
-      d.place_characters(h);
       d.place_objects();
     } else {
       d.message = "There is no set of upstairs here!";
@@ -180,7 +179,6 @@ int PC::move(Dungeon &d, int c, heap_t *h)
       d.generate();
       this->y = d.rooms[0].y;
       this->x = d.rooms[0].x;
-      d.place_characters(h);
       d.place_objects();
     } else {
       d.message = "There is no set of downstairs here!";

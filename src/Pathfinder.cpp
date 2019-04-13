@@ -7,16 +7,11 @@
 #include "heap.h"
 #include "Pathfinder.h"
 
-#define DUNGEON_X 80
-#define DUNGEON_Y 21
-#define row       1
-#define col       0
-
 heap_t heap;
 
 static int32_t path_cmp(const void *key, const void *with) {
-  return ((Pathfinder::Pathfinder::dungeon_path *) key)->cost - 
-  ((Pathfinder::dungeon_path *) with)->cost;
+  return ((Pathfinder::Pathfinder::dungeon_path_t *) key)->cost - 
+  ((Pathfinder::dungeon_path_t *) with)->cost;
 } 
 
 Pathfinder::Pathfinder()
@@ -36,7 +31,7 @@ int Pathfinder::init(uint8_t hardness[DUNGEON_Y][DUNGEON_X])
     for(c = 0; c < DUNGEON_X; c++){
       path[r][c].pos[row] = r;
       path[r][c].pos[col] = c;
-      path[r][c].cost = INT_MAX;
+      path[r][c].cost = UINT16_MAX;
       h[r][c] = hardness[r][c];
     }
   } 
@@ -47,7 +42,7 @@ int Pathfinder::init(uint8_t hardness[DUNGEON_Y][DUNGEON_X])
 int Pathfinder::dijkstra_floor(uint8_t pc_x, uint8_t pc_y)
 {
   uint32_t r, c;
-  Pathfinder::dungeon_path *p;
+  Pathfinder::dungeon_path_t *p;
   path[pc_y][pc_x].cost = 0;
 
   // Insert all floor cells into heap
@@ -58,7 +53,7 @@ int Pathfinder::dijkstra_floor(uint8_t pc_x, uint8_t pc_y)
     }
   }
 
-  while ((p = (Pathfinder::dungeon_path*)heap_remove_min(&heap))) {
+  while ((p = (dungeon_path_t*) heap_remove_min(&heap))) {
 
     p->hn = NULL;
 
@@ -150,7 +145,7 @@ int Pathfinder::dijkstra_floor(uint8_t pc_x, uint8_t pc_y)
 int Pathfinder::dijkstra_all(uint8_t pc_x, uint8_t pc_y)
 {
   uint32_t r, c;
-  Pathfinder::dungeon_path *p;
+  Pathfinder::dungeon_path_t *p;
   path[pc_y][pc_x].cost = 0;
 
   // Insert all cells into heap
@@ -159,7 +154,7 @@ int Pathfinder::dijkstra_all(uint8_t pc_x, uint8_t pc_y)
       if(h[r][c] != 255){ 
         path[r][c].hn = heap_insert(&heap, &path[r][c]); 
 
-        dungeon_path t = path[r][c];
+        dungeon_path_t t = path[r][c];
         path[r][c] = t;
 
       }
@@ -167,11 +162,11 @@ int Pathfinder::dijkstra_all(uint8_t pc_x, uint8_t pc_y)
     }
   }
   
-  while ((p = (Pathfinder::dungeon_path*)heap_remove_min(&heap))) {
+  while ((p = (dungeon_path_t*) heap_remove_min(&heap))) {
     p->hn = NULL;
 
     // DEBUG
-    dungeon_path t = path[p->pos[row]][p->pos[col]];
+    dungeon_path_t t = path[p->pos[row]][p->pos[col]];
     path[p->pos[row]  ][p->pos[col]  ] = t;
 
     // Cell Above

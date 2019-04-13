@@ -37,41 +37,44 @@ int IO::display(int cmd, Dungeon &d)
 
 int IO::display_all(Dungeon &d)
 {
-  uint8_t r, c;
+  uint8_t r, c, cmd = ' ';
 
+  do{
   for(r = 1; r < DUNGEON_Y+1; r++) {
       for(c = 0; c < DUNGEON_X; c++) {
-	if(d.characters[r-1][c]){ 
-	  attron(COLOR_PAIR(d.characters[r-1][c]->color));
-	  mvaddch(r, c, d.characters[r-1][c]->symbol);
-	  attroff(COLOR_PAIR(d.characters[r-1][c]->color));
-	} else if(d.objects[r-1][c]){
-	  attron(COLOR_PAIR(d.objects[r-1][c]->color));
-	  mvaddch(r, c, d.objects[r-1][c]->symbol);
-	  attroff(COLOR_PAIR(d.objects[r-1][c]->color));
-	} else {
-	  switch(d.map[r-1][c]) {
-	  case Dungeon::ter_wall:
-	  case Dungeon::ter_unknown:
-	  case Dungeon::ter_immutable:
-	    mvaddch(r, c, ' ');
-	    break;
-	  case Dungeon::ter_floor:
-	    mvaddch(r, c, '.');
-	    break;
-	  case Dungeon::ter_corridor:
-	    mvaddch(r, c, '#');
-	    break;
-	  case Dungeon::ter_stair_up:
-	    mvaddch(r, c, '>');
-	    break;
-	  case Dungeon::ter_stair_down:
-	    mvaddch(r, c, '<');
-	    break;
-	  }
-	}
-      }      
+        if(d.characters[r-1][c]){ 
+	      attron(COLOR_PAIR(d.characters[r-1][c]->color));
+        mvaddch(r, c, d.characters[r-1][c]->symbol);
+        attroff(COLOR_PAIR(d.characters[r-1][c]->color));
+      } else if(d.objects[r-1][c]){
+        attron(COLOR_PAIR(d.objects[r-1][c]->color));
+        mvaddch(r, c, d.objects[r-1][c]->symbol);
+        attroff(COLOR_PAIR(d.objects[r-1][c]->color));
+      } else {
+        switch(d.map[r-1][c]) {
+        case Dungeon::ter_wall:
+        case Dungeon::ter_unknown:
+        case Dungeon::ter_immutable:
+          mvaddch(r, c, ' ');
+          break;
+        case Dungeon::ter_floor:
+          mvaddch(r, c, '.');
+          break;
+        case Dungeon::ter_corridor:
+          mvaddch(r, c, '#');
+          break;
+        case Dungeon::ter_stair_up:
+          mvaddch(r, c, '>');
+          break;
+        case Dungeon::ter_stair_down:
+          mvaddch(r, c, '<');
+          break;
+        }
+      }
+    }      
   }
+  cmd = getch();
+  }while(cmd != 'f');
 
   return 0;
 }
@@ -212,7 +215,7 @@ int IO::display_monsters(Dungeon &d)
 int IO::display_teleport(Dungeon &d)
 {
   uint8_t cmd = ' ', tx = d.player.x, ty = d.player.y;
-  srand(time(NULL));
+  
 
   do{
     display_all(d);

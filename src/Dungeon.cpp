@@ -1,6 +1,7 @@
 #include <ctime>
 #include <climits>
 #include <string>
+#include <cmath>
 
 #include <endian.h>
 #include <ncurses.h>
@@ -15,7 +16,6 @@
 Dungeon::Dungeon()
 {
   uint16_t r, c;
-  srand(time(NULL));
   
   for(r = 0; r < DUNGEON_Y; r++) {
     for(c = 0; c < DUNGEON_X; c++) {
@@ -186,9 +186,6 @@ int Dungeon::place_characters(heap_t *h)
       rrty = rand() % 100;
       uint16_t index = rand() % monster_templates.size();
       temp = &monster_templates.at(index);
-      //char buffer[100];
-      //sprintf(buffer, "%d", (int)monster_templates.size());
-      //message = std::string(buffer);
     } while(rrty >= temp->rarity || !temp->isValid || 
       (temp->unique && temp->num_generated != 0));
 
@@ -229,9 +226,6 @@ int Dungeon::place_objects()
       rrty = rand() % 100;
       uint16_t index = rand() % object_templates.size();
       temp = &object_templates.at(index);
-      //char buffer[100];
-      //sprintf(buffer, "%d", (int)monster_templates.size());
-      //message = std::string(buffer);
     } while(rrty >= temp->rarity || !temp->isValid || 
       (temp->unique && temp->num_generated != 0));
 
@@ -269,6 +263,24 @@ int Dungeon::generate()
   return 0;
 }
 
+int Dungeon::same_room(Character &c1, Character &c2)
+{
+  int i;
+
+  for(i = 0; i < num_rooms; i++){
+    if((c1.x >= rooms[i].x) && (c1.y >= rooms[i].y) &&
+       (c1.x - rooms[i].x) < rooms[i].width && 
+       (c1.y - rooms[i].y) < rooms[i].height && 
+       (c2.x >= rooms[i].x) && (c2.y >= rooms[i].y) &&
+       (c2.x - rooms[i].x) < rooms[i].width && 
+       (c2.y - rooms[i].y) < rooms[i].height){
+      return 1;
+    }
+  }
+  
+  return 0;
+}
+
 /* ----------------------------- */
 /*          Pathfinding          */
 /* ----------------------------- */
@@ -277,7 +289,7 @@ int Dungeon::update_distances()
 { 
   floor_pathfinder.init(hardness);
   floor_pathfinder.dijkstra_floor(player.x, player.y);
-  
+
   all_pathfinder.init(hardness);
   all_pathfinder.dijkstra_all(player.x, player.y);
 
