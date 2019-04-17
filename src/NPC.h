@@ -22,7 +22,6 @@ public:
 
 	uint8_t last_seen_x;
 	uint8_t last_seen_y;
-	std::string name;
 	std::string description;
 	uint32_t abilities;
 	

@@ -41,7 +41,6 @@ NPC::NPC(int pos_x, int pos_y, int seed)
   last_seen_y = pos_y;
 }
 
-
 NPC::NPC(MonsterTemplate &temp, int pos_x, int pos_y)
 {
   is_pc = 0;
@@ -53,6 +52,8 @@ NPC::NPC(MonsterTemplate &temp, int pos_x, int pos_y)
   last_seen_x = pos_x;
   last_seen_y = pos_y;
 
+  name = temp.name;
+  description = temp.description;
   speed = temp.speed.roll();
   move_time = 1000/(speed);
   symbol = temp.symbol;
@@ -64,47 +65,66 @@ NPC::NPC(MonsterTemplate &temp, int pos_x, int pos_y)
   template_index = temp.index;
 }
 
-
 int NPC::move(Dungeon &d)
 {  
   if(abilities & NPC_ERRATIC){
     if(rand()%2){ 
-      do{
-        switch(rand()%8){
-          case 0:
-          next_y++;
-          next_x--;
-          break;
-          case 1:
-          next_y++;
+      switch(rand()%8){
+      case 0:
+      next_y = y+1;
+      next_x = x-1;
+      break;
+      case 1:
+      next_y = y+1;
+
+      break;
+
+      next_x = x+1;
+      break;
+      case 3:
+      next_y = y+1;
+      next_x = x+1;
+      break;
+      case 4:
+      next_y = y-1;
+
+      break;
+      case 5:
+
+      next_x = x-1;
+      break;
+      case 6:
+      next_y = y-1;
+      next_x = x-1;
+      break;
+      case 7:
+      next_y = y-1;
+      next_x = x+1;
+      break;
+      }
+
+      if((abilities & NPC_TUNNELING) &&
+          d.map[next_y][next_x] == Dungeon::ter_wall){
+        if(d.hardness[next_y][next_x] < 85){
+          d.hardness[next_y][next_x] = 0;
+          d.map[next_y][next_x] = Dungeon::ter_corridor;
+        } else {
+          d.hardness[next_y][next_x] -= 85;
           next_x = x;
-          break;
-          case 2:
           next_y = y;
-          next_x++;
-          break;
-          case 3:
-          next_y++;
-          next_x++;
-          break;
-          case 4:
-          next_y--;
-          next_x = x;
-          break;
-          case 5:
-          next_y = y;
-          next_x--;
-          break;
-          case 6:
-          next_y--;
-          next_x--;
-          break;
-          case 7:
-          next_y--;
-          next_x++;
-          break;
         }
-      } while(d.map[next_y][next_x] == Dungeon::ter_wall);
+      } else {
+        if(d.map[next_y][next_x] == Dungeon::ter_wall){
+          next_x = x;
+          next_y = y;
+        }
+      }
+
+      if(next_y > 20 || next_y < 1 || next_x > 80 || next_x < 1){
+        next_x = x;
+        next_y = y;
+      }
+
       return 0;
     }
   }
@@ -159,7 +179,7 @@ int NPC::move01(Dungeon &d)
   else{ next_x = x; }
 
   if(y < last_seen_y){ next_y = y+1; }
-  else if(y > last_seen_y){ next_y = y-1;; }
+  else if(y > last_seen_y){ next_y = y-1; }
   else{ next_y = y; }
 
   if(d.map[next_y][next_x] == Dungeon::ter_wall){

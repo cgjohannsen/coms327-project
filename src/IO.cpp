@@ -5,16 +5,30 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <string>
 
 #include <ncurses.h>
 
 #include "IO.h"
 #include "NPC.h"
+#include "Object.h"
+#include "PC.h"
 #include "Character.h"
 
-IO::IO(){}
+int prompt_name(Dungeon &d)
+{
+  int i;
+  for(i = 0; i < 81; i++){
+    mvprintw(0, i, " ");
+  }
+  mvprintw(0, 0, "Enter your brave warrior's name (Press enter when finished): ");
+  char n[40];
+  getstr(n);
+  d.player.set_name(n);
+  return 0;
+}
 
-int IO::display(int cmd, Dungeon &d)
+int display(int cmd, Dungeon &d)
 {
   mvprintw(0, 0, d.message.c_str());
   switch(cmd){
@@ -35,11 +49,10 @@ int IO::display(int cmd, Dungeon &d)
   return 0;
 }
 
-int IO::display_all(Dungeon &d)
+int display_all(Dungeon &d)
 {
-  uint8_t r, c, cmd = ' ';
+  uint8_t r, c;
 
-  do{
   for(r = 1; r < DUNGEON_Y+1; r++) {
       for(c = 0; c < DUNGEON_X; c++) {
         if(d.characters[r-1][c]){ 
@@ -73,13 +86,11 @@ int IO::display_all(Dungeon &d)
       }
     }      
   }
-  cmd = getch();
-  }while(cmd != 'f');
 
   return 0;
 }
 
-int IO::display_map(Dungeon &d)
+int display_map(Dungeon &d)
 {
   uint8_t r, c;
 
@@ -145,7 +156,7 @@ int IO::display_map(Dungeon &d)
   return 0;
 }
 
-int IO::display_monsters(Dungeon &d)
+int display_monsters(Dungeon &d)
 {
   uint32_t cmd = (int) 'm';
   int r, c, i = 0;
@@ -212,7 +223,7 @@ int IO::display_monsters(Dungeon &d)
   return 0;
 }
 
-int IO::display_teleport(Dungeon &d)
+int display_teleport(Dungeon &d)
 {
   uint8_t cmd = ' ', tx = d.player.x, ty = d.player.y;
   
@@ -293,7 +304,175 @@ int IO::display_teleport(Dungeon &d)
   return 0;
 }
 
-int IO::parse_monsters(Dungeon &d)
+int print_inventory(Dungeon &d)
+{
+  int i, r, c;
+  mvprintw(0, 0, d.message.c_str());
+
+  char buffer[50];
+
+  for(r = 2; r < CARRY_CAPACITY+4; r++){
+    for(c = 25; c < 60; c++){
+      mvaddch(r, c, ' ');
+    }
+  }
+
+  mvprintw(2, 25, "   PLAYER INVENTORY   ");
+
+  for(i = 0; i < CARRY_CAPACITY; i++){
+    if(d.player.carry[i]){
+      sprintf(buffer, "  [%d] : %s     ", i, d.player.carry[i]->name.c_str()); 
+    } else {
+      sprintf(buffer, "  [%d] : EMPTY        ", i);
+    }
+    mvprintw(3+i, 25, buffer);
+  }
+
+  return 0;
+}
+
+int print_equipment(Dungeon &d)
+{
+  int i, r, c;
+  mvprintw(0, 0, d.message.c_str());
+
+  char buffer[50];
+
+  for(r = 2; r < EQUIPMENT_SLOTS+4; r++){
+    for(c = 25; c < 60; c++){
+      mvaddch(r, c, ' ');
+    }
+  }
+
+  std::string object_types[] = {"WEAPON", "OFFHAND", "RANGED", "ARMOR", "HELMET", 
+  "CLOAK", "GLOVES", "BOOTS", "AMULET", "LIGHT", "RING 1", "RING 2"};
+
+  mvprintw(2 , 25, "   PLAYER EQUIPMENT   ");
+  for(i = 0; i < EQUIPMENT_SLOTS; i++){
+    sprintf(buffer, " [%c][%s] ", 'a' + i, object_types[i].c_str());  
+    mvprintw(i+3, 25, buffer);
+    if(d.player.equipment[i]){
+      sprintf(buffer, ": %s", d.player.equipment[i]->name.c_str());  
+    } else {
+      sprintf(buffer , ": EMPTY");
+    }
+    mvprintw(i+3, 39, buffer);
+    
+  }
+  
+  return 0;
+}
+
+int display_monster_targetting(Dungeon &d)
+{
+  uint8_t cmd = ' ', tx = d.player.x, ty = d.player.y;
+
+  do{
+    mvprintw(0, 0, d.message.c_str());
+    display_all(d);
+    mvaddch(ty+1, tx, '*');
+
+    cmd = getch();
+    switch(cmd){
+      case '7':
+      case 'y':
+        if(tx-1 > 0 && ty-1 > 0){
+          tx--;
+          ty--;
+        }
+        break;
+      case '8':
+      case 'k':
+        if(ty-1 > 0){
+          ty--;
+        }
+        break;
+      case '9':
+      case 'u':
+        if(tx+1 < DUNGEON_X && ty-1 > 0){
+          tx++;
+          ty--;
+        }
+        break;
+      case '6':
+      case 'l':
+        if(tx+1 < DUNGEON_X){
+          tx++;
+        }
+        break;
+      case '3':
+      case 'n':
+        if(tx+1 < DUNGEON_X && ty+1 < DUNGEON_Y){
+          tx++;
+          ty++;
+        }
+        break;
+      case '2':
+      case 'j':
+        if(ty+1 < DUNGEON_Y){
+          ty++;
+        }
+        break;
+      case '1':
+      case 'b':
+        if(tx-1 > 0 && ty+1 < DUNGEON_Y){
+          tx--;
+          ty++;
+        }
+        break;
+      case '4':
+      case 'h':
+        if(tx-1 > 0){
+          tx--;
+        }
+        break;
+    }
+
+    
+
+  }while(cmd != 't' && cmd != 27);
+
+  if(cmd == 't' && d.characters[ty][tx] && d.characters[ty][tx]->symbol != '@'){
+    display_monster_info(*(NPC*)d.characters[ty][tx]);
+  }
+
+  return 0;
+}
+
+int display_object_info(Object &o)
+{
+  char buffer[500];
+  sprintf(buffer, "NAME: %s\n", o.name.c_str());
+  mvprintw(1, 0, buffer);
+  sprintf(buffer, "TYPE: %s\n", o.type.c_str());
+  printw(buffer);
+  sprintf(buffer, "DESCRIPTION: \n%s", o.description.c_str());
+  printw(buffer);
+  
+  getch();
+
+  return 0;
+}
+
+int display_monster_info(NPC &monster)
+{
+
+  char buffer[500];
+  sprintf(buffer, "NAME: %s\n", monster.name.c_str());
+  mvprintw(1, 0, buffer);
+  sprintf(buffer, "DESCRIPTION: \n%s", monster.description.c_str());
+  printw(buffer);
+  sprintf(buffer, "ATTACK DAMAGE: %s\n", monster.attack_damage.c_str());
+  printw(buffer);
+  sprintf(buffer, "SPEED: %d", monster.speed);
+  printw(buffer);
+
+  getch();
+
+  return 0;
+}
+
+int parse_monsters(Dungeon &d)
 {
   char *home = getenv("HOME");
   char *path;
@@ -381,7 +560,7 @@ int IO::parse_monsters(Dungeon &d)
   return 0;
 }
 
-int IO::parse_objects(Dungeon &d)
+int parse_objects(Dungeon &d)
 {
   char *home = getenv("HOME");
   char *path;
@@ -486,7 +665,7 @@ int IO::parse_objects(Dungeon &d)
   return 0;
 }
 
-int IO::print_monster_templates(Dungeon &d)
+int print_monster_templates(Dungeon &d)
 {
   uint32_t cmd, i = 0;
   char buffer[21];
@@ -590,7 +769,7 @@ int IO::print_monster_templates(Dungeon &d)
   return 0;
 }  
 
-int IO::print_object_templates(Dungeon &d)
+int print_object_templates(Dungeon &d)
 {
   uint32_t cmd, i = 0;
   char buffer[21];
@@ -688,7 +867,7 @@ int IO::print_object_templates(Dungeon &d)
   return 0;
 }
 
-int IO::read_dungeon(Dungeon &d)
+int read_dungeon(Dungeon &d)
 {
   char *home = getenv("HOME");
   char *path;
@@ -780,7 +959,7 @@ int IO::read_dungeon(Dungeon &d)
   return 0;
 }
 
-int IO::write_dungeon(Dungeon &d)
+int write_dungeon(Dungeon &d)
 {
   char *home = getenv("HOME");
   char *path;

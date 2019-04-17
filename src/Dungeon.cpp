@@ -210,8 +210,7 @@ int Dungeon::place_characters(heap_t *h)
 
 int Dungeon::place_objects()
 {
-  uint32_t i, r, c, x, y;
-  int rrty;
+  int i, r, c, x, y, rrty;
   ObjectTemplate *temp;
 
   for(r = 0; r < DUNGEON_Y; r++) {
@@ -220,7 +219,7 @@ int Dungeon::place_objects()
     }
   }
 
-  for(i = 0; i < 10; i++) {
+  for(i = 0; i < (rand() % (MAX_OBJECTS-10)) + 10; i++) {
     // Randomly select object template (check for rarity)
     do{
       rrty = rand() % 100;

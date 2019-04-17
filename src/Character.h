@@ -2,6 +2,7 @@
 # define CHARACTER_H
 
 # include <cstdint>
+# include <string>
 
 # include "heap.h"
 # include "Dice.h"
@@ -19,15 +20,15 @@ public:
   uint32_t color;
   uint32_t speed;
   uint32_t move_time;
-  uint32_t hitpoints;
+  int hitpoints;
   Dice attack_damage;
-  Object *object;
   char symbol;
   uint8_t x;
   uint8_t y;
   uint8_t next_x;
   uint8_t next_y;
   uint16_t template_index = 0;
+  std::string name;
 
   int can_see(Dungeon &, Character &, Character &);
 

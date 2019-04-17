@@ -1,22 +1,22 @@
 
-Character.h,454
+Character.h,444
 # define CHARACTER_H2,20
-class Character{Character12,132
-  uint8_t is_pc;16,159
-  heap_node_t *hn;hn17,176
-  uint8_t isAlive;18,195
-  uint32_t color;19,214
-  uint32_t speed;20,232
-  uint32_t move_time;21,250
-  uint32_t hitpoints;22,272
-  Dice attack_damage;23,294
-  Object *object;object24,316
-  char symbol;25,334
-  uint8_t x;26,349
-  uint8_t y;27,362
-  uint8_t next_x;28,375
-  uint8_t next_y;29,393
-  uint16_t template_index 30,411
+class Character{Character13,151
+  uint8_t is_pc;17,178
+  heap_node_t *hn;hn18,195
+  uint8_t isAlive;19,214
+  uint32_t color;20,233
+  uint32_t speed;21,251
+  uint32_t move_time;22,269
+  int hitpoints;23,291
+  Dice attack_damage;24,308
+  char symbol;25,330
+  uint8_t x;26,345
+  uint8_t y;27,358
+  uint8_t next_x;28,371
+  uint8_t next_y;29,389
+  uint16_t template_index 30,407
+  std::string name;31,438
 
 Dice.h,143
 # define DICE_H2,15
@@ -26,7 +26,7 @@ class Dice 6,53
 	uint32_t base, num, sides;10,77
 	char str[str11,105
 
-Dungeon.h,1547
+Dungeon.h,1577
 # define DUNGEON_H2,18
 # define DUNGEON_Y 20,325
 # define DUNGEON_X 21,350
@@ -42,47 +42,48 @@ Dungeon.h,1547
 # define ROOM_MAX_Y 31,594
 # define MAX_BUFFER 32,619
 # define MAX_MONSTERS 33,646
-class Dungeon 36,673
-	const std::string file_type 40,700
-	uint32_t file_version 41,747
-	uint32_t file_version = 0, file_size;41,747
-	enum terrain 43,787
-  		ter_wall,44,803
-  		ter_immutable,45,817
-  		ter_floor,46,836
-  		ter_corridor,47,851
-  		ter_stair_up,48,869
-  		ter_stair_down,49,887
-  		ter_unknown50,907
-	class room 53,928
-  		uint8_t x;55,951
-  		uint8_t y;56,966
-  		uint8_t width;57,981
-  		uint8_t height;58,1000
-	class stair 61,1025
-  		uint8_t x;63,1049
-  		uint8_t y;64,1064
-  		char dir;65,1079
-	std::string message;68,1098
-	uint16_t num_rooms;70,1121
-	room *rooms;rooms71,1142
-	uint16_t num_up;72,1156
-	uint16_t num_down;73,1174
-	stair *u_stairs;u_stairs74,1194
-	stair *d_stairs;d_stairs75,1212
-	uint16_t nummon;76,1230
-	Pathfinder floor_pathfinder;78,1250
-	Pathfinder all_pathfinder;79,1280
-	uint8_t hardness[hardness81,1309
-	terrain map[map82,1350
-	terrain seen[seen83,1386
-	PC player;85,1424
-	Character *characters[characters86,1436
-	Object *objects[objects87,1482
-	std::vector<MonsterTemplate> monster_templates;88,1522
-	std::vector<ObjectTemplate> object_templates;89,1571
+# define MAX_OBJECTS 34,671
+class Dungeon 37,698
+	const std::string file_type 41,725
+	uint32_t file_version 42,772
+	uint32_t file_version = 0, file_size;42,772
+	enum terrain 44,812
+  		ter_wall,45,828
+  		ter_immutable,46,842
+  		ter_floor,47,861
+  		ter_corridor,48,876
+  		ter_stair_up,49,894
+  		ter_stair_down,50,912
+  		ter_unknown51,932
+	class room 54,953
+  		uint8_t x;56,976
+  		uint8_t y;57,991
+  		uint8_t width;58,1006
+  		uint8_t height;59,1025
+	class stair 62,1050
+  		uint8_t x;64,1074
+  		uint8_t y;65,1089
+  		char dir;66,1104
+	std::string message;69,1123
+	uint16_t num_rooms;71,1146
+	room *rooms;rooms72,1167
+	uint16_t num_up;73,1181
+	uint16_t num_down;74,1199
+	stair *u_stairs;u_stairs75,1219
+	stair *d_stairs;d_stairs76,1237
+	uint16_t nummon;77,1255
+	Pathfinder floor_pathfinder;79,1275
+	Pathfinder all_pathfinder;80,1305
+	uint8_t hardness[hardness82,1334
+	terrain map[map83,1375
+	terrain seen[seen84,1411
+	PC player;86,1449
+	Character *characters[characters87,1461
+	Object *objects[objects88,1507
+	std::vector<MonsterTemplate> monster_templates;89,1547
+	std::vector<ObjectTemplate> object_templates;90,1596
 
-IO.h,226
+IO.h,209
 # define IO_H2,13
 # define DUNGEON_X 6,52
 # define DUNGEON_Y 7,74
@@ -90,7 +91,6 @@ IO.h,226
 # define DISPLAY_MAP_CMD 10,130
 # define DISPLAY_MONSTERS_CMD 11,163
 # define DISPLAY_TELEPORT_CMD 12,196
-class IO 14,230
 
 MonsterTemplate.h,413
 # define MONSTERTEMPLATE_H2,26
@@ -112,7 +112,7 @@ class MonsterTemplate{MonsterTemplate12,175
 Move.h,21
 # define MOVE_H2,15
 
-NPC.h,426
+NPC.h,400
 # define NPC_H2,14
 #define NPC_SMART	7,74
 #define NPC_TELEPATHIC	8,100
@@ -126,9 +126,8 @@ NPC.h,426
 class NPC 19,344
 	uint8_t last_seen_x;23,384
 	uint8_t last_seen_y;24,406
-	std::string name;25,428
-	std::string description;26,447
-	uint32_t abilities;27,473
+	std::string description;25,428
+	uint32_t abilities;26,454
 
 Object.h,497
 # define OBJECT_H2,17
@@ -173,10 +172,27 @@ class ObjectTemplate{ObjectTemplate11,153
 	bool isValid 31,479
 	uint8_t num_generated 32,501
 
-PC.h,69
+PC.h,514
 # define PC_H2,13
-typedef struct heap heap_t;8,74
-class PC 12,119
+# define WEAPON 9,93
+# define OFFHAND 10,112
+# define RANGED 11,131
+# define ARMOR 12,150
+# define HELMET 13,170
+# define CLOAK 14,189
+# define GLOVES 15,208
+# define BOOTS 16,227
+# define AMULET 17,247
+# define LIGHT 18,266
+# define RING1 19,285
+# define RING2 20,305
+# define CARRY_CAPACITY 22,325
+# define EQUIPMENT_SLOTS 23,353
+typedef struct heap heap_t;25,382
+class PC 30,441
+	uint8_t items_carried 34,480
+	Object *equipment[equipment36,509
+	Object *carry[carry37,546
 
 Pathfinder.h,394
 # define PATHFINDER_H2,21

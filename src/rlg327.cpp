@@ -78,7 +78,6 @@ static int32_t event_cmp(const void *key, const void *with) {
 }
 
 Dungeon d;
-IO out;
 
 int play_game()
 {
@@ -91,36 +90,40 @@ int play_game()
   d.place_objects();
   d.update_distances();
 
+  //display(DISPLAY_MAP_CMD, d);
+  //prompt_name(d);
+
   while(d.player.isAlive && d.nummon) {
     cur = (Character *)heap_remove_min(&event_queue);
     
     if(cur->is_pc) {
       do {
         clear();
-        out.display(DISPLAY_MAP_CMD, d);
+        //display(DISPLAY_MAP_CMD, d);
+        display(DISPLAY_ALL_CMD, d);
 
         cmd = getch();
 
         if(cmd == 'm') {
-          out.display(DISPLAY_MONSTERS_CMD, d);
+          display(DISPLAY_MONSTERS_CMD, d);
         } else if(cmd == 'f'){
           clear();
           d.message = "Revealing dungeon.... (Press f to exit)";
-          out.display(DISPLAY_ALL_CMD, d);
+          display(DISPLAY_ALL_CMD, d);
           d.message = "";
-        } else if(cmd == 't'){
+        } else if(cmd == 'g'){
           clear();
           d.message = "Entering teleport mode... (Press t to teleport, r for random)";
-          out.display(DISPLAY_TELEPORT_CMD, d);
+          display(DISPLAY_TELEPORT_CMD, d);
           d.message = "";
-        } else if(move_pc(d, cmd)){
+        } else if(move_pc(d, &event_queue, cmd) < 0){
           mvprintw(0, 0, "You're a quitter!                                                               ");
           getch();
           endwin();
           return 1;
         }
         d.update_distances();
-      } while(cmd == 'm' || cmd == 'f' || cmd == 't');
+      } while(cmd == 'm' || cmd == 'f' || cmd == 'g');
     } else if(cur->isAlive) { 
       move_npc(d, *(NPC*)cur); 
     }
@@ -173,7 +176,7 @@ int main(int argc, char *argv[])
   int arg, load = 0;
   for(arg = 1; arg < argc; arg++){
     if(!strcmp(argv[arg],"--load") || !strcmp(argv[arg],"-l")){ 
-      out.read_dungeon(d);
+      read_dungeon(d);
       load++;
     }
   }
@@ -182,7 +185,7 @@ int main(int argc, char *argv[])
   }
   for(arg = 1; arg < argc; arg++){
     if(!strcmp(argv[arg],"--save") || !strcmp(argv[arg], "-s"))
-      { out.write_dungeon(d); }
+      { write_dungeon(d); }
   } 
   for(arg = 1; arg < argc; arg++){
     if(!strcmp(argv[arg],"--pathfind")){
@@ -196,13 +199,19 @@ int main(int argc, char *argv[])
     }
   }
 
-  out.parse_monsters(d);
-  out.parse_objects(d);
+  parse_monsters(d);
+  parse_objects(d);
 
   for(arg = 1; arg < argc; arg++){
     if(!strcmp(argv[arg],"--parse")) {
-      out.print_monster_templates(d);
-      out.print_object_templates(d);
+      print_monster_templates(d);
+      print_object_templates(d);
+    }
+  }
+
+  for(arg = 1; arg < argc; arg++){
+    if(!strcmp(argv[arg],"--name")) {
+      d.player.name = argv[arg+1];
     }
   }
 
