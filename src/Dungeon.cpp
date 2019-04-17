@@ -166,7 +166,6 @@ int Dungeon::place_characters(heap_t *h)
   uint32_t i, r, c, x, y;
   int rrty;
   MonsterTemplate *temp;
-  srand(time(0));
   
   for(r = 0; r < DUNGEON_Y; r++) {
     for(c = 0; c < DUNGEON_X; c++) {

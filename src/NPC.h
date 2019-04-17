@@ -29,6 +29,7 @@ public:
 	NPC(int, int, int);
 	NPC(MonsterTemplate &, int, int);
 
+	uint32_t attack();
 
 	int move(Dungeon &);
 	int move00(Dungeon &);

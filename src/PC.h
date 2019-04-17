@@ -29,6 +29,11 @@ class Dungeon;
 
 class PC : public Character{
 
+private:
+
+	uint32_t base_speed = 10;
+	int base_hitpoints = 100;
+
 public:
 
 	uint8_t items_carried = 0;
@@ -39,6 +44,8 @@ public:
 	PC();
 	int init(uint8_t, uint8_t);
 	int set_name(char *);
+	int update_stats();
+	uint32_t attack();
 	int pickup(Dungeon &);
 	int move(Dungeon &, int c);
 	int equip(Dungeon &, char);

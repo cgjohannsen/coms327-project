@@ -15,10 +15,10 @@ PC::PC()
   is_pc = 1;
   isAlive = 1;
   color = COLOR_WHITE;
-  speed = 10;
+  speed = base_speed;
   move_time = 1000/(speed);
   symbol = '@';
-  hitpoints = 1;
+  hitpoints = base_hitpoints;
   attack_damage.init(0, 1, 4);
 
   uint8_t i;
@@ -44,6 +44,34 @@ int PC::set_name(char *s)
 {
   name = s;
   return 0;
+}
+
+int PC::update_stats()
+{
+  uint8_t i;
+  for(i = 0; i < EQUIPMENT_SLOTS; i++){
+    if(equipment[i]){
+      speed = base_speed + (*equipment[i]).speed_bonus;
+      hitpoints += (*equipment[i]).hit_bonus;
+    }
+  }
+
+  return 0;
+}
+
+uint32_t PC::attack()
+{
+  uint32_t damage = 0, i;
+
+  damage += attack_damage.roll();
+
+  for(i = 0; i < EQUIPMENT_SLOTS; i++){
+    if(equipment[i]){
+      damage += (*equipment[i]).damage_bonus.roll();
+    }
+  }
+
+  return damage;
 }
 
 int PC::pickup(Dungeon &d)
@@ -157,6 +185,8 @@ int PC::equip(Dungeon &d, char c)
       break;
     }
   }
+
+  update_stats();
 
   return 0;
 }
@@ -360,6 +390,8 @@ int PC::unequip(Dungeon &d, char c)
     break;
   }
 
+  update_stats();
+
   return 0;
 }
 int PC::drop(Dungeon &d, char c)
@@ -501,6 +533,19 @@ int PC::move(Dungeon &d, int c)
     return 2;
     case (int) 'L':
     display_monster_targetting(d);
+    return 2;
+    case 'm':
+    display_monsters(d);
+    return 2;
+    case 'f':
+    d.message = "Revealing dungeon.... (Press f to exit)";
+    display_all(d);
+    d.message = "";
+    return 2;
+    case 'g':
+    d.message = "Entering teleport mode... (Press t to teleport, r for random)";
+    display_teleport(d);
+    d.message = "";
     return 2;
     case (int) 'Q':
     return -1;

@@ -83,47 +83,37 @@ int play_game()
 {
   heap_t event_queue;
   Character *cur;
-  int cmd;
+  int cmd, result = 0;
 
   heap_init(&event_queue, event_cmp, NULL);
   d.place_characters(&event_queue);
   d.place_objects();
   d.update_distances();
 
-  //display(DISPLAY_MAP_CMD, d);
-  //prompt_name(d);
-
   while(d.player.isAlive && d.nummon) {
     cur = (Character *)heap_remove_min(&event_queue);
     
     if(cur->is_pc) {
-      do {
+      do{
         clear();
         //display(DISPLAY_MAP_CMD, d);
         display(DISPLAY_ALL_CMD, d);
-
         cmd = getch();
-
-        if(cmd == 'm') {
-          display(DISPLAY_MONSTERS_CMD, d);
-        } else if(cmd == 'f'){
-          clear();
-          d.message = "Revealing dungeon.... (Press f to exit)";
-          display(DISPLAY_ALL_CMD, d);
-          d.message = "";
-        } else if(cmd == 'g'){
-          clear();
-          d.message = "Entering teleport mode... (Press t to teleport, r for random)";
-          display(DISPLAY_TELEPORT_CMD, d);
-          d.message = "";
-        } else if(move_pc(d, &event_queue, cmd) < 0){
+        result = move_pc(d, &event_queue, cmd);
+        if(result < 0){
           mvprintw(0, 0, "You're a quitter!                                                               ");
           getch();
           endwin();
           return 1;
+        } else if(result == 10){
+          clear();
+          mvprintw(0, 0, win_screen);
+          getch();
+          endwin();
+          return 0;
         }
-        d.update_distances();
-      } while(cmd == 'm' || cmd == 'f' || cmd == 'g');
+      } while(result == 2);
+      d.update_distances();
     } else if(cur->isAlive) { 
       move_npc(d, *(NPC*)cur); 
     }
@@ -133,15 +123,7 @@ int play_game()
   }
 
   clear();
-  if(d.nummon){
-    // PC loss
-    mvprintw(1, 0, loss_screen);
-  } else {
-    // PC win
-    mvprintw(0, 0, win_screen);
-  }
-
-  // end ncurses
+  mvprintw(0, 0, loss_screen);
   getch();
   endwin();
 
@@ -209,11 +191,7 @@ int main(int argc, char *argv[])
     }
   }
 
-  for(arg = 1; arg < argc; arg++){
-    if(!strcmp(argv[arg],"--name")) {
-      d.player.name = argv[arg+1];
-    }
-  }
+  prompt_name(d);
 
   play_game();
 

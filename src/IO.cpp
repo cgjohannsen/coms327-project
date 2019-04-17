@@ -17,12 +17,8 @@
 
 int prompt_name(Dungeon &d)
 {
-  int i;
-  for(i = 0; i < 81; i++){
-    mvprintw(0, i, " ");
-  }
   mvprintw(0, 0, "Enter your brave warrior's name (Press enter when finished): ");
-  char n[40];
+  char n[20];
   getstr(n);
   d.player.set_name(n);
   return 0;
@@ -45,6 +41,8 @@ int display(int cmd, Dungeon &d)
       display_teleport(d);
       break;
   }
+
+  display_user_info(d);
 
   return 0;
 }
@@ -300,6 +298,19 @@ int display_teleport(Dungeon &d)
   d.characters[ty][tx] = &(d.player);
   d.player.y = ty;
   d.player.x = tx;
+
+  return 0;
+}
+
+int display_user_info(Dungeon &d)
+{
+  char buffer[81];
+  sprintf(buffer, "NAME: %s", d.player.name.c_str());
+  mvprintw(22, 0, buffer);
+  sprintf(buffer, "HEALTH: %d/100", d.player.hitpoints);
+  mvprintw(22, 15, buffer);
+  sprintf(buffer, "SPEED: %d", d.player.speed);
+  mvprintw(22, 35, buffer);
 
   return 0;
 }

@@ -65,6 +65,11 @@ NPC::NPC(MonsterTemplate &temp, int pos_x, int pos_y)
   template_index = temp.index;
 }
 
+uint32_t NPC::attack()
+{
+  return attack_damage.roll();
+}
+
 int NPC::move(Dungeon &d)
 {  
   if(abilities & NPC_ERRATIC){

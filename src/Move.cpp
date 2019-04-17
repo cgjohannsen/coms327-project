@@ -11,31 +11,41 @@
 
 int move_npc(Dungeon &d, NPC &c)
 {
-	// TODO
-
 	c.move(d);
 	
 	if(d.characters[c.next_y][c.next_x] && 
-		!(c.next_x == c.x && c.next_y == c.y) &&
+	!(c.next_x == c.x && c.next_y == c.y) &&
 		d.characters[c.next_y][c.next_x]->symbol == '@'){
-		combat(d, c, d.player);	
-	} else {
-		if(d.characters[c.next_y][c.next_x] && 
-		!(c.next_x == c.x && c.next_y == c.y)){
-			/*
-			int r[] = {c.next_y-1, c.next_y+1, c.next_y};
-			int c[] = {c.next_x-1, c.next_x+1, c.next_x};
-			int rand_r, rand_c;
-			do{
-				rand_r = rand()%3;
-				rand_c = rand()%3;
-			}while((rand_r == 2 && rand_c == 2) || 
-				d.hardness[rand_r][rand_c] != 0 || 
-				d.characters[rand_r][rand_c]);
-			Character *temp = d.characters[rand_r][rand_c];
-			d.characters[rand_r][rand_c] = 
-			*/
+		//combat(d, c, d.player);	
+	} else if(d.characters[c.next_y][c.next_x] && 
+			!(c.next_x == c.x && c.next_y == c.y)){
+		uint8_t tr, tc, temp_row = 0, temp_col = 0;
+		for(tr = c.next_y-1; tr < c.next_y+2; tr++){
+			for(tc = c.next_x-1; tc < c.next_x+2; tc++){
+				if(!d.characters[tr][tc] && d.hardness[tr][tc] == 0){
+					temp_row = tr;
+					temp_col = tc;
+				}
+			}
 		}
+		if(temp_row != 0 && temp_col != 0){
+			d.characters[temp_row][temp_col] = d.characters[c.next_y][c.next_x];
+			d.characters[temp_row][temp_col]->x = temp_col;
+			d.characters[temp_row][temp_col]->y = temp_row;
+			d.characters[c.y][c.x] = NULL;
+    		c.x = c.next_x;
+    		c.y = c.next_y;
+    		d.characters[c.y][c.x] = &c;
+		} else {
+			Character *temp = d.characters[c.next_y][c.next_x];
+			d.characters[c.next_y][c.next_x] = d.characters[c.y][c.x];
+			d.characters[c.y][c.x] = temp;
+			temp->x = c.x;
+			temp->y = c.y;
+			c.x = c.next_x;
+    		c.y = c.next_y;
+		}
+	} else {
 		d.characters[c.y][c.x] = NULL;
     	c.x = c.next_x;
     	c.y = c.next_y;
@@ -58,11 +68,14 @@ int move_pc(Dungeon &d, heap_t *h, int cmd)
     	d.place_objects();
     	d.place_characters(h);
     	return t;
+	} else if(t == 2){
+		return t;
 	} else if(t == 0) {
 		if(d.hardness[d.player.next_y][d.player.next_x] == 0){
 			if(d.characters[d.player.next_y][d.player.next_x] && 
 			  !(d.player.next_x == d.player.x && d.player.next_y == d.player.y)){
-				combat(d, d.player, *d.characters[d.player.next_y][d.player.next_x]);
+				if((combat(d, d.player, *d.characters[d.player.next_y][d.player.next_x])) == 10)
+					return 10;
 			} else {
 				d.characters[d.player.y][d.player.x] = NULL;
     			d.player.x = d.player.next_x;
@@ -87,7 +100,7 @@ int move_pc(Dungeon &d, heap_t *h, int cmd)
 
 int combat(Dungeon &d, Character &attacker, Character &defender)
 {
-	uint32_t damage = attacker.attack_damage.roll();
+	uint32_t damage = attacker.attack();
 
 	defender.hitpoints -= damage;
 
@@ -98,7 +111,13 @@ int combat(Dungeon &d, Character &attacker, Character &defender)
 		d.message = buffer;
 
 		if(!defender.is_pc){
-			delete(&defender);
+			if(((NPC*)d.characters[defender.y][defender.x])->abilities & NPC_BOSS){
+				return 10;
+			}
+			d.characters[defender.y][defender.x]->isAlive = 0;
+			d.characters[defender.y][defender.x] = NULL;
+			delete(d.characters[defender.y][defender.x]);
+			d.nummon--;
 		} else {
 			d.player.isAlive = 0;
 		}

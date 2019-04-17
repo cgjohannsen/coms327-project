@@ -2,21 +2,21 @@
 Character.h,444
 # define CHARACTER_H2,20
 class Character{Character13,151
-  uint8_t is_pc;17,178
-  heap_node_t *hn;hn18,195
-  uint8_t isAlive;19,214
-  uint32_t color;20,233
-  uint32_t speed;21,251
-  uint32_t move_time;22,269
-  int hitpoints;23,291
-  Dice attack_damage;24,308
-  char symbol;25,330
-  uint8_t x;26,345
-  uint8_t y;27,358
-  uint8_t next_x;28,371
-  uint8_t next_y;29,389
-  uint16_t template_index 30,407
-  std::string name;31,438
+  uint8_t is_pc;19,203
+  heap_node_t *hn;hn20,220
+  uint8_t isAlive;21,239
+  uint32_t color;22,258
+  uint32_t speed;23,276
+  uint32_t move_time;24,294
+  int hitpoints;25,316
+  Dice attack_damage;26,333
+  char symbol;27,355
+  uint8_t x;28,370
+  uint8_t y;29,383
+  uint8_t next_x;30,396
+  uint8_t next_y;31,414
+  uint16_t template_index 32,432
+  std::string name;33,463
 
 Dice.h,143
 # define DICE_H2,15
@@ -172,7 +172,7 @@ class ObjectTemplate{ObjectTemplate11,153
 	bool isValid 31,479
 	uint8_t num_generated 32,501
 
-PC.h,514
+PC.h,571
 # define PC_H2,13
 # define WEAPON 9,93
 # define OFFHAND 10,112
@@ -190,9 +190,11 @@ PC.h,514
 # define EQUIPMENT_SLOTS 23,353
 typedef struct heap heap_t;25,382
 class PC 30,441
-	uint8_t items_carried 34,480
-	Object *equipment[equipment36,509
-	Object *carry[carry37,546
+	uint32_t base_speed 34,481
+	int base_hitpoints 35,508
+	uint8_t items_carried 39,545
+	Object *equipment[equipment41,574
+	Object *carry[carry42,611
 
 Pathfinder.h,394
 # define PATHFINDER_H2,21

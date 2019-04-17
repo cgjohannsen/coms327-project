@@ -14,6 +14,8 @@ class Character{
 
 public:
 
+  virtual ~Character();
+
   uint8_t is_pc;
   heap_node_t *hn;
   uint8_t isAlive;
@@ -31,6 +33,7 @@ public:
   std::string name;
 
   int can_see(Dungeon &, Character &, Character &);
+  virtual uint32_t attack();
 
 };
 
