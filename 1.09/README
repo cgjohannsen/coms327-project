@@ -1,0 +1,50 @@
+Assignment 1.08
+
+This program can generate, load, and save dungeons in accordance to the specifications for assignments up to 1.03. It can also calculate distances from the player to ech cell in the dungeon. These distances are based on including walls or not, and if including walls the hardness of each wall cell.
+
+The executable, when given an argument for the switch nummon, generate a dungeon with the argument number of monsters. When executed, the program will wait for user input and move the PC according to the spec provided. (Similar to vim navigation commands)
+
+The PC can navigate the dungeon, go up or down stairs to new, random dungeons, slay monsters, and be slain themselves. The user can press 'm' to open a view of all monsters and their locations relative to the PC.
+
+We also now have objects in the game. Here is a table showing the various types which are elegible to show:
+
+| Type       | Symbol |
+| ---        | ---    |
+| WEAPON     | &#124; |
+| OFFHAND    | )      |
+| RANGED     | }      |
+| ARMOR      | [      |
+| HELMET     | ]      |
+| CLOAK      | (      |
+| GLOVES     |  {     |
+| BOOTS      | \      |
+| RING       |  =     |
+| AMULET     | "      |
+| LIGHT      | _      |
+| SCROLL     | ~      |
+| BOOK       | ?      |
+| FLASK      | !      |
+| GOLD       | $      |
+| AMMUNITION | /      |
+| FOOD       | ,      |
+| WAND       | -      |
+| CONTAINER  | %      |
+
+Now with debugging commands, our adventurer can now view the entire dungeon when the 'f' key is pressed, or teleport anywhere in dungeon with the 'g' key.
+
+Updated combat and object functionality. One can now pick up items by walking over them, view their inventory and equipment, inspect an item, and equip or unequip items through keyboard commands. 
+
+Executable Commands:
+
+--load -l	Loads the dungeon from the file at location $HOME/.rlg327/dungeon
+
+--save -s	Saves the dungeon file to $HOME/.rlg327/dungeon
+
+--pathfind	Will calculate distances from player to every cell in dungeon. Outputs the results in
+		accordance to the specified format for assignment 1.03
+		
+-lt [file]	Loads dungeon file entered from directory at location $HOME/.rlg327/saved_dungeons/
+
+--nummon [n]	Executes simulated gameplay with n number of monsters
+
+--parse	 	Parses monster_desc.txt file from ~/.rlg327 directory. Will add those templates which are in said file to a list of monster templates and print out all parsed templates

@@ -1,0 +1,276 @@
+#include <cstdint>
+#include <cstddef>
+#include <climits>
+
+#include <stdio.h>
+
+#include "heap.h"
+#include "Pathfinder.h"
+
+heap_t heap;
+
+static int32_t path_cmp(const void *key, const void *with) {
+  return ((Pathfinder::Pathfinder::dungeon_path_t *) key)->cost - 
+  ((Pathfinder::dungeon_path_t *) with)->cost;
+} 
+
+Pathfinder::Pathfinder()
+{
+  heap_init(&heap, path_cmp, NULL);
+}
+
+Pathfinder::~Pathfinder()
+{
+  heap_delete(&heap);
+}
+
+int Pathfinder::init(uint8_t hardness[DUNGEON_Y][DUNGEON_X])
+{
+  uint8_t r, c;
+  for(r = 0; r < DUNGEON_Y; r++){
+    for(c = 0; c < DUNGEON_X; c++){
+      path[r][c].pos[row] = r;
+      path[r][c].pos[col] = c;
+      path[r][c].cost = UINT16_MAX;
+      h[r][c] = hardness[r][c];
+    }
+  } 
+
+  return 0;
+}
+
+int Pathfinder::dijkstra_floor(uint8_t pc_x, uint8_t pc_y)
+{
+  uint32_t r, c;
+  Pathfinder::dungeon_path_t *p;
+  path[pc_y][pc_x].cost = 0;
+
+  // Insert all floor cells into heap
+  for(r = 0; r < DUNGEON_Y; r++){
+    for(c = 0; c < DUNGEON_X; c++){
+      if(h[r][c] == 0){ path[r][c].hn = heap_insert(&heap, &path[r][c]); }
+      else{ path[r][c].hn = NULL; }
+    }
+  }
+
+  while ((p = (dungeon_path_t*) heap_remove_min(&heap))) {
+
+    p->hn = NULL;
+
+    // Cell Above
+    if(path[p->pos[row]+1][p->pos[col]  ].hn && 
+       path[p->pos[row]+1][p->pos[col]  ].cost > p->cost + 1){
+       path[p->pos[row]+1][p->pos[col]  ].cost = p->cost + 1;
+       path[p->pos[row]+1][p->pos[col]  ].from[row] = p->pos[row];
+       path[p->pos[row]+1][p->pos[col]  ].from[col] = p->pos[col];
+       heap_decrease_key_no_replace(&heap, 
+				    path[p->pos[row]+1][p->pos[col]  ].hn);
+    }
+
+    // Cell Above + Right
+    if(path[p->pos[row]+1][p->pos[col]+1].hn && 
+       path[p->pos[row]+1][p->pos[col]+1].cost > p->cost + 1){
+       path[p->pos[row]+1][p->pos[col]+1].cost = p->cost + 1;
+       path[p->pos[row]+1][p->pos[col]+1].from[row] = p->pos[row];
+       path[p->pos[row]+1][p->pos[col]+1].from[col] = p->pos[col];
+       heap_decrease_key_no_replace(&heap, 
+				    path[p->pos[row]+1][p->pos[col]+1].hn);
+    }
+
+    // Cell Right
+    if(path[p->pos[row]  ][p->pos[col]+1].hn && 
+       path[p->pos[row]  ][p->pos[col]+1].cost > p->cost + 1){
+       path[p->pos[row]  ][p->pos[col]+1].cost = p->cost + 1;
+       path[p->pos[row]  ][p->pos[col]+1].from[row] = p->pos[row];
+       path[p->pos[row]  ][p->pos[col]+1].from[col] = p->pos[col];
+       heap_decrease_key_no_replace(&heap, 
+				    path[p->pos[row]  ][p->pos[col]+1].hn);
+    }
+
+    // Cell Below + Right
+    if(path[p->pos[row]-1][p->pos[col]+1].hn && 
+       path[p->pos[row]-1][p->pos[col]+1].cost > p->cost + 1){
+       path[p->pos[row]-1][p->pos[col]+1].cost = p->cost + 1;
+       path[p->pos[row]-1][p->pos[col]+1].from[row] = p->pos[row];
+       path[p->pos[row]-1][p->pos[col]+1].from[col] = p->pos[col];
+       heap_decrease_key_no_replace(&heap, 
+				    path[p->pos[row]-1][p->pos[col]+1].hn);
+    }
+
+    // Cell Below
+    if(path[p->pos[row]-1][p->pos[col]  ].hn && 
+       path[p->pos[row]-1][p->pos[col]  ].cost > p->cost + 1){
+       path[p->pos[row]-1][p->pos[col]  ].cost = p->cost + 1;
+       path[p->pos[row]-1][p->pos[col]  ].from[row] = p->pos[row];
+       path[p->pos[row]-1][p->pos[col]  ].from[col] = p->pos[col];
+       heap_decrease_key_no_replace(&heap, 
+				    path[p->pos[row]-1][p->pos[col]  ].hn);
+    }
+
+    // Cell Below + Left
+    if(path[p->pos[row]-1][p->pos[col]-1].hn && 
+       path[p->pos[row]-1][p->pos[col]-1].cost > p->cost + 1){
+       path[p->pos[row]-1][p->pos[col]-1].cost = p->cost + 1;
+       path[p->pos[row]-1][p->pos[col]-1].from[row] = p->pos[row];
+       path[p->pos[row]-1][p->pos[col]-1].from[col] = p->pos[col];
+       heap_decrease_key_no_replace(&heap, 
+				    path[p->pos[row]-1][p->pos[col]-1].hn);
+    }
+
+    // Cell Left
+    if(path[p->pos[row]  ][p->pos[col]-1].hn && 
+       path[p->pos[row]  ][p->pos[col]-1].cost > p->cost + 1){
+       path[p->pos[row]  ][p->pos[col]-1].cost = p->cost + 1;
+       path[p->pos[row]  ][p->pos[col]-1].from[row] = p->pos[row];
+       path[p->pos[row]  ][p->pos[col]-1].from[col] = p->pos[col];
+       heap_decrease_key_no_replace(&heap, 
+				    path[p->pos[row]  ][p->pos[col]-1].hn);
+    }
+
+    // Cell Above + Left 
+    if(path[p->pos[row]+1][p->pos[col]-1].hn && 
+       path[p->pos[row]+1][p->pos[col]-1].cost > p->cost + 1){
+       path[p->pos[row]+1][p->pos[col]-1].cost = p->cost + 1;
+       path[p->pos[row]+1][p->pos[col]-1].from[row] = p->pos[row];
+       path[p->pos[row]+1][p->pos[col]-1].from[col] = p->pos[col];
+       heap_decrease_key_no_replace(&heap, 
+				    path[p->pos[row]+1][p->pos[col]-1].hn);
+    }
+
+  }
+
+  return 0;
+}
+
+int Pathfinder::dijkstra_all(uint8_t pc_x, uint8_t pc_y)
+{
+  uint32_t r, c;
+  Pathfinder::dungeon_path_t *p;
+  path[pc_y][pc_x].cost = 0;
+
+  // Insert all cells into heap
+  for(r = 0; r < DUNGEON_Y; r++){
+    for(c = 0; c < DUNGEON_X; c++){
+      if(h[r][c] != 255){ 
+        path[r][c].hn = heap_insert(&heap, &path[r][c]); 
+
+        dungeon_path_t t = path[r][c];
+        path[r][c] = t;
+
+      }
+      else{ path[r][c].hn = NULL; }
+    }
+  }
+  
+  while ((p = (dungeon_path_t*) heap_remove_min(&heap))) {
+    p->hn = NULL;
+
+    // DEBUG
+    dungeon_path_t t = path[p->pos[row]][p->pos[col]];
+    path[p->pos[row]  ][p->pos[col]  ] = t;
+
+    // Cell Above
+    if(path[p->pos[row]+1][p->pos[col]  ].hn && 
+       path[p->pos[row]+1][p->pos[col]  ].cost > 
+       p->cost + ((h[p->pos[row]][p->pos[col]])/85) + 1){
+       path[p->pos[row]+1][p->pos[col]  ].cost = 
+       p->cost + ((h[p->pos[row]][p->pos[col]])/85) + 1;
+       path[p->pos[row]+1][p->pos[col]  ].from[row] = p->pos[row];
+       path[p->pos[row]+1][p->pos[col]  ].from[col] = p->pos[col];
+       heap_decrease_key_no_replace(&heap, 
+			     path[p->pos[row]+1][p->pos[col]  ].hn);
+    }
+
+    // Cell Above + Right
+    if(path[p->pos[row]+1][p->pos[col]+1].hn && 
+       path[p->pos[row]+1][p->pos[col]+1].cost > 
+       p->cost + ((h[p->pos[row]][p->pos[col]])/85) + 1){
+       path[p->pos[row]+1][p->pos[col]+1].cost = 
+       p->cost + ((h[p->pos[row]][p->pos[col]])/85) + 1;
+       path[p->pos[row]+1][p->pos[col]+1].from[row] = p->pos[row];
+       path[p->pos[row]+1][p->pos[col]+1].from[col] = p->pos[col];
+       heap_decrease_key_no_replace(&heap, 
+       			    path[p->pos[row]+1][p->pos[col]+1].hn);
+    }
+    
+    // Cell Right
+    if(path[p->pos[row]  ][p->pos[col]+1].hn && 
+       path[p->pos[row]  ][p->pos[col]+1].cost > 
+       p->cost + ((h[p->pos[row]][p->pos[col]])/85) + 1){
+       path[p->pos[row]  ][p->pos[col]+1].cost = 
+       p->cost + ((h[p->pos[row]][p->pos[col]])/85) + 1;
+       path[p->pos[row]  ][p->pos[col]+1].from[row] = p->pos[row];
+       path[p->pos[row]  ][p->pos[col]+1].from[col] = p->pos[col];
+       heap_decrease_key_no_replace(&heap, 
+       			    path[p->pos[row]  ][p->pos[col]+1].hn);
+    }
+    
+
+    // Cell Below + Right
+    if(path[p->pos[row]-1][p->pos[col]+1].hn && 
+       path[p->pos[row]-1][p->pos[col]+1].cost > 
+       p->cost + ((h[p->pos[row]][p->pos[col]])/85) + 1){
+       path[p->pos[row]-1][p->pos[col]+1].cost = 
+       p->cost + ((h[p->pos[row]][p->pos[col]])/85) + 1;
+       path[p->pos[row]-1][p->pos[col]+1].from[row] = p->pos[row];
+       path[p->pos[row]-1][p->pos[col]+1].from[col] = p->pos[col];
+       heap_decrease_key_no_replace(&heap, 
+       			    path[p->pos[row]-1][p->pos[col]+1].hn);
+    }
+    
+
+    // Cell Below
+    if(path[p->pos[row]-1][p->pos[col]  ].hn && 
+       path[p->pos[row]-1][p->pos[col]  ].cost > 
+       p->cost + ((h[p->pos[row]][p->pos[col]])/85) + 1){
+       path[p->pos[row]-1][p->pos[col]  ].cost = 
+       p->cost + ((h[p->pos[row]][p->pos[col]])/85) + 1;
+       path[p->pos[row]-1][p->pos[col]  ].from[row] = p->pos[row];
+       path[p->pos[row]-1][p->pos[col]  ].from[col] = p->pos[col];
+       heap_decrease_key_no_replace(&heap, 
+       			    path[p->pos[row]-1][p->pos[col]  ].hn);
+    }
+    
+
+    // Cell Below + Left
+    if(path[p->pos[row]-1][p->pos[col]-1].hn && 
+       path[p->pos[row]-1][p->pos[col]-1].cost > 
+       p->cost + ((h[p->pos[row]][p->pos[col]])/85) + 1){
+       path[p->pos[row]-1][p->pos[col]-1].cost = 
+       p->cost + ((h[p->pos[row]][p->pos[col]])/85) + 1;
+       path[p->pos[row]-1][p->pos[col]-1].from[row] = p->pos[row];
+       path[p->pos[row]-1][p->pos[col]-1].from[col] = p->pos[col];
+       heap_decrease_key_no_replace(&heap, 
+       			    path[p->pos[row]-1][p->pos[col]-1].hn);
+    }
+    
+
+    // Cell Left
+    if(path[p->pos[row]  ][p->pos[col]-1].hn && 
+       path[p->pos[row]  ][p->pos[col]-1].cost > 
+       p->cost + ((h[p->pos[row]][p->pos[col]])/85) + 1){
+       path[p->pos[row]  ][p->pos[col]-1].cost = 
+       p->cost + ((h[p->pos[row]][p->pos[col]])/85) + 1;
+       path[p->pos[row]  ][p->pos[col]-1].from[row] = p->pos[row];
+       path[p->pos[row]  ][p->pos[col]-1].from[col] = p->pos[col];
+       heap_decrease_key_no_replace(&heap, 
+       			    path[p->pos[row]  ][p->pos[col]-1].hn);
+    }
+
+    // Cell Above + Left 
+    if(path[p->pos[row]+1][p->pos[col]-1].hn && 
+       path[p->pos[row]+1][p->pos[col]-1].cost > 
+       p->cost + ((h[p->pos[row]][p->pos[col]])/85) + 1){
+       path[p->pos[row]+1][p->pos[col]-1].cost = 
+       p->cost + ((h[p->pos[row]][p->pos[col]])/85) + 1;
+       path[p->pos[row]+1][p->pos[col]-1].from[row] = p->pos[row];
+       path[p->pos[row]+1][p->pos[col]-1].from[col] = p->pos[col];
+       heap_decrease_key_no_replace(&heap, 
+       			    path[p->pos[row]+1][p->pos[col]-1].hn);
+    }
+    
+
+  }
+
+  return 0;
+}
