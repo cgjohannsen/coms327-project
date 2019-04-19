@@ -11,7 +11,7 @@
 
 int move_npc(Dungeon &d, NPC &c)
 {
-	c.move(d);
+	//c.move(d);
 	
 	if(d.characters[c.next_y][c.next_x] && 
 	!(c.next_x == c.x && c.next_y == c.y) &&

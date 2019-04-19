@@ -95,8 +95,10 @@ int display_map(Dungeon &d)
   for(r = 0; r < DUNGEON_Y; r++) {
     for(c = 0; c < DUNGEON_X; c++) {
 
-      if(r < d.player.y+3 && r > d.player.y-3 && 
-         c < d.player.x+3 && c > d.player.x-3) {
+      if(r < d.player.y+d.player.visual_range && 
+         r > d.player.y-d.player.visual_range && 
+         c < d.player.x+d.player.visual_range && 
+         c > d.player.x-d.player.visual_range) {
         d.seen[r][c] = d.map[r][c];
         if(d.characters[r][c]){ 
           attron(COLOR_PAIR(d.characters[r][c]->color));

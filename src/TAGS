@@ -1,22 +1,23 @@
 
-Character.h,444
+Character.h,475
 # define CHARACTER_H2,20
 class Character{Character13,151
-  uint8_t is_pc;19,203
-  heap_node_t *hn;hn20,220
-  uint8_t isAlive;21,239
-  uint32_t color;22,258
-  uint32_t speed;23,276
-  uint32_t move_time;24,294
-  int hitpoints;25,316
-  Dice attack_damage;26,333
-  char symbol;27,355
-  uint8_t x;28,370
-  uint8_t y;29,383
-  uint8_t next_x;30,396
-  uint8_t next_y;31,414
-  uint16_t template_index 32,432
-  std::string name;33,463
+  uint8_t visual_range;19,203
+  uint8_t is_pc;20,227
+  heap_node_t *hn;hn21,244
+  uint8_t isAlive;22,263
+  uint32_t color;23,282
+  uint32_t speed;24,300
+  uint32_t move_time;25,318
+  int hitpoints;26,340
+  Dice attack_damage;27,357
+  char symbol;28,379
+  uint8_t x;29,394
+  uint8_t y;30,407
+  uint8_t next_x;31,420
+  uint8_t next_y;32,438
+  uint16_t template_index 33,456
+  std::string name;34,487
 
 Dice.h,143
 # define DICE_H2,15

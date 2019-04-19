@@ -20,6 +20,7 @@ PC::PC()
   symbol = '@';
   hitpoints = base_hitpoints;
   attack_damage.init(0, 1, 4);
+  visual_range = 3;
 
   uint8_t i;
   for(i = 0; i < CARRY_CAPACITY; i++){
@@ -53,6 +54,9 @@ int PC::update_stats()
     if(equipment[i]){
       speed = base_speed + (*equipment[i]).speed_bonus;
       hitpoints += (*equipment[i]).hit_bonus;
+      if(equipment[i]->type == "LIGHT"){
+        visual_range += equipment[i]->attribute;
+      }
     }
   }
 

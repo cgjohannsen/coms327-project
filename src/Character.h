@@ -16,6 +16,7 @@ public:
 
   virtual ~Character();
 
+  uint8_t visual_range;
   uint8_t is_pc;
   heap_node_t *hn;
   uint8_t isAlive;
