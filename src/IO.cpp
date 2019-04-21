@@ -14,6 +14,7 @@
 #include "Object.h"
 #include "PC.h"
 #include "Character.h"
+#include "Move.h"
 
 int prompt_name(Dungeon &d)
 {
@@ -315,6 +316,84 @@ int display_user_info(Dungeon &d)
   mvprintw(22, 15, buffer);
   sprintf(buffer, "SPEED: %d", d.player.speed);
   mvprintw(22, 35, buffer);
+
+  return 0;
+}
+
+int display_ranged_attack(Dungeon &d)
+{
+  uint8_t cmd = ' ', tx = d.player.x, ty = d.player.y;
+
+  do{
+    mvprintw(0, 0, d.message.c_str());
+    display_map(d);
+    mvaddch(ty+1, tx, '*');
+
+    cmd = getch();
+    switch(cmd){
+      case '7':
+      case 'y':
+        if(tx-1 > 0 && ty-1 > 0){
+          tx--;
+          ty--;
+        }
+        break;
+      case '8':
+      case 'k':
+        if(ty-1 > 0){
+          ty--;
+        }
+        break;
+      case '9':
+      case 'u':
+        if(tx+1 < DUNGEON_X && ty-1 > 0){
+          tx++;
+          ty--;
+        }
+        break;
+      case '6':
+      case 'l':
+        if(tx+1 < DUNGEON_X){
+          tx++;
+        }
+        break;
+      case '3':
+      case 'n':
+        if(tx+1 < DUNGEON_X && ty+1 < DUNGEON_Y){
+          tx++;
+          ty++;
+        }
+        break;
+      case '2':
+      case 'j':
+        if(ty+1 < DUNGEON_Y){
+          ty++;
+        }
+        break;
+      case '1':
+      case 'b':
+        if(tx-1 > 0 && ty+1 < DUNGEON_Y){
+          tx--;
+          ty++;
+        }
+        break;
+      case '4':
+      case 'h':
+        if(tx-1 > 0){
+          tx--;
+        }
+        break;
+    }
+  }while(cmd != 'a' && cmd != 27);
+
+  if(d.characters[ty][tx]){
+    if(ty == d.player.y && tx == d.player.x){
+      mvprintw(0, 0, "The player attacks itself in its confusion!");
+    }
+
+    combat(d, d.player, *d.characters[ty][tx]);
+
+  }
 
   return 0;
 }

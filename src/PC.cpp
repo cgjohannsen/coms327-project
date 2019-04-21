@@ -497,6 +497,15 @@ int PC::move(Dungeon &d, int c)
     case (int) ' ':
     d.message = "The PC bides his (or her) time...";
     break;
+    case 'r':
+    if(!equipment[RANGED]){
+      d.message = "No ranged weapon equipped";
+    } else {
+      d.message = "Entering ranged attack: press a on selected space";
+      display_ranged_attack(d);
+      //d.message = "";
+    }
+    break;
     case (int) 'w':
     d.message = "Select item to equip: ";
     print_inventory(d);

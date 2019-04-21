@@ -101,26 +101,28 @@ int Dungeon::place_rooms()
 
 int Dungeon::place_corridors()
 {
-  uint16_t i, r, c, room1, room2;
+  uint16_t i, r, c, tr, tc, room1, room2;
 
   for(i = 0; i < num_rooms; i++){
     room1 = i;
     room2 = (i + 1) % num_rooms;
 
-    r = rooms[room1].y;
-    c = rooms[room1].x;
-    
+    r = rooms[room1].y + (rand()%rooms[room1].height);
+    c = rooms[room1].x + (rand()%rooms[room1].width);
+    tr = rooms[room2].y + (rand()%rooms[room2].height);
+    tc = rooms[room2].x + (rand()%rooms[room2].width);
+
     do{
-      if(r < rooms[room2].y){ r++; }
-      else if(r > rooms[room2].y){ r--; }
-      else if(c < rooms[room2].x){ c++; }
-      else if(c > rooms[room2].x){ c--; }
+      if(r < tr){ r++; }
+      else if(r > tr){ r--; }
+      else if(c < tc){ c++; }
+      else if(c > tc){ c--; }
       
       if(hardness[r][c] != 255 && map[r][c] != ter_floor){
         map[r][c] = ter_corridor;
         hardness[r][c] = 0;
       }
-    }while( r != rooms[room2].y || c != rooms[room2].x);
+    }while( r != tr || c != tc);
   }
 
   return 0;

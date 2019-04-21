@@ -30,7 +30,7 @@
 # define ROOM_MAX_X   20
 # define ROOM_MAX_Y   15
 # define MAX_BUFFER   1000
-# define MAX_MONSTERS 50
+# define MAX_MONSTERS 40
 # define MAX_OBJECTS  25
 
 

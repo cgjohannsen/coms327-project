@@ -21,6 +21,7 @@ int display_map(Dungeon &);
 int display_monsters(Dungeon &);
 int display_teleport(Dungeon &);
 int display_user_info(Dungeon &);
+int display_ranged_attack(Dungeon &);
 int print_inventory(Dungeon &);
 int print_equipment(Dungeon &);
 int display_monster_targetting(Dungeon &);

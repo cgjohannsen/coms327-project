@@ -96,8 +96,8 @@ int play_game()
     if(cur->is_pc) {
       do{
         clear();
-        display(DISPLAY_MAP_CMD, d);
-        //display(DISPLAY_ALL_CMD, d);
+        //display(DISPLAY_MAP_CMD, d);
+        display(DISPLAY_ALL_CMD, d);
         cmd = getch();
         result = move_pc(d, &event_queue, cmd);
         if(result < 0){
