@@ -68,7 +68,8 @@ uint32_t PC::attack()
   uint32_t damage = 0, i;
 
   for(i = 0; i < EQUIPMENT_SLOTS; i++){
-    if(equipment[i]){
+    // Ranged weapons only apply for ranged attacks
+    if(equipment[i] && i != RANGED){ 
       damage += (*equipment[i]).damage_bonus.roll();
     }
   }
@@ -503,7 +504,7 @@ int PC::move(Dungeon &d, int c)
     } else {
       d.message = "Entering ranged attack: press a on selected space";
       display_ranged_attack(d);
-      //d.message = "";
+      d.message = "";
     }
     break;
     case (int) 'w':

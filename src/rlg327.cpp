@@ -95,7 +95,7 @@ int play_game()
     
     if(cur->is_pc) {
       do{
-        clear();
+        //clear();
         //display(DISPLAY_MAP_CMD, d);
         display(DISPLAY_ALL_CMD, d);
         cmd = getch();

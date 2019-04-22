@@ -27,6 +27,7 @@ int prompt_name(Dungeon &d)
 
 int display(int cmd, Dungeon &d)
 {
+  mvprintw(0, 0, "                                                         ");
   mvprintw(0, 0, d.message.c_str());
   switch(cmd){
     case DISPLAY_ALL_CMD:
@@ -386,12 +387,16 @@ int display_ranged_attack(Dungeon &d)
     }
   }while(cmd != 'a' && cmd != 27);
 
+  if(cmd == 27){
+    return 0;
+  }
+
   if(d.characters[ty][tx]){
     if(ty == d.player.y && tx == d.player.x){
-      mvprintw(0, 0, "The player attacks itself in its confusion!");
+      mvprintw(0, 0, "The player attacks itself in its confusion!            ");
     }
 
-    combat(d, d.player, *d.characters[ty][tx]);
+    ranged_combat(d, tx, ty);
 
   }
 
@@ -554,11 +559,13 @@ int display_monster_info(NPC &monster)
   char buffer[500];
   sprintf(buffer, "NAME: %s\n", monster.name.c_str());
   mvprintw(1, 0, buffer);
-  sprintf(buffer, "DESCRIPTION: \n%s", monster.description.c_str());
+  sprintf(buffer, "DESCRIPTION: \n%s   \n", monster.description.c_str());
   printw(buffer);
-  sprintf(buffer, "ATTACK DAMAGE: %s\n", monster.attack_damage.c_str());
+  sprintf(buffer, "ATTACK DAMAGE: %s   \n", monster.attack_damage.c_str());
   printw(buffer);
-  sprintf(buffer, "SPEED: %d", monster.speed);
+  sprintf(buffer, "SPEED: %d   \n", monster.speed);
+  printw(buffer);
+  sprintf(buffer, "HITPOINTS: %d   \n", monster.hitpoints);
   printw(buffer);
 
   getch();

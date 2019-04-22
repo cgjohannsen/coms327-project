@@ -1,6 +1,7 @@
 #include <string>
 #include <cstdint>
 #include <ncurses.h>
+#include <cmath>
 
 #include "Move.h"
 
@@ -16,7 +17,7 @@ int move_npc(Dungeon &d, NPC &c)
 	if(d.characters[c.next_y][c.next_x] && 
 	!(c.next_x == c.x && c.next_y == c.y) &&
 		d.characters[c.next_y][c.next_x]->symbol == '@'){
-		combat(d, c, d.player);	
+		combat(d, c, d.player, c.attack());	
 	} else if(d.characters[c.next_y][c.next_x] && 
 			!(c.next_x == c.x && c.next_y == c.y)){
 		uint8_t tr, tc, temp_row = 0, temp_col = 0;
@@ -74,7 +75,8 @@ int move_pc(Dungeon &d, heap_t *h, int cmd)
 		if(d.hardness[d.player.next_y][d.player.next_x] == 0){
 			if(d.characters[d.player.next_y][d.player.next_x] && 
 			  !(d.player.next_x == d.player.x && d.player.next_y == d.player.y)){
-				if((combat(d, d.player, *d.characters[d.player.next_y][d.player.next_x])) == 10)
+				if((combat(d, d.player, *d.characters[d.player.next_y][d.player.next_x], 
+					d.player.attack())) == 10)
 					return 10;
 			} else {
 				d.characters[d.player.y][d.player.x] = NULL;
@@ -98,17 +100,45 @@ int move_pc(Dungeon &d, heap_t *h, int cmd)
 	return 0;
 }
 
-int combat(Dungeon &d, Character &attacker, Character &defender)
+int ranged_combat(Dungeon &d, uint8_t tx, uint8_t ty)
 {
-	uint32_t damage = attacker.attack();
+	uint32_t damage;
+	Object weapon = *d.player.equipment[RANGED];
 
+	d.message = "hello";
+
+	uint8_t r, c;
+	for(ty-weapon.attribute>0 ? r = ty-weapon.attribute : r = 0 ; 
+		ty+weapon.attribute<DUNGEON_Y ? r<ty+weapon.attribute : r<DUNGEON_Y; r++) {
+		for(tx-weapon.attribute>0 ? c = tx-weapon.attribute : c = 0 ; 
+		tx+weapon.attribute<DUNGEON_X ? c<tx+weapon.attribute : c<DUNGEON_X; c++) {
+			char buffer[81];
+			sprintf(buffer, "%d, %d, %d", c, r, damage);
+			d.message = buffer;
+			if(d.characters[r][c] && r != ty && c != tx){
+				damage = (weapon.damage_bonus.roll()) / (r>c ? abs(r-ty) : abs(c-tx));
+				char buffer[81];
+				sprintf(buffer, "%s, %d, %d, %d", d.characters[r][c]->name.c_str(),
+					c, r, damage);
+				d.message = buffer;
+				if(combat(d, d.player, *d.characters[r][c], damage) == 10)
+					return 10;
+			}
+		} 
+	}
+
+	return 0;
+}
+
+int combat(Dungeon &d, Character &attacker, Character &defender, uint32_t damage)
+{
 	defender.hitpoints -= damage;
 
 	if(defender.hitpoints < 1){
 		char buffer[81];
 		sprintf(buffer, "%s slays %s", attacker.name.c_str(), 
 			defender.name.c_str());
-		d.message = buffer;
+		//d.message = buffer;
 
 		if(!defender.is_pc){
 			if(((NPC*)d.characters[defender.y][defender.x])->abilities & NPC_BOSS){
