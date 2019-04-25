@@ -326,11 +326,23 @@ int display_ranged_attack(Dungeon &d)
   uint8_t cmd = ' ', tx = d.player.x, ty = d.player.y;
 
   uint8_t pc_vr = d.player.visual_range;
+  uint8_t r, c;
 
   do{
     mvprintw(0, 0, d.message.c_str());
     display_map(d);
-    mvaddch(ty+1, tx, '*');
+    for(r = ty-d.player.equipment[RANGED]->attribute; 
+	r < ty+d.player.equipment[RANGED]->attribute+1; r++){
+	for(c = tx-d.player.equipment[RANGED]->attribute; 
+	    c < tx+d.player.equipment[RANGED]->attribute+1; c++) {
+		if(!d.characters[r][c]){
+			mvaddch(r+1, c, '^');	
+		}
+	}
+    }
+    if(!d.characters[ty][tx]){
+        mvaddch(ty+1, tx, '*');
+    }
 
     cmd = getch();
     switch(cmd){
@@ -397,14 +409,31 @@ int display_ranged_attack(Dungeon &d)
     return 0;
   }
 
-  if(d.characters[ty][tx]){
+  uint8_t flag = 0;
+  for(r = ty-d.player.equipment[RANGED]->attribute; 
+      r < ty+d.player.equipment[RANGED]->attribute+1; r++){
+	for(c = tx-d.player.equipment[RANGED]->attribute; 
+	    c < tx+d.player.equipment[RANGED]->attribute+1; c++) {
+		if(d.characters[r][c] && r != d.player.y && c != d.player.x){
+			flag = 1;
+		}
+	}
+  }
+
+  if(flag){
     if(ty == d.player.y && tx == d.player.x){
       mvprintw(0, 0, "The player attacks itself in its confusion!            ");
     }
 
     ranged_combat(d, tx, ty);
 
+  } else {
+    char buffer[81];
+    sprintf(buffer, "No monsters hit! Aimed at (%d, %d)", tx, ty);
+    d.message = buffer;
   }
+
+  mvprintw(0, 0, d.message.c_str());
 
   return 0;
 }

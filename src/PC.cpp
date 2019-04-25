@@ -504,7 +504,6 @@ int PC::move(Dungeon &d, int c)
     } else {
       d.message = "Entering ranged attack: press a on selected space";
       display_ranged_attack(d);
-      d.message = "";
     }
     break;
     case (int) 'w':

@@ -105,26 +105,22 @@ int ranged_combat(Dungeon &d, uint8_t tx, uint8_t ty)
 	uint32_t damage;
 	Object weapon = *d.player.equipment[RANGED];
 
-	d.message = "hello";
-
-	uint8_t r, c;
-	for(r = ty-weapon.attribute; r < ty+weapon.attribute; r++) {
-		for(c = tx-weapon.attribute; c < tx+weapon.attribute; c++) {
-			char buffer[81];
-			sprintf(buffer, "%d, %d, %d", c, r, damage);
-			d.message = buffer;
-			if(d.characters[r][c] && r != ty && c != tx){
+	uint8_t r, c, cnt = 0;
+	for(r = ty-weapon.attribute; r < ty+weapon.attribute+1; r++) {
+		for(c = tx-weapon.attribute; c < tx+weapon.attribute+1; c++) {
+			if(d.characters[r][c] && r != ty && c != tx) {
+				cnt++;
 				damage = (weapon.damage_bonus.roll()) / 
-					(r>c ? abs(r-ty) : abs(c-tx));
-				char buffer[81];
-				sprintf(buffer, "%s, %d, %d, %d", 
-						d.characters[r][c]->name.c_str(),c, r, damage);
-				d.message = buffer;
+					sqrt((r-ty)*(r-ty)+(c-tx)*(c-tx));
 				if(combat(d, d.player, *d.characters[r][c], damage) == 10)
 					return 10;
 			}
 		}	 
 	}
+
+	char buffer[81];
+	sprintf(buffer, "Dealt damage to %d monsters!", cnt);
+	d.message = buffer;
 
 	return 0;
 }
