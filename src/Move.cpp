@@ -108,23 +108,22 @@ int ranged_combat(Dungeon &d, uint8_t tx, uint8_t ty)
 	d.message = "hello";
 
 	uint8_t r, c;
-	for(ty-weapon.attribute>0 ? r = ty-weapon.attribute : r = 0 ; 
-		ty+weapon.attribute<DUNGEON_Y ? r<ty+weapon.attribute : r<DUNGEON_Y; r++) {
-		for(tx-weapon.attribute>0 ? c = tx-weapon.attribute : c = 0 ; 
-		tx+weapon.attribute<DUNGEON_X ? c<tx+weapon.attribute : c<DUNGEON_X; c++) {
+	for(r = ty-weapon.attribute; r < ty+weapon.attribute; r++) {
+		for(c = tx-weapon.attribute; c < tx+weapon.attribute; c++) {
 			char buffer[81];
 			sprintf(buffer, "%d, %d, %d", c, r, damage);
 			d.message = buffer;
 			if(d.characters[r][c] && r != ty && c != tx){
-				damage = (weapon.damage_bonus.roll()) / (r>c ? abs(r-ty) : abs(c-tx));
+				damage = (weapon.damage_bonus.roll()) / 
+					(r>c ? abs(r-ty) : abs(c-tx));
 				char buffer[81];
-				sprintf(buffer, "%s, %d, %d, %d", d.characters[r][c]->name.c_str(),
-					c, r, damage);
+				sprintf(buffer, "%s, %d, %d, %d", 
+						d.characters[r][c]->name.c_str(),c, r, damage);
 				d.message = buffer;
 				if(combat(d, d.player, *d.characters[r][c], damage) == 10)
 					return 10;
 			}
-		} 
+		}	 
 	}
 
 	return 0;

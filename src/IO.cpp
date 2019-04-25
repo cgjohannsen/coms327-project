@@ -92,15 +92,15 @@ int display_all(Dungeon &d)
 
 int display_map(Dungeon &d)
 {
-  uint8_t r, c;
+  uint8_t r, c, pc_vr = d.player.visual_range;
 
   for(r = 0; r < DUNGEON_Y; r++) {
     for(c = 0; c < DUNGEON_X; c++) {
 
-      if(r < d.player.y+d.player.visual_range && 
-         r > d.player.y-d.player.visual_range && 
-         c < d.player.x+d.player.visual_range && 
-         c > d.player.x-d.player.visual_range) {
+      if(r < d.player.y+pc_vr && 
+         r > d.player.y-pc_vr && 
+         c < d.player.x+pc_vr && 
+         c > d.player.x-pc_vr) {
         d.seen[r][c] = d.map[r][c];
         if(d.characters[r][c]){ 
           attron(COLOR_PAIR(d.characters[r][c]->color));
@@ -325,6 +325,8 @@ int display_ranged_attack(Dungeon &d)
 {
   uint8_t cmd = ' ', tx = d.player.x, ty = d.player.y;
 
+  uint8_t pc_vr = d.player.visual_range;
+
   do{
     mvprintw(0, 0, d.message.c_str());
     display_map(d);
@@ -334,53 +336,57 @@ int display_ranged_attack(Dungeon &d)
     switch(cmd){
       case '7':
       case 'y':
-        if(tx-1 > 0 && ty-1 > 0){
+        if(tx-1 > 0 && tx-1 > d.player.x-pc_vr && 
+			ty-1 > 0 && ty-1 > d.player.y-pc_vr){
           tx--;
           ty--;
         }
         break;
       case '8':
       case 'k':
-        if(ty-1 > 0){
+        if(ty-1 > 0 && ty-1 > d.player.y-pc_vr){
           ty--;
         }
         break;
       case '9':
       case 'u':
-        if(tx+1 < DUNGEON_X && ty-1 > 0){
+        if(tx+1 < DUNGEON_X && tx+1 < d.player.x+pc_vr && 
+			ty-1 > 0 && ty-1 > d.player.y-pc_vr){
           tx++;
           ty--;
         }
         break;
       case '6':
       case 'l':
-        if(tx+1 < DUNGEON_X){
+        if(tx+1 < DUNGEON_X && tx+1 < d.player.x+pc_vr){
           tx++;
         }
         break;
       case '3':
       case 'n':
-        if(tx+1 < DUNGEON_X && ty+1 < DUNGEON_Y){
+        if(tx+1 < DUNGEON_X && tx+1 < d.player.x+pc_vr && 
+			ty+1 < DUNGEON_Y && ty+1 < d.player.y+pc_vr){
           tx++;
           ty++;
         }
         break;
       case '2':
       case 'j':
-        if(ty+1 < DUNGEON_Y){
+        if(ty+1 < DUNGEON_Y && ty+1 < d.player.y+pc_vr){
           ty++;
         }
         break;
       case '1':
       case 'b':
-        if(tx-1 > 0 && ty+1 < DUNGEON_Y){
+        if(tx-1 > 0 && tx-1 > d.player.x-pc_vr && 
+			ty+1 < DUNGEON_Y && ty+1 < d.player.y+pc_vr){
           tx--;
           ty++;
         }
         break;
       case '4':
       case 'h':
-        if(tx-1 > 0){
+        if(tx-1 > 0 && tx-1 > d.player.x-pc_vr){
           tx--;
         }
         break;
