@@ -409,17 +409,18 @@ int display_ranged_attack(Dungeon &d)
     return 0;
   }
 
-  uint8_t flag = 0;
   for(r = ty-d.player.equipment[RANGED]->attribute; 
       r < ty+d.player.equipment[RANGED]->attribute+1; r++){
 	for(c = tx-d.player.equipment[RANGED]->attribute; 
 	    c < tx+d.player.equipment[RANGED]->attribute+1; c++) {
-		if(d.characters[r][c] && r != d.player.y && c != d.player.x){
-			flag = 1;
+		if(d.characters[r][c]){
+			if(ranged_combat(d, tx, ty, r, c) == 10)
+				return 10;			
 		}
 	}
   }
 
+  /*
   if(flag){
     if(ty == d.player.y && tx == d.player.x){
       mvprintw(0, 0, "The player attacks itself in its confusion!            ");
@@ -432,7 +433,7 @@ int display_ranged_attack(Dungeon &d)
     sprintf(buffer, "No monsters hit! Aimed at (%d, %d)", tx, ty);
     d.message = buffer;
   }
-
+*/
   mvprintw(0, 0, d.message.c_str());
 
   return 0;
