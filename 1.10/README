@@ -4,13 +4,11 @@ Assignment 1.10
 
 LIGHT objects now function. They increase the visual range of the PC by the attribute value in the description.
 
-Ranged combat has been implemented. 'r' is the command which will bring the user to the ranged combat screen, if a ranged weapon is equipped, and 'a' will attack the target location. 
-All ranged weapons have a blast radius determined by the attribute value of the description. 
-For the example bow object in the object_desc.txt file, the radius is 0, therefore there is no splash damage. 
-The crappy hand grenade on the other hand (a green '}') has a value of 1. 
-This blast radius is displayed to the user in the ranged attack view. 
-Damage done to monsters farther away from the target is lessened as well by a factor of their distance from the target times 5. 
-Note the PC is not free from splash damage, so be careful. 
+Ranged attacks now function. There is a bow and grenade object in the object_desc.txt file included. Equip either and press 'r' to enter range mode. then press 'a' to attack. Note the attribute field determines the range of the attack. Spaces farther out from the target receive less damage.
+
+Scrolls now allow the player to learn spells. Equip the scroll to learn the spell then press 's' to select a spell. This uses the same system as ranged combat. There are two scroll objects included in the object_desc.txt file.
+
+Use the --debug switch to reveal the full dungeon and have the NPCs not move.
 
 *****************
 
